@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         params.put("email", email);
         params.put("password", password);
 
-        String apiKey = "http://192.168.53.221:10000/api/v1/users/login";
+        String apiKey = "https://wellbeing-azhs.onrender.com/api/v1/users/login";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, apiKey, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override

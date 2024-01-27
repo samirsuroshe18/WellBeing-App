@@ -2,6 +2,7 @@ package com.example.wellbeing;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,8 +22,11 @@ import com.android.volley.toolbox.Volley;
 import com.example.wellbeing.UtilsServices.ParseHtmlClass;
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,7 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
         params.put("email", email);
         params.put("password", password);
 
-        String apiKey = "http://192.168.53.221:10000/api/v1/users/register";
+        String apiKey = "https://wellbeing-azhs.onrender.com/api/v1/users/register";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, apiKey, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
@@ -105,7 +109,17 @@ public class RegisterActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                new ParseHtmlClass(error, RegisterActivity.this);
+//                new ParseHtmlClass(error, RegisterActivity.this);
+                String errMsg = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                try {
+                    JSONObject errRes = new JSONObject(errMsg);
+                    String err = errRes.getString("error");
+                    Toast.makeText(RegisterActivity.this, err, Toast.LENGTH_SHORT).show();
+                    Log.d("Error Message : ", errMsg );
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
         }){
             @Override
