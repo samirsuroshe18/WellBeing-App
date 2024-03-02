@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,8 +22,10 @@ import com.android.volley.toolbox.Volley;
 import com.example.wellbeing.UtilsServices.ParseHtmlClass;
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         params.put("email", email);
         params.put("password", password);
 
-        String apiKey = "https://wellbeing-azhs.onrender.com/api/v1/users/login";
+        String apiKey = "https://wellbeing-backend-blush.vercel.app/api/v1/users/login";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, apiKey, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
@@ -85,6 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                         sharedPreference.setValue_string("accessToken", accessToken);
                         sharedPreference.setValue_string("refreshToken", refreshToken);
                         resMsg = response.getString("message");
+                        Log.d("Response : ", accessToken);
                         Toast.makeText(LoginActivity.this, resMsg, Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         finish();
@@ -100,7 +104,15 @@ public class LoginActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                new ParseHtmlClass(error, LoginActivity.this);
+                String errMsg = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                try {
+                    JSONObject errRes = new JSONObject(errMsg);
+                    String err = errRes.getString("error");
+                    Toast.makeText(LoginActivity.this, err, Toast.LENGTH_SHORT).show();
+                    Log.d("Error Message : ", errMsg );
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }){
             @Override

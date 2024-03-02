@@ -1,14 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
+        android:id="@+id/container1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="13dp"
+        android:layout_alignParentTop="true">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_profile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/profile_img"
+            app:civ_border_width="1dp"
+            app:civ_border_color="#323131"
+            android:layout_centerVertical="true"/>
+
+        <EditText
+            android:id="@+id/description"
+            android:background="@drawable/edtext_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:textAlignment="center"
+            android:textColorHint="#A4A4A4"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/user_profile"
+            android:layout_toLeftOf="@+id/image_upload"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:hint="Describe about your task"/>
+
+        <ImageView
+            android:id="@+id/image_upload"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/image_icon"
+            android:layout_toLeftOf="@+id/video_upload"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/video_upload"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/video_icon"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="5dp"
+            android:layout_centerVertical="true"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/home" />
+        android:layout_below="@+id/container1">
 
-</FrameLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/post_display_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

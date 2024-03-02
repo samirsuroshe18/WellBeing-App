@@ -81,7 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
         params.put("email", email);
         params.put("password", password);
 
-        String apiKey = "https://wellbeing-azhs.onrender.com/api/v1/users/register";
+        String apiKey = "https://wellbeing-backend-blush.vercel.app/api/v1/users/register";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, apiKey, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override

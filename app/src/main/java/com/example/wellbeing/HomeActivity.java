@@ -1,7 +1,11 @@
 package com.example.wellbeing;
 
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -61,4 +65,5 @@ public class HomeActivity extends AppCompatActivity {
 
         fragmentTransaction.commit();
     }
+
 }
