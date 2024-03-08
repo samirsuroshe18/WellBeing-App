@@ -1,9 +1,15 @@
 package com.example.wellbeing.models;
 
-public class PostModel {
-    String _id, userProfile, userName, createdAt, description, media, totalLikes, totalDislikes, totalComments, mediaType;
+import android.net.Uri;
 
-    public PostModel(String _id, String userProfile, String userName, String createdAt, String description, String media, String totalLikes, String totalDislikes, String totalComments, String mediaType) {
+public class PostModel {
+    String _id, userProfile, userName, createdAt, description, media, mediaType, taskId, duration;
+    int totalLikes, totalDislikes, totalComments;
+    public PostModel() {
+
+    }
+
+    public PostModel(String _id, String userProfile, String userName, String createdAt, String description, String media, int totalLikes, int totalDislikes, int totalComments, String mediaType, String taskId, String duration) {
         this._id = _id;
         this.userProfile = userProfile;
         this.userName = userName;
@@ -14,6 +20,8 @@ public class PostModel {
         this.totalDislikes = totalDislikes;
         this.totalComments = totalComments;
         this.mediaType = mediaType;
+        this.taskId = taskId;
+        this.duration = duration;
     }
 
     public String get_id() {
@@ -40,20 +48,28 @@ public class PostModel {
         return media;
     }
 
-    public String getTotalLikes() {
+    public int getTotalLikes() {
         return totalLikes;
     }
 
-    public String getTotalDislikes() {
+    public int getTotalDislikes() {
         return totalDislikes;
     }
 
-    public String getTotalComments() {
+    public int getTotalComments() {
         return totalComments;
     }
 
     public String getMediaType() {
         return mediaType;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public String getDuration() {
+        return duration;
     }
 
     public void set_id(String _id) {
@@ -80,19 +96,27 @@ public class PostModel {
         this.media = media;
     }
 
-    public void setTotalLikes(String totalLikes) {
+    public void setTotalLikes(int totalLikes) {
         this.totalLikes = totalLikes;
     }
 
-    public void setTotalDislikes(String totalDislikes) {
+    public void setTotalDislikes(int totalDislikes) {
         this.totalDislikes = totalDislikes;
     }
 
-    public void setTotalComments(String totalComments) {
+    public void setTotalComments(int totalComments) {
         this.totalComments = totalComments;
     }
 
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 }

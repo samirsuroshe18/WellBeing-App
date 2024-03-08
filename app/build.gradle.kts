@@ -47,6 +47,8 @@ dependencies {
     implementation ("org.jsoup:jsoup:1.14.3")
     implementation("com.android.volley:volley:1.2.1")
     implementation("de.hdodenhof:circleimageview:3.1.0")
+    implementation("org.ocpsoft.prettytime:prettytime:5.0.1.Final")
+    implementation("com.squareup.picasso:picasso:2.8")
 
 
     testImplementation("junit:junit:4.13.2")

@@ -80,6 +80,7 @@
         android:layout_height="wrap_content"
         android:text="10"
         android:textSize="25dp"
+        android:textColor="@color/white"
         android:textStyle="bold"
         android:layout_above="@+id/line"
         android:layout_toLeftOf="@+id/play"
@@ -108,7 +109,7 @@
         android:layout_marginRight="15dp"
         android:layout_marginBottom="15dp"
         app:tint="@color/white"
-        android:visibility="gone"/>
+        android:visibility="invisible"/>
 
     <View
         android:id="@+id/line"

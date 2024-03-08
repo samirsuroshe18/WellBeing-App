@@ -5,135 +5,200 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/mystic_lavender"
+    android:paddingHorizontal="15dp"
     android:orientation="vertical"
     tools:context=".fragments.ProfileFragment">
 
-    <LinearLayout
-        android:layout_width="366dp"
-        android:layout_height="220dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/gradient_background">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
-                android:layout_width="150dp"
-                android:layout_height="200dp"
-                android:layout_marginEnd="11dp"
-                app:cardCornerRadius="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/gradient_background">
 
-                <ImageView
-                    android:id="@+id/imageView4"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/img_round_shape_bg"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/header_background" />
+                    android:layout_height="match_parent">
 
-            </androidx.cardview.widget.CardView>
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardView"
+                        android:layout_width="150dp"
+                        android:layout_height="200dp"
+                        android:layout_marginEnd="11dp"
+                        app:cardCornerRadius="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/imageView5"
-                android:layout_width="wrap_content"
+                        <ImageView
+                            android:id="@+id/imageView4"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/img_round_shape_bg"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/header_background" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <ImageView
+                        android:id="@+id/imageView5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="36dp"
+                        android:src="@drawable/front_shapes3"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.831" />
+
+                    <ImageView
+                        android:id="@+id/imageView6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="96dp"
+                        android:src="@drawable/front_shapes"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.4" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Samir Suroshe"
+                        android:textAlignment="textStart"
+                        android:textColor="#EFEFEF"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/cardView"
+                        app:layout_constraintHorizontal_bias="0.313"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Email"
+                        android:textColor="#A4A4A4"
+                        android:textSize="10dp"
+                        app:layout_constraintEnd_toEndOf="@+id/textView"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/textView"
+                        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+                    <TextView
+                        android:id="@+id/editTextTextEmailAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="sameersuroshe@gmail.com"
+                        android:textAlignment="textStart"
+                        android:textColor="#EFEFEF"
+                        android:textSize="15sp"
+                        app:layout_constraintEnd_toEndOf="@+id/textView2"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/textView2"
+                        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="280dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="36dp"
-                android:src="@drawable/front_shapes3"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.831" />
+                android:layout_marginTop="20dp"
+                android:padding="5dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/profile_btn_bg">
 
-            <ImageView
-                android:id="@+id/imageView6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="96dp"
-                android:src="@drawable/front_shapes"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.4" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:text="About"
+                    android:background="@drawable/btn_bg"
+                    android:layout_alignParentLeft="true"/>
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="154dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Samir Suroshe"
-                android:textAlignment="textStart"
-                android:textColor="#EFEFEF"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.075"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:background="@drawable/btn_bg"
+                    android:layout_centerHorizontal="true"
+                    android:text="work" />
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="92dp"
-                android:text="Email"
-                android:textColor="#A4A4A4"
-                android:textSize="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.046"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:background="@drawable/btn_bg"
+                    android:layout_alignParentRight="true"
+                    android:text="activity" />
 
-            <TextView
-                android:id="@+id/editTextTextEmailAddress"
-                android:layout_width="177dp"
-                android:layout_height="38dp"
-                android:text="sameersuroshe@gmail.com"
-                android:textAlignment="textStart"
-                android:textColor="#EFEFEF"
-                android:textSize="15sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.083"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.582" />
+            </RelativeLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-    </LinearLayout>
+                <RelativeLayout
+                    android:id="@+id/linearLayout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_alignParentTop="true">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/btn_bg"
-        android:gravity="center_horizontal">
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="168dp"
+                        android:layout_height="193dp"
+                        app:cardCornerRadius="20dp"
+                        android:elevation="10dp"
+                        android:layout_marginRight="10dp"/>
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/img_round_shape_bg"
-            android:text="About" />
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardView2"
+                        android:layout_width="168dp"
+                        android:layout_height="193dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginLeft="10dp"
+                        app:cardCornerRadius="20dp" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/img_round_shape_bg"
-            android:text="work" />
+                </RelativeLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/img_round_shape_bg"
-            android:text="activity" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_below="@+id/linearLayout2">
 
-    </LinearLayout>
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="168dp"
+                        android:layout_height="193dp"
+                        app:cardCornerRadius="20dp"
+                        android:layout_marginRight="10dp"/>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="168dp"
+                        android:layout_height="193dp"
+                        app:cardCornerRadius="20dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginLeft="10dp"/>
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

@@ -64,9 +64,13 @@
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="8dp"
         android:paddingVertical="5dp"
-        android:ellipsize="end"
         android:maxLines="5"
-        android:text="This task was amazing i ha v" />
+        android:text="This task \nskdlsa adlf  ldsa f\ndkjf\njdfka\njsaflk\njdfsjh
+        ;adf\n djfk\ndfkj"
+        android:ellipsize="end" >
+    </TextView>
+
+
 
     <ImageView
         android:id="@+id/post_image"

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PostActivity">
+
+    <EditText
+        android:id="@+id/description_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:layout_alignParentTop="true"
+        android:hint="write about how did you complete a task.."/>
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:scaleType="centerCrop"
+        android:layout_below="@+id/description_et"
+        android:visibility="visible"/>
+
+    <ImageView
+        android:id="@+id/video"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_below="@+id/description_et"
+        android:visibility="gone"/>
+
+    <RelativeLayout
+        android:id="@+id/container1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="13dp"
+        android:layout_alignParentBottom="true">
+
+
+
+
+        <ImageView
+            android:id="@+id/image_upload"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/image_icon"
+            android:layout_toLeftOf="@+id/video_upload"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/video_upload"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/video_icon"
+            android:layout_marginLeft="5dp"
+            android:layout_toLeftOf="@+id/upload_post"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/upload_post"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/send"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
