@@ -1,0 +1,342 @@
+Index: app/src/main/res/layout/fragment_task.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<LinearLayout\r\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:orientation=\"vertical\"\r\n    android:layout_height=\"match_parent\"\r\n    tools:context=\".fragments.TaskFragment\">\r\n\r\n    <ScrollView\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"match_parent\">\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"match_parent\"\r\n            android:orientation=\"vertical\">\r\n\r\n            <LinearLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\">\r\n\r\n                <TextView\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_weight=\"1\"\r\n                    android:text=\"Title : \"/>\r\n\r\n                <TextView\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:text=\"this is first task\"\r\n                    android:layout_weight=\"3\"/>\r\n\r\n            </LinearLayout>\r\n\r\n            <LinearLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\">\r\n\r\n                <TextView\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_weight=\"1\"\r\n                    android:text=\"Description : \"/>\r\n\r\n                <TextView\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:text=\"this is Description\"\r\n                    android:layout_weight=\"3\"/>\r\n\r\n            </LinearLayout>\r\n\r\n            <RelativeLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\">\r\n\r\n                <TextView\r\n                    android:id=\"@+id/ref_txt\"\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:text=\"Reference\"\r\n                    android:layout_alignParentTop=\"true\"/>\r\n\r\n                <ImageView\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"300dp\"\r\n                    android:scaleType=\"centerCrop\"\r\n                    android:layout_below=\"@+id/ref_txt\"\r\n                    android:visibility=\"visible\"/>\r\n\r\n                <VideoView\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"300dp\"\r\n                    android:layout_below=\"@+id/ref_txt\"\r\n                    android:visibility=\"invisible\"/>\r\n\r\n            </RelativeLayout>\r\n\r\n            <LinearLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\">\r\n\r\n                <TextView\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:text=\"Created By : \"\r\n                    android:layout_weight=\"1\"/>\r\n\r\n                <TextView\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:text=\"Samir Suroshe\"\r\n                    android:layout_weight=\"3\"/>\r\n\r\n            </LinearLayout>\r\n\r\n            <LinearLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\">\r\n\r\n                <TextView\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:text=\"Timeline to complete : \"\r\n                    android:layout_weight=\"1\"/>\r\n\r\n                <TextView\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:text=\"2 Days\"\r\n                    android:layout_weight=\"3\"/>\r\n\r\n            </LinearLayout>\r\n\r\n            <RelativeLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\">\r\n\r\n                <androidx.appcompat.widget.AppCompatButton\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_alignParentLeft=\"true\"\r\n                    android:text=\"Prev\" />\r\n\r\n                <androidx.appcompat.widget.AppCompatButton\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_centerHorizontal=\"true\"\r\n                    android:text=\"Accept\" />\r\n\r\n                <androidx.appcompat.widget.AppCompatButton\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_alignParentRight=\"true\"\r\n                    android:text=\"Next\" />\r\n\r\n            </RelativeLayout>\r\n\r\n            <LinearLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\">\r\n\r\n                <androidx.appcompat.widget.AppCompatButton\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:text=\"Create a post\"/>\r\n\r\n            </LinearLayout>\r\n\r\n        </LinearLayout>\r\n\r\n    </ScrollView>\r\n\r\n</LinearLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/fragment_task.xml b/app/src/main/res/layout/fragment_task.xml
+--- a/app/src/main/res/layout/fragment_task.xml	(revision 916b057802ea3a38ccf1744a6eda7a67263f8b65)
++++ b/app/src/main/res/layout/fragment_task.xml	(date 1709905452828)
+@@ -1,15 +1,17 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<LinearLayout
++<RelativeLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:tools="http://schemas.android.com/tools"
+     android:layout_width="match_parent"
+     android:orientation="vertical"
+     android:layout_height="match_parent"
+-    tools:context=".fragments.TaskFragment">
++    tools:context=".fragments.TaskFragment"
++    android:background="@color/mystic_lavender">
+ 
+     <ScrollView
+         android:layout_width="match_parent"
+-        android:layout_height="match_parent">
++        android:layout_height="match_parent"
++        android:layout_above="@+id/navigate">
+ 
+         <LinearLayout
+             android:layout_width="match_parent"
+@@ -36,7 +38,8 @@
+ 
+             <LinearLayout
+                 android:layout_width="match_parent"
+-                android:layout_height="wrap_content">
++                android:layout_height="wrap_content"
++                android:id="@+id/description">
+ 
+                 <TextView
+                     android:layout_width="wrap_content"
+@@ -48,33 +51,27 @@
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="this is Description"
+-                    android:layout_weight="3"/>
++                    android:layout_weight="3"
++                    />
+ 
+             </LinearLayout>
+ 
+             <RelativeLayout
+                 android:layout_width="match_parent"
+-                android:layout_height="wrap_content">
+-
+-                <TextView
+-                    android:id="@+id/ref_txt"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:text="Reference"
+-                    android:layout_alignParentTop="true"/>
++                android:layout_height="match_parent"
++                abo>
+ 
+                 <ImageView
+                     android:layout_width="match_parent"
+-                    android:layout_height="300dp"
++                    android:layout_height="575dp"
+                     android:scaleType="centerCrop"
+-                    android:layout_below="@+id/ref_txt"
+                     android:visibility="visible"/>
+ 
+                 <VideoView
+                     android:layout_width="match_parent"
+-                    android:layout_height="300dp"
+-                    android:layout_below="@+id/ref_txt"
+-                    android:visibility="invisible"/>
++                    android:layout_height="wrap_content"
++                    android:layout_marginTop="-1dp"
++                    android:visibility="invisible" />
+ 
+             </RelativeLayout>
+ 
+@@ -114,43 +111,34 @@
+ 
+             </LinearLayout>
+ 
+-            <RelativeLayout
+-                android:layout_width="match_parent"
+-                android:layout_height="wrap_content">
++        </LinearLayout>
++
++    </ScrollView>
++
++    <RelativeLayout
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:layout_alignParentBottom="true"
++        android:id="@+id/navigate">
+ 
+-                <androidx.appcompat.widget.AppCompatButton
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:layout_alignParentLeft="true"
+-                    android:text="Prev" />
++        <androidx.appcompat.widget.AppCompatButton
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:layout_alignParentLeft="true"
++            android:text="Prev" />
+ 
+-                <androidx.appcompat.widget.AppCompatButton
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:layout_centerHorizontal="true"
+-                    android:text="Accept" />
++        <androidx.appcompat.widget.AppCompatButton
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:layout_centerHorizontal="true"
++            android:text="Accept" />
+ 
+-                <androidx.appcompat.widget.AppCompatButton
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:layout_alignParentRight="true"
+-                    android:text="Next" />
++        <androidx.appcompat.widget.AppCompatButton
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:layout_alignParentRight="true"
++            android:text="Next" />
+ 
+-            </RelativeLayout>
++    </RelativeLayout>
+ 
+-            <LinearLayout
+-                android:layout_width="match_parent"
+-                android:layout_height="wrap_content">
+-
+-                <androidx.appcompat.widget.AppCompatButton
+-                    android:layout_width="match_parent"
+-                    android:layout_height="wrap_content"
+-                    android:text="Create a post"/>
+-
+-            </LinearLayout>
+-
+-        </LinearLayout>
+-
+-    </ScrollView>
+-
+-</LinearLayout>
+\ No newline at end of file
++</RelativeLayout>
+\ No newline at end of file
+Index: app/src/main/res/layout/fragment_create.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<FrameLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    tools:context=\".fragments.CreateFragment\">\r\n\r\n    <!-- TODO: Update blank fragment layout -->\r\n    <TextView\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"match_parent\"\r\n        android:text=\"@string/create\" />\r\n\r\n</FrameLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/fragment_create.xml b/app/src/main/res/layout/fragment_create.xml
+--- a/app/src/main/res/layout/fragment_create.xml	(revision 916b057802ea3a38ccf1744a6eda7a67263f8b65)
++++ b/app/src/main/res/layout/fragment_create.xml	(date 1706630237873)
+@@ -3,12 +3,168 @@
+     xmlns:tools="http://schemas.android.com/tools"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+-    tools:context=".fragments.CreateFragment">
+-
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    tools:context=".fragments.CreateFragment"
++    android:layout_gravity="center_horizontal">
+     <!-- TODO: Update blank fragment layout -->
+-    <TextView
+-        android:layout_width="match_parent"
+-        android:layout_height="match_parent"
+-        android:text="@string/create" />
++
++    <LinearLayout
++        android:id="@+id/linearLayout"
++        android:layout_width="match_parent"
++        android:layout_height="match_parent"
++        android:background="@drawable/curve_bg"
++        android:orientation="vertical"
++        android:layout_below="@+id/constraintLayout">
++
++        <androidx.constraintlayout.widget.ConstraintLayout
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content">
++
++            <ImageView
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                app:layout_constraintStart_toStartOf="parent"
++                app:layout_constraintTop_toTopOf="parent"
++                app:srcCompat="@drawable/front_shapes3" />
++
++            <ImageView
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                app:layout_constraintEnd_toEndOf="parent"
++                app:layout_constraintTop_toTopOf="parent"
++                app:srcCompat="@drawable/front_shapes4" />
++
++            <TextView
++                android:layout_width="300dp"
++                android:layout_height="60dp"
++                android:layout_marginTop="44dp"
++                android:gravity="center"
++                android:text="Register"
++                android:textColor="@color/white"
++                android:textSize="40sp"
++                android:textStyle="bold"
++                app:layout_constraintEnd_toEndOf="parent"
++                app:layout_constraintStart_toStartOf="parent"
++                app:layout_constraintTop_toTopOf="parent" />
++
++
++        </androidx.constraintlayout.widget.ConstraintLayout>
++
++        <LinearLayout
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:orientation="vertical"
++            app:layout_constraintEnd_toEndOf="parent"
++            app:layout_constraintStart_toStartOf="parent">
++
++            <TextView
++                android:layout_width="93dp"
++                android:layout_height="21dp"
++                android:layout_marginStart="48dp"
++                android:text="Email Address"
++                android:textColor="#A4A4A4"
++                android:layout_marginTop="10dp"/>
++
++            <EditText
++                android:id="@+id/email_editText"
++                android:layout_width="314dp"
++                android:layout_height="55dp"
++                android:layout_marginTop="10dp"
++                android:background="@drawable/input_bg"
++                android:drawableLeft="@drawable/email"
++                android:drawablePadding="10dp"
++                android:ems="10"
++                android:hint="Email"
++                android:inputType="textEmailAddress"
++                android:paddingStart="20dp"
++                android:layout_gravity="center_horizontal"/>
++        </LinearLayout>
++
++        <LinearLayout
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:orientation="vertical"
++            app:layout_constraintEnd_toEndOf="parent"
++            app:layout_constraintStart_toStartOf="parent">
+ 
+-</FrameLayout>
+\ No newline at end of file
++            <TextView
++                android:layout_width="93dp"
++                android:layout_height="21dp"
++                android:layout_marginStart="48dp"
++                android:text="Your Name"
++                android:textColor="#A4A4A4"
++                android:layout_marginTop="10dp"/>
++
++            <EditText
++                android:id="@+id/name_editText"
++                android:layout_width="314dp"
++                android:layout_height="55dp"
++                android:layout_marginTop="10dp"
++                android:background="@drawable/input_bg"
++                android:drawableLeft="@drawable/user"
++                android:drawablePadding="10dp"
++                android:ems="10"
++                android:hint="Name"
++                android:inputType="text"
++                android:paddingStart="20dp"
++                android:layout_gravity="center_horizontal"/>
++        </LinearLayout>
++
++        <LinearLayout
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:orientation="vertical"
++            app:layout_constraintEnd_toEndOf="parent"
++            app:layout_constraintStart_toStartOf="parent">
++
++            <TextView
++                android:layout_width="93dp"
++                android:layout_height="21dp"
++                android:layout_marginStart="48dp"
++                android:text="Password"
++                android:textColor="#A4A4A4"
++                android:layout_marginTop="10dp"/>
++
++            <EditText
++                android:id="@+id/pass_editText"
++                android:layout_width="314dp"
++                android:layout_height="55dp"
++                android:layout_marginTop="10dp"
++                android:background="@drawable/input_bg"
++                android:drawableLeft="@drawable/pass"
++                android:drawablePadding="10dp"
++                android:ems="10"
++                android:hint="Password"
++                android:inputType="textPassword"
++                android:paddingStart="20dp"
++                android:layout_gravity="center_horizontal"/>
++        </LinearLayout>
++
++
++        <androidx.appcompat.widget.AppCompatButton
++            android:id="@+id/sign_in_btn"
++            android:layout_width="314dp"
++            android:layout_height="55dp"
++            android:layout_gravity="center_horizontal"
++            android:layout_marginTop="35dp"
++            android:text="Sign Up"
++            android:textColor="@color/white"
++            android:textSize="20sp"
++            android:gravity="center"
++            android:textAllCaps="false"
++            android:background="@drawable/btn_bg" />
++
++        <TextView
++            android:id="@+id/mov_to_logIn"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:text="Do you have an account? Sign In"
++            android:textColor="#A4A4A4"
++            android:layout_gravity="end"
++            android:layout_marginTop="8dp"
++            android:layout_marginEnd="49dp"/>
++
++    </LinearLayout>
++
++
++</FrameLayout>
