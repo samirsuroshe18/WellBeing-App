@@ -49,6 +49,8 @@ dependencies {
     implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation("org.ocpsoft.prettytime:prettytime:5.0.1.Final")
     implementation("com.squareup.picasso:picasso:2.8")
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+    implementation("androidx.activity:activity:1.8.0")
 
 
     testImplementation("junit:junit:4.13.2")

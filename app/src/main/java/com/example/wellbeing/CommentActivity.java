@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -85,7 +86,7 @@ public class CommentActivity extends AppCompatActivity {
     }
 
     public void getComments(){
-            String apiKey = "http://192.168.219.221:10000/api/v1/comment/get-comment";
+            String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/comment/get-comment";
 
             final HashMap<String, String> params = new HashMap<>();
             params.put("multiMedia", multiMedia);
@@ -99,7 +100,7 @@ public class CommentActivity extends AppCompatActivity {
                             for (int i = 0; i<dataObject.length(); i++){
                                 commentList.add(new CommentModel(dataObject.getJSONObject(i).getString("_id"),
                                         dataObject.getJSONObject(i).getJSONObject("commentedBy").getString("userName"),
-                                        dataObject.getJSONObject(i).getJSONObject("commentedBy").getString("pofilePicture"),
+                                        dataObject.getJSONObject(i).getJSONObject("commentedBy").getString("profilePicture"),
                                         dataObject.getJSONObject(i).getString("content"),
                                         dataObject.getJSONObject(i).getString("createdAt")
                                         ));
@@ -145,10 +146,15 @@ public class CommentActivity extends AppCompatActivity {
 
             RequestQueue requestQueue = Volley.newRequestQueue(CommentActivity.this);
             requestQueue.add(jsonObjectRequest);
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         }
 
     public void sendComment(){
-        String apiKey = "http://192.168.219.221:10000/api/v1/comment/post-comment";
+        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/comment/post-comment";
 
         final HashMap<String, String> params = new HashMap<>();
         params.put("multiMedia", multiMedia);
@@ -163,7 +169,7 @@ public class CommentActivity extends AppCompatActivity {
                         for (int i = 0; i<dataObject.length(); i++){
                             commentList.add(new CommentModel(dataObject.getJSONObject(i).getString("_id"),
                                     dataObject.getJSONObject(i).getJSONObject("commentedBy").getString("userName"),
-                                    dataObject.getJSONObject(i).getJSONObject("commentedBy").getString("pofilePicture"),
+                                    dataObject.getJSONObject(i).getJSONObject("commentedBy").getString("profilePicture"),
                                     dataObject.getJSONObject(i).getString("content"),
                                     dataObject.getJSONObject(i).getString("createdAt")
                             ));
@@ -210,5 +216,10 @@ public class CommentActivity extends AppCompatActivity {
 
         RequestQueue requestQueue = Volley.newRequestQueue(CommentActivity.this);
         requestQueue.add(jsonObjectRequest);
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 }

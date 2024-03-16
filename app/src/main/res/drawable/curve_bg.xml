@@ -1,50 +1,12 @@
-<vector
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
-    android:width="447dp"
-    android:height="803dp"
-    android:viewportWidth="447"
-    android:viewportHeight="803"
-    >
-    <group>
-        <clip-path
-            android:pathData="M59 0H388C420.585 0 447 26.4152 447 59V744C447 776.585 420.585 803 388 803H59C26.4152 803 0 776.585 0 744V59C0 26.4152 26.4152 0 59 0Z"
-            />
-        <group
-            android:translateX="-0.236"
-            android:translateY="-2.114"
-            android:pivotX="223.5"
-            android:pivotY="401.5"
-            android:scaleX="5.081"
-            android:scaleY="6.077"
-            android:rotation="44.784"
-            >
-            <path
-                android:pathData="M0 0V803H447V0"
-                >
-                <aapt:attr name="android:fillColor">
-                    <gradient
-                        android:type="radial"
-                        android:fillAlpha="0.2"
-                        android:centerX="223.5"
-                        android:centerY="401.5"
-                        android:gradientRadius="111.75"
-                        >
-                        <item
-                            android:color="#66B379DF"
-                            android:offset="0"
-                            />
-                        <item
-                            android:color="#14CC5854"
-                            android:offset="0.771"
-                            />
-                        <item
-                            android:color="#66B379DF"
-                            android:offset="1"
-                            />
-                    </gradient>
-                </aapt:attr>
-            </path>
-        </group>
-    </group>
-</vector>
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:startColor="#66B379DF"
+        android:endColor="#14C45647"
+        android:centerColor="#66B379DF"
+        android:angle="90"
+        />
+    <corners android:topLeftRadius="40dp"
+        android:topRightRadius="40dp"/>
+
+</shape>

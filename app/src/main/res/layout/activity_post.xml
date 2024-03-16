@@ -23,12 +23,12 @@
         android:layout_below="@+id/description_et"
         android:visibility="visible"/>
 
-    <ImageView
+    <VideoView
         android:id="@+id/video"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_below="@+id/description_et"
-        android:visibility="gone"/>
+        android:visibility="invisible"/>
 
     <RelativeLayout
         android:id="@+id/container1"
@@ -39,15 +39,13 @@
         android:layout_alignParentBottom="true">
 
 
-
-
         <ImageView
             android:id="@+id/image_upload"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/image_icon"
+            android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/video_upload"
-            android:layout_centerVertical="true"/>
+            android:src="@drawable/image_icon" />
 
         <ImageView
             android:id="@+id/video_upload"

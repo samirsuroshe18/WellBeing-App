@@ -3,6 +3,7 @@ package com.example.wellbeing;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -36,12 +38,16 @@ public class LoginActivity extends AppCompatActivity {
     Button sign_in_btn;
     String email, password, accessToken, refreshToken, resMsg;
     SharedPreferenceClass sharedPreference;
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        progressDialog = new ProgressDialog(LoginActivity.this);
+        progressDialog.setTitle("Login");
+        progressDialog.setMessage("Login to your account");
         mov_to_signUp = findViewById(R.id.mov_to_signUp);
         email_editText = findViewById(R.id.email_editText);
         pass_editText = findViewById(R.id.pass_editText);
@@ -71,11 +77,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void LoginUser(View view) {
+        progressDialog.show();
         final HashMap<String, String> params = new HashMap<>();
         params.put("email", email);
         params.put("password", password);
 
-        String apiKey = "https://wellbeing-backend-blush.vercel.app/api/v1/users/login";
+        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/login";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, apiKey, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
@@ -92,26 +99,36 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, resMsg, Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         finish();
+                        progressDialog.dismiss();
                     } else {
                         // Handle the case where "accessToken" key is not present in the JSON response
                         Toast.makeText(LoginActivity.this, "No accessToken found in the response", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
                     }
 
                 }catch (Exception e){
                     e.printStackTrace();
+                    progressDialog.dismiss();
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String errMsg = new String(error.networkResponse.data, StandardCharsets.UTF_8);
-                try {
-                    JSONObject errRes = new JSONObject(errMsg);
-                    String err = errRes.getString("error");
-                    Toast.makeText(LoginActivity.this, err, Toast.LENGTH_SHORT).show();
-                    Log.d("Error Message : ", errMsg );
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
+                if (error != null && error.networkResponse != null && error.networkResponse.data != null) {
+                    String errMsg = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                    try {
+                        JSONObject errRes = new JSONObject(errMsg);
+                        String err = errRes.getString("error");
+                        Toast.makeText(LoginActivity.this, err, Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        progressDialog.dismiss();
+                    }
+                } else {
+                    // Handle the case when the error or its networkResponse is null
+                    Toast.makeText(LoginActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
                 }
             }
         }){
@@ -125,5 +142,11 @@ public class LoginActivity extends AppCompatActivity {
 
         RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
         requestQueue.add(jsonObjectRequest);
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
     }
 }

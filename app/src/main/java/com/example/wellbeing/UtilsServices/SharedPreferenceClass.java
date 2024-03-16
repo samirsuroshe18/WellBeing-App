@@ -23,7 +23,8 @@ public class SharedPreferenceClass {
         prefsEditor.putString(key, value).commit();
     }
 
-    public void clear(){
-        prefsEditor.clear().commit();
+    public void remove(String key){
+        prefsEditor.remove(key).apply();
     }
+
 }
