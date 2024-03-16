@@ -1,13 +1,13 @@
 package com.example.wellbeing;
 
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
-import android.widget.VideoView;
 
+import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -15,12 +15,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.wellbeing.UtilsServices.ConnectivityUtils;
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
 import com.example.wellbeing.adapters.PostsAdapter;
 import com.example.wellbeing.fragments.CreateFragment;
@@ -41,79 +43,158 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
-
     BottomNavigationView bottomNavigationView;
-    String accessToken;
+    String accessToken, fragmentTagName;
     SharedPreferenceClass sharedPreferenceClass;
     ArrayList<PostModel> postList;
     PostsAdapter adapter;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     HomeFragment homeFragment;
+    TaskFragment taskFragment;
+    CreateFragment createFragment;
+    LeaderboardFragment leaderboardFragment;
+    ProfileFragment profileFragment;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
 
-        bottomNavigationView = findViewById(R.id.bottomNav);
+        bottomNavigationView = findViewById(R.id.bottomNav2);
         postList = new ArrayList<>();
         sharedPreferenceClass = new SharedPreferenceClass(this);
         accessToken = sharedPreferenceClass.getValue_string("accessToken");
         adapter = new PostsAdapter(postList, this, accessToken);
 
-        getPosts();
 
-        bottomNavigationView.setSelectedItemId(R.id.navigation_home);
-
-        homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("HomeFragment");
-        if (homeFragment == null) {
-            homeFragment = new HomeFragment(this, postList, adapter);
+        if (ConnectivityUtils.isConnectedToInternet(getApplicationContext())) {
+            getPosts();
+        } else {
+            Toast.makeText(this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
         }
 
-        loadFrag(homeFragment, true);
+
+        homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("homeFragment");
+        if (homeFragment == null){
+            homeFragment = new HomeFragment(postList, adapter);
+        }
+        loadFrag(homeFragment, "homeFragment", true);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_home);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if(id==R.id.navigation_home){
-                    if (homeFragment.isVisible()) {
-                        // Refresh the data if the HomeFragment is currently visible
-                        postList.clear();
-                        getUpdatedPosts();
-                        loadFrag(new HomeFragment(HomeActivity.this, postList, adapter), false);
-                    } else {
-                        loadFrag(homeFragment, false);
+                    homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("homeFragment");
+                    if ( homeFragment == null){
+                        homeFragment = new HomeFragment(postList, adapter);
+                        loadFrag(homeFragment, "homeFragment", false);
+                    }else  {
+                        if (homeFragment.isVisible()){
+                            postList.clear();
+                            getUpdatedPosts();
+                            homeFragment = new HomeFragment(postList, adapter);
+                            loadFrag(homeFragment, "homeFragment", false);
+                        }
+                        loadFrag(homeFragment, "homeFragment", false);
                     }
                 } else if (id==R.id.navigation_task) {
-                    loadFrag(new TaskFragment(), false);
+                    taskFragment = (TaskFragment) getSupportFragmentManager().findFragmentByTag("taskFragment");
+                    if ( taskFragment == null){
+                        taskFragment = new TaskFragment();
+                        loadFrag(taskFragment, "taskFragment", false);
+                    }else  {
+                        if (taskFragment.isVisible()){
+                            taskFragment = new TaskFragment();
+                            loadFrag(taskFragment, "taskFragment", false);
+                        }
+                        loadFrag(taskFragment, "taskFragment", false);
+                    }
                 } else if (id==R.id.navigation_create) {
-                    loadFrag(new CreateFragment(), false);
+                    createFragment = (CreateFragment) getSupportFragmentManager().findFragmentByTag("createFragment");
+                    if ( createFragment == null){
+                        createFragment = new CreateFragment();
+                        loadFrag(createFragment, "createFragment", false);
+                    }else  {
+                        loadFrag(createFragment, "createFragment", false);
+                    }
                 } else if (id==R.id.navigation_leaderboard) {
-                    loadFrag(new LeaderboardFragment(), false);
+                    leaderboardFragment = (LeaderboardFragment) getSupportFragmentManager().findFragmentByTag("leaderboardFragment");
+                    if ( leaderboardFragment == null){
+                        leaderboardFragment = new LeaderboardFragment();
+                        loadFrag(leaderboardFragment, "leaderboardFragment", false);
+                    }else  {
+                        loadFrag(leaderboardFragment, "leaderboardFragment", false);
+                    }
                 }else {
-                    loadFrag(new ProfileFragment(), false);
+                    profileFragment = (ProfileFragment) getSupportFragmentManager().findFragmentByTag("profileFragment");
+                    if ( profileFragment == null){
+                        profileFragment = new ProfileFragment();
+                        loadFrag(profileFragment, "profileFragment", false);
+                    }else  {
+                        loadFrag(profileFragment, "profileFragment", false);
+                    }
                 }
                 return true;
             }
         });
+
+        // This callback is only called when MyFragment is at least started
+        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+            @Override
+            public void handleOnBackPressed() {
+                // Handle the back button event
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                Fragment currentFragment = fragmentManager.findFragmentById(R.id.container);
+                String currentFragmentTag = currentFragment.getTag();
+
+                // Check if the current fragment is the home fragment
+                if (currentFragmentTag != null && currentFragmentTag.equals("homeFragment")) {
+                    // Clear the back stack
+                    finishAffinity();
+                } else {
+                    fragmentManager.popBackStack();
+                }
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
-    public void loadFrag(Fragment fragment, boolean flag){
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Intent intent = getIntent();
+        fragmentTagName = intent.getStringExtra("fragmentTagName");
+        if (fragmentTagName != null){
+            if (fragmentTagName.equals("taskFragment")){
+                taskFragment = new TaskFragment();
+                loadFrag(taskFragment, "taskFragment", false);
+            }
+        }
+
+    }
+
+    public void loadFrag(Fragment fragment, String tagName, boolean flag){
         fragmentManager = getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
         if (flag){
-            fragmentTransaction.add(R.id.container, fragment);
+            fragmentTransaction.add(R.id.container, fragment, tagName);
         }else {
-            fragmentTransaction.replace(R.id.container, fragment);
-            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.replace(R.id.container, fragment, tagName);
         }
+
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
     private void getPosts() {
 
-        String apiKey = "http://192.168.219.221:10000/api/v1/upload/get-post";
+        String apiKey = "https://wellbeing-backend-blush.vercel.app/api/v1/upload/get-post";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
@@ -125,10 +206,10 @@ public class HomeActivity extends AppCompatActivity {
                             PostModel postModel = new PostModel();
 
                             postModel.set_id(dataObject.getJSONObject(i).getString("_id"));
-                            postModel.setUserProfile(dataObject.getJSONObject(i).getJSONObject("uploadedBy").getString("pofilePicture"));
+                            postModel.setUserProfile(dataObject.getJSONObject(i).getJSONObject("uploadedBy").getString("profilePicture"));
                             postModel.setUserName(dataObject.getJSONObject(i).getJSONObject("uploadedBy").getString("userName"));
                             postModel.setCreatedAt(dataObject.getJSONObject(i).getString("createdAt"));
-                            postModel.setDescription(dataObject.getJSONObject(i).getString("discription"));
+                            postModel.setDescription(dataObject.getJSONObject(i).getString("description"));
                             postModel.setMedia(dataObject.getJSONObject(i).getString("multiMedia"));
                             postModel.setTotalLikes(dataObject.getJSONObject(i).getInt("likes"));
                             postModel.setTotalDislikes(dataObject.getJSONObject(i).getInt("dislikes"));
@@ -138,6 +219,7 @@ public class HomeActivity extends AppCompatActivity {
                             postModel.setDuration(dataObject.getJSONObject(i).getString("duration"));
 
                             postList.add(postModel);
+                            Log.d("getPostData : ", String.valueOf(dataObject));
                             adapter.notifyDataSetChanged();
                         }
 
@@ -175,11 +257,17 @@ public class HomeActivity extends AppCompatActivity {
 
         RequestQueue requestQueue = Volley.newRequestQueue(HomeActivity.this);
         requestQueue.add(jsonObjectRequest);
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
     }
 
     private void getUpdatedPosts() {
 
-        String apiKey = "http://192.168.219.221:10000/api/v1/upload/get-post";
+        String apiKey = "https://wellbeing-backend-blush.vercel.app/api/v1/upload/get-post";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
@@ -187,14 +275,15 @@ public class HomeActivity extends AppCompatActivity {
                 try {
                     if (response != null) {
                         JSONArray dataObject = response.getJSONArray("data");
+
                         for (int i=0; i<dataObject.length(); i++){
                             PostModel postModel = new PostModel();
 
                             postModel.set_id(dataObject.getJSONObject(i).getString("_id"));
-                            postModel.setUserProfile(dataObject.getJSONObject(i).getJSONObject("uploadedBy").getString("pofilePicture"));
+                            postModel.setUserProfile(dataObject.getJSONObject(i).getJSONObject("uploadedBy").getString("profilePicture"));
                             postModel.setUserName(dataObject.getJSONObject(i).getJSONObject("uploadedBy").getString("userName"));
                             postModel.setCreatedAt(dataObject.getJSONObject(i).getString("createdAt"));
-                            postModel.setDescription(dataObject.getJSONObject(i).getString("discription"));
+                            postModel.setDescription(dataObject.getJSONObject(i).getString("description"));
                             postModel.setMedia(dataObject.getJSONObject(i).getString("multiMedia"));
                             postModel.setTotalLikes(dataObject.getJSONObject(i).getInt("likes"));
                             postModel.setTotalDislikes(dataObject.getJSONObject(i).getInt("dislikes"));
@@ -206,7 +295,7 @@ public class HomeActivity extends AppCompatActivity {
                             postList.add(postModel);
                             adapter.notifyDataSetChanged();
                         }
-
+                        Log.d("getUpdatedPostData : ", String.valueOf(dataObject));
                     }
                 }catch (Exception e){
                     e.printStackTrace();
@@ -241,6 +330,12 @@ public class HomeActivity extends AppCompatActivity {
 
         RequestQueue requestQueue = Volley.newRequestQueue(HomeActivity.this);
         requestQueue.add(jsonObjectRequest);
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
     }
 
 }

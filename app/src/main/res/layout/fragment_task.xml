@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".fragments.TaskFragment">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/navBtn">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,10 +28,22 @@
                     android:text="Title : "/>
 
                 <TextView
+                    android:id="@+id/taskTitleTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="this is first task"
+                    android:text=""
+                    android:maxWidth="200dp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
                     android:layout_weight="3"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/postBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:layout_weight="1"
+                    android:text="Post"/>
 
             </LinearLayout>
 
@@ -45,10 +58,14 @@
                     android:text="Description : "/>
 
                 <TextView
+                    android:id="@+id/describeTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="this is Description"
-                    android:layout_weight="3"/>
+                    android:text=""
+                    android:layout_weight="3"
+                    android:maxWidth="300dp"
+                    android:maxLines="5"
+                    android:ellipsize="end"/>
 
             </LinearLayout>
 
@@ -56,24 +73,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/ref_txt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Reference"
-                    android:layout_alignParentTop="true"/>
-
                 <ImageView
+                    android:id="@+id/taskImage"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="-2dp"
+                    android:layout_marginEnd="0dp"
                     android:scaleType="centerCrop"
-                    android:layout_below="@+id/ref_txt"
-                    android:visibility="visible"/>
+                    android:visibility="visible" />
 
                 <VideoView
+                    android:id="@+id/taskVideo"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
-                    android:layout_below="@+id/ref_txt"
+                    android:layout_alignParentTop="true"
                     android:visibility="invisible"/>
 
             </RelativeLayout>
@@ -88,10 +102,17 @@
                     android:text="Created By : "
                     android:layout_weight="1"/>
 
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/taskCreatedProfile"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"/>
+
+
                 <TextView
+                    android:id="@+id/taskCreatedUserName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Samir Suroshe"
+                    android:text=""
                     android:layout_weight="3"/>
 
             </LinearLayout>
@@ -107,45 +128,32 @@
                     android:layout_weight="1"/>
 
                 <TextView
+                    android:id="@+id/timelineTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2 Days"
-                    android:layout_weight="3"/>
+                    android:text=""
+                    android:layout_weight="4"/>
 
             </LinearLayout>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:text="Prev" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:text="Accept" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:text="Next" />
-
-            </RelativeLayout>
-
             <LinearLayout
+                android:id="@+id/timer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:visibility="invisible">
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Create a post"/>
+                    android:text="Time Left : "
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/timeLeftTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"/>
+
 
             </LinearLayout>
 
@@ -153,4 +161,34 @@
 
     </ScrollView>
 
-</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/navBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acceptBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="Accept" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acceptedBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Accepted"
+            android:visibility="invisible"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/nextBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Next" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

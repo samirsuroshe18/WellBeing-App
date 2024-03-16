@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,16 +22,21 @@ public class HomeFragment extends Fragment {
 
     ArrayList<PostModel> postList;
     RecyclerView postRecyclerView;
-    Context context;
     PostsAdapter adapter;
 
     public HomeFragment() {
     }
 
-    public  HomeFragment(Context context, ArrayList<PostModel> postList, PostsAdapter adapter){
-        this.context = context;
+    public  HomeFragment(ArrayList<PostModel> postList, PostsAdapter adapter){
         this.postList = postList;
         this.adapter = adapter;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
     }
 
     @Override
@@ -37,8 +44,8 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         postRecyclerView = view.findViewById(R.id.post_display_recycler_view);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         postRecyclerView.setLayoutManager(layoutManager);
         postRecyclerView.setAdapter(adapter);
 

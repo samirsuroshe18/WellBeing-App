@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -92,8 +93,6 @@ public class PostsAdapter extends RecyclerView.Adapter {
             try {
                 Picasso.get().load(posts.getUserProfile()).placeholder(R.drawable.avatar).into(((ImageViewHolder) holder).user_profile);
                 Picasso.get().load(posts.getMedia()).into(((ImageViewHolder) holder).post_image);
-//            ((ImageViewHolder)holder).user_profile.setImageURI(Uri.parse(posts.getUserProfile()));
-//            ((ImageViewHolder)holder).post_image.setImageURI(Uri.parse(posts.getMedia()));
                 ((ImageViewHolder) holder).user_name.setText(posts.getUserName());
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
                 Date date = sdf.parse(posts.getCreatedAt());
@@ -110,7 +109,7 @@ public class PostsAdapter extends RecyclerView.Adapter {
             ((ImageViewHolder) holder).like_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String apiKey = "http://192.168.219.221:10000/api/v1/like/send-like";
+                    String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/like/send-like";
                     PostModel currentPost = postModel.get(holder.getAdapterPosition());
 
                     final HashMap<String, String> params = new HashMap<>();
@@ -166,13 +165,18 @@ public class PostsAdapter extends RecyclerView.Adapter {
 
                     RequestQueue requestQueue = Volley.newRequestQueue(context);
                     requestQueue.add(jsonObjectRequest);
+
+                    jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                            DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                 }
             });
 
             ((ImageViewHolder) holder).dislike_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String apiKey = "http://192.168.219.221:10000/api/v1/dislike/send-dislike";
+                    String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/dislike/send-dislike";
                     PostModel currentPost = postModel.get(holder.getAdapterPosition());
 
                     final HashMap<String, String> params = new HashMap<>();
@@ -228,6 +232,12 @@ public class PostsAdapter extends RecyclerView.Adapter {
 
                     RequestQueue requestQueue = Volley.newRequestQueue(context);
                     requestQueue.add(jsonObjectRequest);
+
+                    jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                            DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                    ));
                 }
             });
 
@@ -244,8 +254,7 @@ public class PostsAdapter extends RecyclerView.Adapter {
             });
         } else {
 
-            Picasso.get().load(posts.getUserProfile()).placeholder(R.drawable.avatar).into(((VideoViewHolder) holder).user_profile);
-//            ((VideoViewHolder)holder).user_profile.setImageURI(Uri.parse(posts.getUserProfile()));
+            Picasso.get().load(posts.getUserProfile()).into(((VideoViewHolder) holder).user_profile);
             ((VideoViewHolder) holder).post_video.setVideoURI(Uri.parse(posts.getMedia()));
             ((VideoViewHolder) holder).user_name.setText(posts.getUserName());
             ((VideoViewHolder) holder).user_name.setText(posts.getUserName());
@@ -258,7 +267,6 @@ public class PostsAdapter extends RecyclerView.Adapter {
             }
             PrettyTime prettyTime = new PrettyTime();
             ((VideoViewHolder) holder).time.setText(prettyTime.format(date));
-//            ((VideoViewHolder) holder).time.setText(posts.getCreatedAt());
             ((VideoViewHolder) holder).description.setText(posts.getDescription());
             ((VideoViewHolder) holder).like_count.setText(String.valueOf(posts.getTotalLikes()));
             ((VideoViewHolder) holder).dislike_count.setText(String.valueOf(posts.getTotalDislikes()));
@@ -295,7 +303,7 @@ public class PostsAdapter extends RecyclerView.Adapter {
             ((VideoViewHolder) holder).like_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String apiKey = "http://192.168.219.221:10000/api/v1/like/send-like";
+                    String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/like/send-like";
                     PostModel currentPost = postModel.get(holder.getAdapterPosition());
 
                     final HashMap<String, String> params = new HashMap<>();
@@ -351,13 +359,19 @@ public class PostsAdapter extends RecyclerView.Adapter {
 
                     RequestQueue requestQueue = Volley.newRequestQueue(context);
                     requestQueue.add(jsonObjectRequest);
+
+                    jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                            DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                    ));
                 }
             });
 
             ((VideoViewHolder) holder).dislike_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String apiKey = "http://192.168.219.221:10000/api/v1/dislike/send-dislike";
+                    String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/dislike/send-dislike";
                     PostModel currentPost = postModel.get(holder.getAdapterPosition());
 
                     final HashMap<String, String> params = new HashMap<>();
@@ -413,6 +427,12 @@ public class PostsAdapter extends RecyclerView.Adapter {
 
                     RequestQueue requestQueue = Volley.newRequestQueue(context);
                     requestQueue.add(jsonObjectRequest);
+
+                    jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                            DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                    ));
                 }
             });
 
