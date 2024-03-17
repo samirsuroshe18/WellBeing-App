@@ -18,6 +18,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -247,6 +248,12 @@ public class TaskFragment extends Fragment {
 
         RequestQueue requestQueue = Volley.newRequestQueue(requireContext());
         requestQueue.add(jsonObjectRequest);
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
     }
 
     public void taskAccepted(String taskId){
@@ -306,6 +313,12 @@ public class TaskFragment extends Fragment {
 
         RequestQueue requestQueue = Volley.newRequestQueue(requireContext());
         requestQueue.add(jsonObjectRequest);
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
     }
 
     public void getTaskCurrentStatus(){
@@ -385,5 +398,11 @@ public class TaskFragment extends Fragment {
 
         RequestQueue requestQueue = Volley.newRequestQueue(requireContext());
         requestQueue.add(jsonObjectRequest);
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
     }
 }

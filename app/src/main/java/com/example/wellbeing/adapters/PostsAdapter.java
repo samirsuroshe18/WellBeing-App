@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,9 +24,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.wellbeing.CommentActivity;
-import com.example.wellbeing.HomeActivity;
 import com.example.wellbeing.R;
-import com.example.wellbeing.RegisterActivity;
 import com.example.wellbeing.models.PostModel;
 import com.squareup.picasso.Picasso;
 

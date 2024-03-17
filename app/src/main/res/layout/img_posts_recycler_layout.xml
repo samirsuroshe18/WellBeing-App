@@ -52,7 +52,6 @@
 
     </LinearLayout>
 
-
     <TextView
         android:id="@+id/description"
         android:layout_width="wrap_content"
@@ -88,7 +87,8 @@
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="25dp"
-            android:src="@drawable/like_icon"/>
+            android:src="@drawable/like_icon"
+            />
 
         <TextView
             android:id="@+id/like_count"
