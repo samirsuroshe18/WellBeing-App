@@ -11,17 +11,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/back_btn"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/arrow"
-            android:layout_alignParentLeft="true"/>
+<!--        <ImageView-->
+<!--            android:id="@+id/back_btn"-->
+<!--            android:layout_width="24dp"-->
+<!--            android:layout_height="24dp"-->
+<!--            android:src="@drawable/arrow"-->
+<!--            android:layout_alignParentLeft="true"/>-->
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Leaderboard"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:padding="5dp"
             android:layout_centerHorizontal="true"/>
 
     </RelativeLayout>

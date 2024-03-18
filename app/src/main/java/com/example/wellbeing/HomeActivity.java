@@ -377,7 +377,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public void getUserInfo(){
 
-        String apiKey = "http://192.168.186.221:10000/api/v1/users/get-userinfo";
+        String apiKey = "https://wellbeing-backend-blush.vercel.app/api/v1/users/get-userinfo";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
