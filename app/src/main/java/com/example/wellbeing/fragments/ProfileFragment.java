@@ -121,7 +121,7 @@ public class ProfileFragment extends Fragment {
                         userModel.setCreatedAt(String.valueOf(formattedDate));
                         userModel.setWellpoints(String.valueOf(dataObject.getJSONObject("wellpoints").getInt("wellpoints")));
                         userModel.setSuccessRate(String.valueOf(dataObject.getInt("successRate")));
-                        userModel.setRank(String.valueOf(dataObject.getInt("rank")));
+                        userModel.setRank(String.valueOf(dataObject.getInt("rank")+1));
 
                         userInfo.add(userModel);
 
