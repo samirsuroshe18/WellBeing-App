@@ -48,8 +48,6 @@
 
         </LinearLayout>
 
-
-
     </LinearLayout>
 
     <TextView
@@ -62,7 +60,7 @@
         android:layout_marginLeft="8dp"
         android:paddingVertical="5dp"
         android:maxLines="5"
-        android:text=""
+        android:text="samir suroshe saamir vasant suroshe \nsamifjfg"
         android:ellipsize="end" >
     </TextView>
 

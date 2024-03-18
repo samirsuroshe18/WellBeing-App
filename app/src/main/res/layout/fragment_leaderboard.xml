@@ -51,7 +51,6 @@
             android:layout_toLeftOf="@+id/first_user"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Samir Suroshe"
             app:layout_constraintEnd_toEndOf="@+id/second_user"
             app:layout_constraintStart_toStartOf="@+id/second_user"
             app:layout_constraintTop_toBottomOf="@+id/second_user" />
@@ -76,7 +75,6 @@
             android:layout_centerHorizontal="true"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Samir Suroshe"
             app:layout_constraintEnd_toEndOf="@+id/first_user"
             app:layout_constraintStart_toStartOf="@+id/first_user"
             app:layout_constraintTop_toBottomOf="@+id/first_user" />
@@ -108,31 +106,29 @@
 
         <TextView
             android:id="@+id/secondUserRank"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:background="@drawable/rankno_bg"
             android:gravity="center"
-            android:text="1"
             app:layout_constraintBottom_toBottomOf="@+id/second_user"
             app:layout_constraintEnd_toEndOf="@+id/second_user"
-            app:layout_constraintHorizontal_bias="0.514"
+            app:layout_constraintHorizontal_bias="0.55"
             app:layout_constraintStart_toStartOf="@+id/second_user" />
 
         <TextView
             android:id="@+id/firstUserRank"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:background="@drawable/rankno_bg"
             android:gravity="center"
-            android:text="1"
             app:layout_constraintBottom_toBottomOf="@+id/first_user"
             app:layout_constraintEnd_toEndOf="@+id/first_user"
             app:layout_constraintStart_toStartOf="@+id/first_user" />
 
         <TextView
             android:id="@+id/thirdUserRank"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:background="@drawable/rankno_bg"
             android:gravity="center"
             app:layout_constraintBottom_toBottomOf="@+id/third_user"
@@ -143,7 +139,6 @@
             android:id="@+id/firstUserPoints"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
             app:layout_constraintEnd_toEndOf="@+id/firstUserName"
             app:layout_constraintStart_toStartOf="@+id/firstUserName"
             app:layout_constraintTop_toBottomOf="@+id/firstUserName" />
@@ -160,7 +155,6 @@
             android:id="@+id/secondUserPoints"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
             app:layout_constraintEnd_toEndOf="@+id/secondUserName"
             app:layout_constraintStart_toStartOf="@+id/secondUserName"
             app:layout_constraintTop_toBottomOf="@+id/secondUserName" />

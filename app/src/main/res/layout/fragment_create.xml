@@ -11,7 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_above="@+id/container1">
+        android:layout_above="@+id/container1"
+        android:background="@drawable/heading_background"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,7 +31,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:hint="Enter Task Title"/>
+        android:hint="Enter Task Title"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"/>
 
     <EditText
         android:id="@+id/taskDescription"
@@ -36,7 +42,9 @@
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
         android:layout_below="@+id/taskTitle"
-        android:hint="Enter Task Description"/>
+        android:hint="Enter Task Description"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
 
     <EditText
         android:id="@+id/taskTime"
@@ -44,7 +52,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/taskDescription"
         android:hint="Enter Task Time to complete"
-        android:inputType="number"/>
+        android:inputType="number"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
 
     <ImageView
         android:id="@+id/image"
@@ -52,14 +62,20 @@
         android:layout_height="350dp"
         android:scaleType="centerCrop"
         android:layout_below="@+id/taskTime"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="12dp"/>
 
     <VideoView
         android:id="@+id/video"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_below="@+id/taskTime"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="12dp"/>
 
     <RelativeLayout
         android:id="@+id/container1"
