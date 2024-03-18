@@ -1,9 +1,11 @@
 package com.example.wellbeing;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -31,7 +33,10 @@ import com.example.wellbeing.fragments.LeaderboardFragment;
 import com.example.wellbeing.fragments.ProfileFragment;
 import com.example.wellbeing.fragments.TaskFragment;
 import com.example.wellbeing.models.PostModel;
+import com.example.wellbeing.models.TaskModel;
+import com.example.wellbeing.models.UserModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,11 +47,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class HomeActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     String accessToken, fragmentTagName;
     SharedPreferenceClass sharedPreferenceClass;
     ArrayList<PostModel> postList;
+    ArrayList<UserModel> userInfo;
     PostsAdapter adapter;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
@@ -55,6 +63,7 @@ public class HomeActivity extends AppCompatActivity {
     CreateFragment createFragment;
     LeaderboardFragment leaderboardFragment;
     ProfileFragment profileFragment;
+    CircleImageView userProfileCV;
 
 
     @Override
@@ -65,13 +74,33 @@ public class HomeActivity extends AppCompatActivity {
 
         bottomNavigationView = findViewById(R.id.bottomNav2);
         postList = new ArrayList<>();
+        userInfo = new ArrayList<>();
         sharedPreferenceClass = new SharedPreferenceClass(this);
         accessToken = sharedPreferenceClass.getValue_string("accessToken");
         adapter = new PostsAdapter(postList, this, accessToken);
+        userProfileCV = findViewById(R.id.userProfileCV);
+
+        userProfileCV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                profileFragment = (ProfileFragment) getSupportFragmentManager().findFragmentByTag("profileFragment");
+                if ( profileFragment == null){
+                    profileFragment = new ProfileFragment();
+                    loadFrag(profileFragment, "profileFragment", false);
+                }else  {
+                    if (profileFragment.isVisible()){
+                        profileFragment = new ProfileFragment();
+                        loadFrag(profileFragment, "profileFragment", false);
+                    }
+                    loadFrag(profileFragment, "profileFragment", false);
+                }
+            }
+        });
 
 
         if (ConnectivityUtils.isConnectedToInternet(getApplicationContext())) {
             getPosts();
+            getUserInfo();
         } else {
             Toast.makeText(this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
         }
@@ -128,6 +157,10 @@ public class HomeActivity extends AppCompatActivity {
                         leaderboardFragment = new LeaderboardFragment();
                         loadFrag(leaderboardFragment, "leaderboardFragment", false);
                     }else  {
+                        if (leaderboardFragment.isVisible()){
+                            leaderboardFragment = new LeaderboardFragment();
+                            loadFrag(leaderboardFragment, "leaderboardFragment", false);
+                        }
                         loadFrag(leaderboardFragment, "leaderboardFragment", false);
                     }
                 }else {
@@ -136,6 +169,10 @@ public class HomeActivity extends AppCompatActivity {
                         profileFragment = new ProfileFragment();
                         loadFrag(profileFragment, "profileFragment", false);
                     }else  {
+                        if (profileFragment.isVisible()){
+                            profileFragment = new ProfileFragment();
+                            loadFrag(profileFragment, "profileFragment", false);
+                        }
                         loadFrag(profileFragment, "profileFragment", false);
                     }
                 }
@@ -305,6 +342,80 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
 
+                if (error != null && error.networkResponse != null && error.networkResponse.data != null) {
+                    String errMsg = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                    try {
+                        JSONObject errRes = new JSONObject(errMsg);
+                        String err = errRes.getString("error");
+                        Toast.makeText(HomeActivity.this, err, Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    // Handle the case when the error or its networkResponse is null
+                    Toast.makeText(HomeActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer "+accessToken);
+                return headers;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(HomeActivity.this);
+        requestQueue.add(jsonObjectRequest);
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
+    }
+
+    public void getUserInfo(){
+
+        String apiKey = "http://192.168.186.221:10000/api/v1/users/get-userinfo";
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (response != null) {
+
+                        String resMsg = response.getString("message");
+                        Toast.makeText(HomeActivity.this, resMsg, Toast.LENGTH_SHORT).show();
+
+                        JSONObject dataObject = (JSONObject) response.getJSONArray("data").get(0);
+                        UserModel userModel = new UserModel();
+
+                        userModel.set_id(dataObject.getString("_id"));
+                        userModel.setUserName(dataObject.getString("userName"));
+                        userModel.setEmail(dataObject.getString("email"));
+                        userModel.setProfilePicture(dataObject.getString("profilePicture"));
+                        userModel.setTask_completed(String.valueOf(dataObject.getInt("task_completed")));
+                        userModel.setCreatedAt(dataObject.getString("createdAt"));
+                        userModel.setWellpoints(String.valueOf(dataObject.getJSONObject("wellpoints").getInt("wellpoints")));
+                        userModel.setSuccessRate(String.valueOf(dataObject.getInt("successRate")));
+                        userModel.setRank(String.valueOf(dataObject.getInt("rank")));
+
+                        userInfo.add(userModel);
+
+                        Picasso.get().load(userInfo.get(userInfo.size()-1).getProfilePicture()).into(userProfileCV);
+                    } else {
+                        // Handle the case where "accessToken" key is not present in the JSON response
+                        Toast.makeText(HomeActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
                 if (error != null && error.networkResponse != null && error.networkResponse.data != null) {
                     String errMsg = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                     try {

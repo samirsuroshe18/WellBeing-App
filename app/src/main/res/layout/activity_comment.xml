@@ -45,6 +45,7 @@
         android:hint="enter comment"
         android:layout_toLeftOf="@+id/send_comment_btn"
         android:layout_alignParentLeft="true"
+        android:background="@drawable/img_round_shape_bg"
         android:layout_alignParentBottom="true"/>
 
     <ImageView
