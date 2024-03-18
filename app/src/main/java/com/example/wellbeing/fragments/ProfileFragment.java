@@ -92,7 +92,7 @@ public class ProfileFragment extends Fragment {
 
     public void getUserInfo(){
 
-        String apiKey = "http://192.168.186.221:10000/api/v1/users/get-userinfo";
+        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/get-userinfo";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override

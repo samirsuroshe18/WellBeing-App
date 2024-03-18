@@ -136,7 +136,7 @@ public class LeaderboardFragment extends Fragment {
     }
 
     public void getLeaderboardList(){
-        String apiKey = "http://192.168.186.221:10000/api/v1/users/get-leaderboardlist";
+        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/get-leaderboardlist";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
