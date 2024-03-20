@@ -40,7 +40,9 @@ import java.util.Map;
 public class PostActivity extends AppCompatActivity {
     private static final int gallery_pic_id = 100;
     private static final int gallery_vid_id = 200;
-    int MY_SOCKET_TIMEOUT_MS = 60000; // 10 seconds
+    public static final int TIMEOUT_MS = 10000;
+    public static final int MAX_RETRIES = 2;
+    public static final float BACKOFF_MULT = 2.0f;
     byte[] multiMediaByteArray;
     EditText descriptionET;
     ImageView image, send, imageUpload, videoUpload;
@@ -257,8 +259,9 @@ public class PostActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(volleyMultipartRequest);
 
         volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-                MY_SOCKET_TIMEOUT_MS,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                TIMEOUT_MS,
+                MAX_RETRIES,
+                BACKOFF_MULT
+        ));
     }
 }

@@ -47,7 +47,9 @@ import java.util.Objects;
 public class CreateFragment extends Fragment {
     private static final int gallery_pic_id = 100;
     private static final int gallery_vid_id = 200;
-    int MY_SOCKET_TIMEOUT_MS = 20000; // 10 seconds
+    public static final int TIMEOUT_MS = 10000;
+    public static final int MAX_RETRIES = 2;
+    public static final float BACKOFF_MULT = 2.0f;
     byte[] multiMediaByteArray;
     EditText taskTitle, taskDescription, taskTime;
     ImageView image, send, imageUpload, videoUpload;
@@ -255,11 +257,12 @@ public class CreateFragment extends Fragment {
 
         //adding the request to volley
         Volley.newRequestQueue(requireContext()).add(volleyMultipartRequest);
-//
-//        volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-//                MY_SOCKET_TIMEOUT_MS,
-//                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
+                TIMEOUT_MS,
+                MAX_RETRIES,
+                BACKOFF_MULT
+        ));
 
         volleyMultipartRequest.setRetryPolicy(new RetryPolicy() {
             @Override

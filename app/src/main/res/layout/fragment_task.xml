@@ -30,7 +30,7 @@
 
                 <TextView
                     android:id="@+id/taskTitleTV"
-                    android:layout_width="287dp"
+                    android:layout_width="233dp"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxWidth="200dp"
@@ -42,7 +42,6 @@
                     android:id="@+id/postBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="Post"
                     android:visibility="invisible" />
 

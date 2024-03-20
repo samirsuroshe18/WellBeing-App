@@ -7,49 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".fragments.HomeFragment">
 
-<!--    <RelativeLayout-->
-<!--        android:id="@+id/container1"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:background="@color/white"-->
-<!--        android:padding="13dp"-->
-<!--        android:layout_alignParentTop="true">-->
-
-<!--        <de.hdodenhof.circleimageview.CircleImageView-->
-<!--            android:id="@+id/user_profile"-->
-<!--            android:layout_width="40dp"-->
-<!--            android:layout_height="40dp"-->
-<!--            android:src="@drawable/profile_img"-->
-<!--            app:civ_border_width="1dp"-->
-<!--            app:civ_border_color="#323131"-->
-<!--            android:layout_centerVertical="true"/>-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/description"-->
-<!--            android:background="@drawable/edtext_bg"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="35dp"-->
-<!--            android:paddingStart="19dp"-->
-<!--            android:gravity="center_vertical"-->
-<!--            android:textColorHint="#A4A4A4"-->
-<!--            android:layout_centerVertical="true"-->
-<!--            android:layout_toRightOf="@+id/user_profile"-->
-<!--            android:layout_toLeftOf="@+id/create"-->
-<!--            android:layout_marginLeft="15dp"-->
-<!--            android:layout_marginRight="15dp"-->
-<!--            android:hint="Describe about your task..."/>-->
-
-<!--        <ImageView-->
-<!--            android:id="@+id/create"-->
-<!--            android:layout_width="35dp"-->
-<!--            android:layout_height="35dp"-->
-<!--            android:src="@drawable/create"-->
-<!--            android:layout_alignParentRight="true"-->
-<!--            android:layout_marginLeft="5dp"-->
-<!--            android:layout_centerVertical="true"/>-->
-
-<!--    </RelativeLayout>-->
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

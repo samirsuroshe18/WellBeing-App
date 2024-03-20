@@ -20,10 +20,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.wellbeing.UtilsServices.FileUtils;
@@ -35,6 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +47,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final int gallery_pic_id = 100;
-    int MY_SOCKET_TIMEOUT_MS = 10000; // 10 seconds
+    public static final int TIMEOUT_MS = 10000;
+    public static final int MAX_RETRIES = 2;
+    public static final float BACKOFF_MULT = 2.0f;
     TextView mov_to_logIn;
     EditText email_editText, name_editText, pass_editText;
     Button sign_up_btn;
@@ -165,22 +171,49 @@ public class RegisterActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if (error != null && error.networkResponse != null && error.networkResponse.data != null) {
-                            String errMsg = new String(error.networkResponse.data, StandardCharsets.UTF_8);
-                            try {
-                                JSONObject errRes = new JSONObject(errMsg);
-                                String err = errRes.getString("error");
-                                Toast.makeText(RegisterActivity.this, err, Toast.LENGTH_SHORT).show();
-                                progressDialog.dismiss();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                progressDialog.dismiss();
+
+                        NetworkResponse networkResponse = error.networkResponse;
+                        String errorMessage = "Unknown error";
+                        if (networkResponse == null) {
+                            if (error.getClass().equals(TimeoutError.class)) {
+                                errorMessage = "Request timeout";
+                            } else if (error.getClass().equals(NoConnectionError.class)) {
+                                errorMessage = "Failed to connect server";
                             }
                         } else {
-                            // Handle the case when the error or its networkResponse is null
-                            Toast.makeText(RegisterActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
-                            progressDialog.dismiss();
+                            String result = null;
+                            try {
+                                result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
+                                Log.d("Error : ", result);
+                            } catch (UnsupportedEncodingException e) {
+                                throw new RuntimeException(e);
+                            }
+                            Toast.makeText(RegisterActivity.this, result, Toast.LENGTH_SHORT).show();
+                            try {
+                                JSONObject response = new JSONObject(result);
+                                String status = response.getString("status");
+                                String message = response.getString("message");
+
+                                Log.e("Error Status", status);
+                                Log.e("Error Message", message);
+
+                                if (networkResponse.statusCode == 404) {
+                                    errorMessage = "Resource not found";
+                                } else if (networkResponse.statusCode == 401) {
+                                    errorMessage = message+" Unauthorized";
+                                } else if (networkResponse.statusCode == 400) {
+                                    errorMessage = message+ "Bad request";
+                                } else if (networkResponse.statusCode == 500) {
+                                    errorMessage = message+" Something is getting wrong";
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
+                        Log.i("Error", errorMessage);
+                        Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        error.printStackTrace();
+
                     }
                 }) {
             @Override
@@ -205,8 +238,9 @@ public class RegisterActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(volleyMultipartRequest);
 
         volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-                MY_SOCKET_TIMEOUT_MS,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                TIMEOUT_MS,
+                MAX_RETRIES,
+                BACKOFF_MULT
+        ));
     }
 }

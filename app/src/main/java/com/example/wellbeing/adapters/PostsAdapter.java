@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +18,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.wellbeing.CommentActivity;
+import com.example.wellbeing.HomeActivity;
 import com.example.wellbeing.R;
 import com.example.wellbeing.models.PostModel;
 import com.squareup.picasso.Picasso;
@@ -32,6 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -52,6 +59,9 @@ public class PostsAdapter extends RecyclerView.Adapter {
     int VIDEO_VIEW_TYPE = 1;
     String accessToken;
     PostModel posts;
+    public static final int TIMEOUT_MS = 10000;
+    public static final int MAX_RETRIES = 2;
+    public static final float BACKOFF_MULT = 2.0f;
 
     public PostsAdapter(ArrayList<PostModel> postModel, Context context, String accessToken) {
         this.postModel = postModel;
@@ -135,19 +145,48 @@ public class PostsAdapter extends RecyclerView.Adapter {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            if (error != null && error.networkResponse != null && error.networkResponse.data != null) {
-                                String errMsg = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+
+                            NetworkResponse networkResponse = error.networkResponse;
+                            String errorMessage = "Unknown error";
+                            if (networkResponse == null) {
+                                if (error.getClass().equals(TimeoutError.class)) {
+                                    errorMessage = "Request timeout";
+                                } else if (error.getClass().equals(NoConnectionError.class)) {
+                                    errorMessage = "Failed to connect server";
+                                }
+                            } else {
+                                String result = null;
                                 try {
-                                    JSONObject errRes = new JSONObject(errMsg);
-                                    String err = errRes.getString("error");
-                                    Toast.makeText(context, err, Toast.LENGTH_SHORT).show();
+                                    result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
+                                    Log.d("Error : ", result);
+                                } catch (UnsupportedEncodingException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+                                try {
+                                    JSONObject response = new JSONObject(result);
+                                    String status = response.getString("status");
+                                    String message = response.getString("message");
+
+                                    Log.e("Error Status", status);
+                                    Log.e("Error Message", message);
+
+                                    if (networkResponse.statusCode == 404) {
+                                        errorMessage = "Resource not found";
+                                    } else if (networkResponse.statusCode == 401) {
+                                        errorMessage = message+" Unauthorized";
+                                    } else if (networkResponse.statusCode == 400) {
+                                        errorMessage = message+ "Bad request";
+                                    } else if (networkResponse.statusCode == 500) {
+                                        errorMessage = message+" Something is getting wrong";
+                                    }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                            } else {
-                                // Handle the case when the error or its networkResponse is null
-                                Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                             }
+                            Log.i("Error", errorMessage);
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                            error.printStackTrace();
 
                         }
                     }){
@@ -164,9 +203,10 @@ public class PostsAdapter extends RecyclerView.Adapter {
                     requestQueue.add(jsonObjectRequest);
 
                     jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                            DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
-                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                            TIMEOUT_MS,
+                            MAX_RETRIES,
+                            BACKOFF_MULT
+                    ));
                 }
             });
 
@@ -202,19 +242,48 @@ public class PostsAdapter extends RecyclerView.Adapter {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            if (error != null && error.networkResponse != null && error.networkResponse.data != null) {
-                                String errMsg = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+
+                            NetworkResponse networkResponse = error.networkResponse;
+                            String errorMessage = "Unknown error";
+                            if (networkResponse == null) {
+                                if (error.getClass().equals(TimeoutError.class)) {
+                                    errorMessage = "Request timeout";
+                                } else if (error.getClass().equals(NoConnectionError.class)) {
+                                    errorMessage = "Failed to connect server";
+                                }
+                            } else {
+                                String result = null;
                                 try {
-                                    JSONObject errRes = new JSONObject(errMsg);
-                                    String err = errRes.getString("error");
-                                    Toast.makeText(context, err, Toast.LENGTH_SHORT).show();
+                                    result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
+                                    Log.d("Error : ", result);
+                                } catch (UnsupportedEncodingException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+                                try {
+                                    JSONObject response = new JSONObject(result);
+                                    String status = response.getString("status");
+                                    String message = response.getString("message");
+
+                                    Log.e("Error Status", status);
+                                    Log.e("Error Message", message);
+
+                                    if (networkResponse.statusCode == 404) {
+                                        errorMessage = "Resource not found";
+                                    } else if (networkResponse.statusCode == 401) {
+                                        errorMessage = message+" Unauthorized";
+                                    } else if (networkResponse.statusCode == 400) {
+                                        errorMessage = message+ "Bad request";
+                                    } else if (networkResponse.statusCode == 500) {
+                                        errorMessage = message+" Something is getting wrong";
+                                    }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                            } else {
-                                // Handle the case when the error or its networkResponse is null
-                                Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                             }
+                            Log.i("Error", errorMessage);
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                            error.printStackTrace();
 
                         }
                     }){
@@ -231,9 +300,9 @@ public class PostsAdapter extends RecyclerView.Adapter {
                     requestQueue.add(jsonObjectRequest);
 
                     jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                            DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
-                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                            TIMEOUT_MS,
+                            MAX_RETRIES,
+                            BACKOFF_MULT
                     ));
                 }
             });
@@ -329,19 +398,48 @@ public class PostsAdapter extends RecyclerView.Adapter {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            if (error != null && error.networkResponse != null && error.networkResponse.data != null) {
-                                String errMsg = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+
+                            NetworkResponse networkResponse = error.networkResponse;
+                            String errorMessage = "Unknown error";
+                            if (networkResponse == null) {
+                                if (error.getClass().equals(TimeoutError.class)) {
+                                    errorMessage = "Request timeout";
+                                } else if (error.getClass().equals(NoConnectionError.class)) {
+                                    errorMessage = "Failed to connect server";
+                                }
+                            } else {
+                                String result = null;
                                 try {
-                                    JSONObject errRes = new JSONObject(errMsg);
-                                    String err = errRes.getString("error");
-                                    Toast.makeText(context, err, Toast.LENGTH_SHORT).show();
+                                    result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
+                                    Log.d("Error : ", result);
+                                } catch (UnsupportedEncodingException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+                                try {
+                                    JSONObject response = new JSONObject(result);
+                                    String status = response.getString("status");
+                                    String message = response.getString("message");
+
+                                    Log.e("Error Status", status);
+                                    Log.e("Error Message", message);
+
+                                    if (networkResponse.statusCode == 404) {
+                                        errorMessage = "Resource not found";
+                                    } else if (networkResponse.statusCode == 401) {
+                                        errorMessage = message+" Unauthorized";
+                                    } else if (networkResponse.statusCode == 400) {
+                                        errorMessage = message+ "Bad request";
+                                    } else if (networkResponse.statusCode == 500) {
+                                        errorMessage = message+" Something is getting wrong";
+                                    }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                            } else {
-                                // Handle the case when the error or its networkResponse is null
-                                Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                             }
+                            Log.i("Error", errorMessage);
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                            error.printStackTrace();
 
                         }
                     }){
@@ -358,9 +456,9 @@ public class PostsAdapter extends RecyclerView.Adapter {
                     requestQueue.add(jsonObjectRequest);
 
                     jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                            DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
-                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                            TIMEOUT_MS,
+                            MAX_RETRIES,
+                            BACKOFF_MULT
                     ));
                 }
             });
@@ -397,19 +495,48 @@ public class PostsAdapter extends RecyclerView.Adapter {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            if (error != null && error.networkResponse != null && error.networkResponse.data != null) {
-                                String errMsg = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+
+                            NetworkResponse networkResponse = error.networkResponse;
+                            String errorMessage = "Unknown error";
+                            if (networkResponse == null) {
+                                if (error.getClass().equals(TimeoutError.class)) {
+                                    errorMessage = "Request timeout";
+                                } else if (error.getClass().equals(NoConnectionError.class)) {
+                                    errorMessage = "Failed to connect server";
+                                }
+                            } else {
+                                String result = null;
                                 try {
-                                    JSONObject errRes = new JSONObject(errMsg);
-                                    String err = errRes.getString("error");
-                                    Toast.makeText(context, err, Toast.LENGTH_SHORT).show();
+                                    result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
+                                    Log.d("Error : ", result);
+                                } catch (UnsupportedEncodingException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+                                try {
+                                    JSONObject response = new JSONObject(result);
+                                    String status = response.getString("status");
+                                    String message = response.getString("message");
+
+                                    Log.e("Error Status", status);
+                                    Log.e("Error Message", message);
+
+                                    if (networkResponse.statusCode == 404) {
+                                        errorMessage = "Resource not found";
+                                    } else if (networkResponse.statusCode == 401) {
+                                        errorMessage = message+" Unauthorized";
+                                    } else if (networkResponse.statusCode == 400) {
+                                        errorMessage = message+ "Bad request";
+                                    } else if (networkResponse.statusCode == 500) {
+                                        errorMessage = message+" Something is getting wrong";
+                                    }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                            } else {
-                                // Handle the case when the error or its networkResponse is null
-                                Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                             }
+                            Log.i("Error", errorMessage);
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                            error.printStackTrace();
 
                         }
                     }){
@@ -426,9 +553,9 @@ public class PostsAdapter extends RecyclerView.Adapter {
                     requestQueue.add(jsonObjectRequest);
 
                     jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                            DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
-                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                            TIMEOUT_MS,
+                            MAX_RETRIES,
+                            BACKOFF_MULT
                     ));
                 }
             });
