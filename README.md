@@ -20,12 +20,13 @@ To achieve optimum performance, we recommend the following computer and software
 - Internet connection for task synchronization and updates
 
 ## Installation Instructions
-To install the Wellbeing App, follow these steps:
-1. Open the Google Play Store on your Android device.
-2. Search for "Wellbeing App" in the search bar.
-3. Select the Wellbeing App from the search results.
-4. Click on the "Install" button to download and install the app on your device.
-5. Once installed, open the app and follow the on-screen instructions to create an account and start using the app.
+To install the Wellbeing Android Application, follow these steps:
+1. Download the APK file from the assets section of the release information.
+2. Enable installation from unknown sources in your device settings.
+3. Open the APK file and follow the on-screen instructions to install the app.
+4. Alternatively, clone the repository and import the project into Android Studio.
+5. Configure the project settings as needed.
+6. Build and run the project on your device or emulator.
 
 ## Operating Instructions
 The Wellbeing App allows users to:
@@ -44,8 +45,8 @@ The Wellbeing App allows users to:
 
 ## Contact Information
 For any inquiries or support, please feel free to contact us:
-- Developer: [Your Name]
-- Email: [Your Email Address]
+- Developer: Samir Suroshe
+- [Email](sameersuroshe50@gmail.com)
 - GitHub: [Your GitHub Profile Link]
 - Twitter: [Your Twitter Profile Link]
 
