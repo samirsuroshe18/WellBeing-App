@@ -46,16 +46,8 @@ The Wellbeing App allows users to:
 ## Contact Information
 For any inquiries or support, please feel free to contact us:
 - Developer: Samir Suroshe
-- [Email](sameersuroshe50@gmail.com)
-- GitHub: [Your GitHub Profile Link]
-- Twitter: [Your Twitter Profile Link]
-
-## Credits and Acknowledgments
-We would like to thank the following individuals and resources for their contributions to the Wellbeing App:
-- [Name]: [Contribution Description]
-- [Name]: [Contribution Description]
-- [Tutorial Name]: [Link to Tutorial]
-- [Library Name]: [Link to Library]
+- Email : [sameersuroshe50@gmail.com](mailto:sameersuroshe50@gmail.com)
+- Linkedin: [samir suroshe](www.linkedin.com/in/samir-suroshe-50b073271)
 
 Your support and contributions are greatly appreciated!
 
