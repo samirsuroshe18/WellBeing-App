@@ -9,13 +9,32 @@
 </div>
 
 ## Project Overview
-The Wellbeing App is an Android application designed to promote mental and emotional wellbeing by encouraging users, particularly teenagers and people, to engage in positive activities and tasks. It was created to address the growing need for tools that support mental health and foster a sense of community and positivity. The app allows users to create tasks related to good deeds, earn points (wellpoints) for completing tasks, and connect with others who share similar interests in promoting wellbeing. The project is important to us as it aims to make a positive impact on the lives of individuals and communities. It was created in Feb 2024 and is available for download on Github. Application can be found [here](https://github.com/samirsuroshe18/WellBeing-app---Android-studio/releases/latest/). To use the app, simply download it from the github, create an account, and start completing tasks to earn wellpoints.
+The Wellbeing App is an Android application designed to promote mental, creative and emotional wellbeing by encouraging users, particularly teenagers and people, to engage in positive creative activities and tasks. It was created to address the growing need for tools that support mental health and foster a sense of community and keep creative and positive. The app allows users to create tasks related to good deeds or creative, earn points (wellpoints) for completing tasks, and connect with others who share similar interests in promoting wellbeing. The project is important to us as it aims to make a positive impact on the lives of individuals and communities. It was created in Feb 2024 and is available for download on Github. Application can be found [here](https://github.com/samirsuroshe18/WellBeing-app---Android-studio/releases/latest/). To use the app, simply download .apk file from the github and install on your android device, create an account, and start completing tasks to earn wellpoints.
+
+## Technologies Used
+This project was built using a variety of technologies across the frontend, backend, and design. Below is a breakdown of the key technologies used in the development of this app:
+
+### Frontend
+- **Android Studio**: The integrated development environment (IDE) used for Android app development.
+- **Java**: The primary programming language used to develop the app's functionality.
+- **XML**: Used for designing the app's user interface.
+- **Volley Library**: Utilized for handling HTTP requests efficiently within the app.
+
+### Backend
+- **Node.js**: Chosen for its efficiency and scalability as the runtime environment for the backend.
+- **Express.js**: This lightweight framework for Node.js was used to set up the server and manage API requests and responses.
+- **MongoDB**: Served as the NoSQL database to store and manage app data.
+
+### Tools
+- **Figma**: The tool used for designing and prototyping the user interface and experience of the app.
+- **Postman**: Employed for testing API endpoints to ensure they function correctly before integrating them with the frontend.
+ - **Eraser.io**: Used for designing and visualizing the data model, facilitating a clear understanding of the database structure and relationships.
+
 
 ## Configuration Instructions
 To achieve optimum performance, we recommend the following computer and software configurations:
 - Operating System: Android 6.0 (Marshmallow) or higher
 - Minimum RAM: 2GB
-- Screen Resolution: 720x1280 pixels or higher
 - Storage: 100MB free space
 - Internet connection for task synchronization and updates
 
@@ -30,7 +49,7 @@ To install the Wellbeing Android Application, follow these steps:
 
 ## Operating Instructions
 The Wellbeing App allows users to:
-- Create tasks related to good deeds and positive activities.
+- Create tasks related to good deeds, positive and creative activities.
 - Earn points (wellpoints) for completing tasks.
 - Connect with others and join community initiatives.
 - Track progress and achievements in promoting wellbeing.
