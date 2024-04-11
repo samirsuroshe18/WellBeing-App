@@ -24,6 +24,7 @@ This project was built using a variety of technologies across the frontend, back
 - **Node.js**: Chosen for its efficiency and scalability as the runtime environment for the backend.
 - **Express.js**: This lightweight framework for Node.js was used to set up the server and manage API requests and responses.
 - **MongoDB**: Served as the NoSQL database to store and manage app data.
+- **Cloudinary**: Manaaging uploading, storing, manipulating, optimizing, and delivering images and videos dynamically.
 
 ### Tools
 - **Figma**: The tool used for designing and prototyping the user interface and experience of the app.
