@@ -1,6 +1,17 @@
 
 
 # Project Name: Wellbeing App <br>
+
+<img src="https://github.com/samirsuroshe18/WellBeing-app---Android-studio/assets/130245723/05165df8-7942-446b-bc95-6c2247cf09f3" width="188" >  
+<img src="https://github.com/samirsuroshe18/WellBeing-app---Android-studio/assets/130245723/10ef11b8-eeb6-4f29-8473-54587f2fe1ad" width="188" >  
+<img src="https://github.com/samirsuroshe18/WellBeing-app---Android-studio/assets/130245723/d24b0381-b8e7-49b2-8ef9-6314b6966d0a" width="188" >  
+<img src="https://github.com/samirsuroshe18/WellBeing-app---Android-studio/assets/130245723/9d94e591-1688-4e36-a9fd-5e9eea79ccb5" width="188" > 
+<img src="https://github.com/samirsuroshe18/WellBeing-app---Android-studio/assets/130245723/f9adc9f4-800d-4ade-9be4-2aa475ff5b24" width="188" >
+<img src="https://github.com/samirsuroshe18/WellBeing-app---Android-studio/assets/130245723/eb97c183-2b44-4531-b705-fe9e756a1658" width="188" >
+<img src="https://github.com/samirsuroshe18/WellBeing-app---Android-studio/assets/130245723/46b41968-0fd4-4051-82d3-ad365d68bdb2" width="188" >
+
+
+## Get
 <div align="center">
   <img src="https://github.com/samirsuroshe18/WellBeing-app---Android-studio/assets/130245723/57dd9a45-2b6b-436b-8ea3-31ee6f6e9554" width="80" height="80" >
   <a href="https://github.com/samirsuroshe18/WellBeing-app---Android-studio/releases/latest/">
