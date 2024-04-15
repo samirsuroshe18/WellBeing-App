@@ -1,289 +1,320 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="15dp"
-    android:orientation="vertical"
     tools:context=".fragments.ProfileFragment">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"
-            android:paddingVertical="11dp"
-            android:background="@drawable/gradient_background">
+            android:layout_height="match_parent"
+            android:paddingHorizontal="15dp"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/logoutBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Logout"
+                android:textAllCaps="false"
+                android:background="@drawable/gradient_background"
+                android:layout_gravity="end"
+                android:layout_marginTop="10dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:paddingVertical="11dp"
+                android:background="@drawable/gradient_background">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardView"
+                        android:layout_width="135dp"
+                        android:layout_height="170dp"
+                        android:layout_marginEnd="11dp"
+                        app:cardCornerRadius="12dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/profilePictureCV"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/img_round_shape_bg"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/header_background"
+                            android:contentDescription="@string/user_profile_image" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:id="@+id/nameTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/samir_suroshe1"
+                        android:textAlignment="textStart"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/cardView"
+                        app:layout_constraintHorizontal_bias="0.313"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/email1"
+                        android:textSize="11sp"
+                        app:layout_constraintStart_toStartOf="@+id/nameTV"
+                        app:layout_constraintTop_toBottomOf="@+id/nameTV" />
+
+                    <TextView
+                        android:id="@+id/emailTV"
+                        android:layout_width="195dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sameersuroshe_gmail_com"
+                        android:textAlignment="textStart"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toStartOf="@+id/textView2"
+                        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/username"
+                        android:textSize="11sp"
+                        app:layout_constraintStart_toStartOf="@+id/emailTV"
+                        app:layout_constraintTop_toBottomOf="@+id/emailTV" />
+
+                    <TextView
+                        android:id="@+id/userNameTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/samir_suroshe2"
+                        app:layout_constraintStart_toStartOf="@+id/textView4"
+                        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+                    <TextView
+                        android:id="@+id/textView6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/join_date"
+                        android:textSize="11sp"
+                        app:layout_constraintStart_toStartOf="@+id/userNameTV"
+                        app:layout_constraintTop_toBottomOf="@+id/userNameTV" />
+
+                    <TextView
+                        android:id="@+id/dateTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/_18_04_2011"
+                        app:layout_constraintStart_toStartOf="@+id/textView6"
+                        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="10dp">
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardView"
-                    android:layout_width="135dp"
+                    android:layout_width="170dp"
                     android:layout_height="170dp"
-                    android:layout_marginEnd="11dp"
                     app:cardCornerRadius="12dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:layout_marginTop="30dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:background="@drawable/gradient_background">
 
-                    <ImageView
-                        android:id="@+id/profilePictureCV"
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/img_round_shape_bg"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/header_background" />
+                        android:background="@drawable/gradient_background">
+
+
+                        <TextView
+                            android:id="@+id/wellpointTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/_100"
+                            android:textSize="50sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.505"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.504" />
+
+                        <TextView
+                            android:id="@+id/wellpoint"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/wellpoints"
+                            android:textSize="20sp"
+                            app:layout_constraintEnd_toEndOf="@+id/wellpointTV"
+                            app:layout_constraintStart_toStartOf="@+id/wellpointTV"
+                            app:layout_constraintTop_toBottomOf="@+id/wellpointTV" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:id="@+id/nameTV"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Samir Suroshe"
-                    android:textAlignment="textStart"
-                    android:textSize="25sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@+id/cardView"
-                    app:layout_constraintHorizontal_bias="0.313"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView2"
+                    android:layout_width="170dp"
+                    android:layout_height="170dp"
+                    app:cardCornerRadius="12dp"
+                    android:layout_marginTop="30dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" >
 
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Email"
-                    android:textSize="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/nameTV"
-                    app:layout_constraintTop_toBottomOf="@+id/nameTV" />
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/gradient_background">
 
-                <TextView
-                    android:id="@+id/emailTV"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="sameersuroshe@gmail.com"
-                    android:textAlignment="textStart"
-                    android:textSize="15sp"
-                    app:layout_constraintStart_toStartOf="@+id/textView2"
-                    app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Username"
-                    android:textSize="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/emailTV"
-                    app:layout_constraintTop_toBottomOf="@+id/emailTV" />
+                        <TextView
+                            android:id="@+id/rankTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/_10"
+                            android:textSize="50sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/userNameTV"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Samir Suroshe"
-                    app:layout_constraintStart_toStartOf="@+id/textView4"
-                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                        <TextView
+                            android:id="@+id/rank"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/rank"
+                            android:textSize="20sp"
+                            app:layout_constraintEnd_toEndOf="@+id/rankTV"
+                            app:layout_constraintStart_toStartOf="@+id/rankTV"
+                            app:layout_constraintTop_toBottomOf="@+id/rankTV" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/textView6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Join Date"
-                    android:textSize="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/userNameTV"
-                    app:layout_constraintTop_toBottomOf="@+id/userNameTV" />
+                </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:id="@+id/dateTV"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="18/04/2011"
-                    app:layout_constraintStart_toStartOf="@+id/textView6"
-                    app:layout_constraintTop_toBottomOf="@+id/textView6" />
+                <androidx.cardview.widget.CardView
+                    android:layout_width="170dp"
+                    android:layout_height="170dp"
+                    app:cardCornerRadius="12dp"
+                    android:layout_marginBottom="30dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" >
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/gradient_background">
+
+
+                        <TextView
+                            android:id="@+id/completedTaskTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/_3"
+                            android:textSize="50sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/completedTask"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/completed_task"
+                            android:textSize="20sp"
+                            app:layout_constraintEnd_toEndOf="@+id/completedTaskTV"
+                            app:layout_constraintStart_toStartOf="@+id/completedTaskTV"
+                            app:layout_constraintTop_toBottomOf="@+id/completedTaskTV" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView3"
+                    android:layout_width="170dp"
+                    android:layout_height="170dp"
+                    android:layout_marginBottom="30dp"
+                    app:cardCornerRadius="12dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/gradient_background">
+
+
+                        <TextView
+                            android:id="@+id/successRateTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/_1001"
+                            android:textSize="50sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/textView7"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/success_rate"
+                            android:textSize="20sp"
+                            app:layout_constraintEnd_toEndOf="@+id/successRateTV"
+                            app:layout_constraintStart_toStartOf="@+id/successRateTV"
+                            app:layout_constraintTop_toBottomOf="@+id/successRateTV" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="10dp">
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                app:cardCornerRadius="12dp"
-                android:layout_marginTop="30dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:background="@drawable/gradient_background">
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loadingAnim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/loading_animation" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/gradient_background">
-
-
-                    <TextView
-                        android:id="@+id/wellpointTV"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="100"
-                        android:textSize="50dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.505"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.504" />
-
-                    <TextView
-                        android:id="@+id/wellpoint"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="WellPoints"
-                        android:textSize="20dp"
-                        app:layout_constraintEnd_toEndOf="@+id/wellpointTV"
-                        app:layout_constraintStart_toStartOf="@+id/wellpointTV"
-                        app:layout_constraintTop_toBottomOf="@+id/wellpointTV" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView2"
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                app:cardCornerRadius="12dp"
-                android:layout_marginTop="30dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" >
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/gradient_background">
-
-
-                    <TextView
-                        android:id="@+id/rankTV"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="10"
-                        android:textSize="50dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/rank"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Rank"
-                        android:textSize="20dp"
-                        app:layout_constraintEnd_toEndOf="@+id/rankTV"
-                        app:layout_constraintStart_toStartOf="@+id/rankTV"
-                        app:layout_constraintTop_toBottomOf="@+id/rankTV" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                app:cardCornerRadius="12dp"
-                android:layout_marginBottom="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" >
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/gradient_background">
-
-
-                    <TextView
-                        android:id="@+id/completedTaskTV"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="3"
-                        android:textSize="50dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/completedTask"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Completed Task"
-                        android:textSize="20dp"
-                        app:layout_constraintEnd_toEndOf="@+id/completedTaskTV"
-                        app:layout_constraintStart_toStartOf="@+id/completedTaskTV"
-                        app:layout_constraintTop_toBottomOf="@+id/completedTaskTV" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView3"
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                android:layout_marginBottom="30dp"
-                app:cardCornerRadius="12dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/gradient_background">
-
-
-                    <TextView
-                        android:id="@+id/successRateTV"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="100"
-                        android:textSize="50dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/textView7"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Success Rate"
-                        android:textSize="20dp"
-                        app:layout_constraintEnd_toEndOf="@+id/successRateTV"
-                        app:layout_constraintStart_toStartOf="@+id/successRateTV"
-                        app:layout_constraintTop_toBottomOf="@+id/successRateTV" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.cardview.widget.CardView>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.WellBeing" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">true</item>
+<!--        <item name="colorPrimary">#605690</item>-->
+<!--        <item name="colorSecondary">#605C71</item>-->
+<!--        <item name="colorSurface">#ffffff</item>-->
+<!--        <item name="colorTertiary">#7C5263</item>-->
+<!--        <item name="colorError">#BA1B1A</item>-->
+<!--        <item name="android:navigationBarColor">?attr/colorSecondary</item>-->
+<!--        <item name="colorPrimary">@color/white</item>-->
+
     </style>
 
     <style name="Theme.WellBeing" parent="Base.Theme.WellBeing" />

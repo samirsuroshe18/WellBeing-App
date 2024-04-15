@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,81 +9,135 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_above="@+id/container1"
-        android:background="@drawable/heading_background"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp">
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/container1">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp">
+
+            <LinearLayout
+                android:id="@+id/layout1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/taskTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints=""
+                    android:layout_marginTop="5dp"
+                    android:hint="Task name"
+                    android:inputType="text"
+                    android:textSize="15sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/layout2"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/layout1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/description"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/taskDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:hint="Description"
+                    android:textSize="15sp"
+                    android:layout_marginTop="5dp"
+                    android:autofillHints="" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/layout3"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/layout2"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/timeline_to_complete"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <EditText
+                    android:id="@+id/taskTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/enter_days"
+                    android:inputType="number"
+                    android:textSize="15sp"
+                    android:layout_marginTop="5dp"
+                    android:autofillHints="" />
+
+            </LinearLayout>
 
 
-        </LinearLayout>
+
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="288dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintTop_toBottomOf="@+id/layout3"
+                android:visibility="invisible"
+                android:layout_marginTop="10dp"
+                android:contentDescription="@string/create_task_image" />
+
+            <VideoView
+                android:id="@+id/video"
+                android:layout_width="match_parent"
+                android:layout_height="288dp"
+                app:layout_constraintTop_toBottomOf="@+id/layout3"
+                android:visibility="invisible"
+                android:layout_marginTop="10dp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 
-    <EditText
-        android:id="@+id/taskTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:hint="Enter Task Title"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"/>
 
-    <EditText
-        android:id="@+id/taskDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textMultiLine"
-        android:layout_below="@+id/taskTitle"
-        android:hint="Enter Task Description"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"/>
-
-    <EditText
-        android:id="@+id/taskTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/taskDescription"
-        android:hint="Enter Task Time to complete"
-        android:inputType="number"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"/>
-
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:scaleType="centerCrop"
-        android:layout_below="@+id/taskTime"
-        android:visibility="invisible"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="12dp"/>
-
-    <VideoView
-        android:id="@+id/video"
-        android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_below="@+id/taskTime"
-        android:visibility="invisible"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="12dp"/>
 
     <RelativeLayout
         android:id="@+id/container1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:padding="13dp"
-        android:layout_alignParentBottom="true">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
 
         <ImageView
@@ -91,28 +145,34 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/video_upload"
+            android:layout_toStartOf="@+id/video_upload"
+            app:tint="?attr/colorOnSurface"
+            android:contentDescription="@string/get_image_from_gallery_btn"
             android:src="@drawable/image_icon" />
 
         <ImageView
             android:id="@+id/video_upload"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/video_icon"
-            android:layout_marginLeft="5dp"
-            android:layout_toLeftOf="@+id/upload_post"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:layout_marginStart="5dp"
+            android:layout_toStartOf="@+id/upload_post"
+            app:tint="?attr/colorOnSurface"
+            android:contentDescription="@string/get_video_from_galley_btn"
+            android:src="@drawable/video_icon" />
 
         <ImageView
             android:id="@+id/upload_post"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/send"/>
+            android:layout_marginStart="5dp"
+            app:tint="?attr/colorOnSurface"
+            android:layout_marginEnd="15dp"
+            android:contentDescription="@string/upload_task_btn"
+            android:src="@drawable/send" />
 
     </RelativeLayout>
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

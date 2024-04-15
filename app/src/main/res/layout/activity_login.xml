@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -21,21 +22,24 @@
             android:src="@drawable/app_logo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/app_iconIV" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/front_shapes2" />
+            app:srcCompat="@drawable/front_shapes2"
+            android:contentDescription="@string/shape_1" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/front_shapes" />
+            app:srcCompat="@drawable/front_shapes"
+            android:contentDescription="@string/shape_2" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -55,21 +59,23 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/front_shapes3" />
+                app:srcCompat="@drawable/front_shapes3"
+                android:contentDescription="@string/shape_3" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/front_shapes4" />
+                app:srcCompat="@drawable/front_shapes4"
+                android:contentDescription="@string/shape_4" />
 
             <TextView
                 android:layout_width="300dp"
                 android:layout_height="60dp"
                 android:layout_marginTop="44dp"
                 android:gravity="center"
-                android:text="Welcome Back!"
+                android:text="@string/messageTV"
                 android:textSize="40sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -90,7 +96,7 @@
                 android:layout_width="93dp"
                 android:layout_height="21dp"
                 android:layout_marginStart="48dp"
-                android:text="Email Address"
+                android:text="@string/email_address"
                 android:layout_marginTop="10dp"/>
 
             <EditText
@@ -100,12 +106,14 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/input_bg"
-                android:drawableLeft="@drawable/email"
+                android:drawableStart="@drawable/email"
                 android:drawablePadding="10dp"
                 android:ems="10"
-                android:hint="Email"
+                android:hint="@string/email"
                 android:inputType="textEmailAddress"
-                android:paddingStart="20dp" />
+                android:paddingStart="20dp"
+                android:paddingEnd="10dp"
+                android:autofillHints="emailAddress"/>
         </LinearLayout>
 
         <LinearLayout
@@ -119,7 +127,7 @@
                 android:layout_width="93dp"
                 android:layout_height="21dp"
                 android:layout_marginStart="48dp"
-                android:text="Password"
+                android:text="@string/password"
                 android:layout_marginTop="10dp"/>
 
             <EditText
@@ -128,13 +136,15 @@
                 android:layout_height="55dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/input_bg"
-                android:drawableLeft="@drawable/pass"
+                android:drawableStart="@drawable/pass"
                 android:drawablePadding="10dp"
                 android:ems="10"
-                android:hint="Password"
+                android:hint="@string/passwordET"
                 android:inputType="textPassword"
                 android:paddingStart="20dp"
-                android:layout_gravity="center_horizontal"/>
+                android:paddingEnd="10dp"
+                android:layout_gravity="center_horizontal"
+                android:autofillHints="password" />
         </LinearLayout>
 
 
@@ -144,7 +154,7 @@
             android:layout_height="55dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="35dp"
-            android:text="Sign In"
+            android:text="@string/sign_in"
             android:textSize="20sp"
             android:gravity="center"
             android:textAllCaps="false"
@@ -158,7 +168,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Don't have an account? "
+                android:text="@string/don_t_have_an_account"
                 android:layout_gravity="end"
                 android:layout_marginTop="8dp"/>
 
@@ -166,7 +176,7 @@
                 android:id="@+id/mov_to_signUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sign Up"
+                android:text="@string/sign_up"
                 android:textColor="#C65647"
                 android:layout_gravity="end"
                 android:layout_marginTop="8dp"/>

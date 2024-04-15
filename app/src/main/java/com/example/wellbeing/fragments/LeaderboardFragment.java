@@ -1,12 +1,7 @@
 package com.example.wellbeing.fragments;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +9,13 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
@@ -28,12 +30,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.wellbeing.CommentActivity;
-import com.example.wellbeing.HomeActivity;
 import com.example.wellbeing.R;
-import com.example.wellbeing.adapters.CommentAdapter;
+import com.example.wellbeing.UtilsServices.ConnectivityUtils;
 import com.example.wellbeing.adapters.LeaderboardAdapter;
-import com.example.wellbeing.models.CommentModel;
 import com.example.wellbeing.models.LeaderboardModel;
 import com.squareup.picasso.Picasso;
 
@@ -41,8 +40,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,30 +57,27 @@ public class LeaderboardFragment extends Fragment {
     RecyclerView leaderboard_recycler_view;
     CircleImageView firstUser, secondUser, thirdUser;
     TextView firstUserName, secondUserName, thirdUserName, firstUserRank, secondUserRank, thirdUserRank,firstUserPoints, secondUserPoints, thirdUserPoints;
-    FrameLayout container;
+    ConstraintLayout container;
     LottieAnimationView lottieAnimationView;
-    public LeaderboardFragment(FrameLayout container, LottieAnimationView lottieAnimationView) {
-        // Required empty public constructor
-        this.container = container;
-        this.lottieAnimationView = lottieAnimationView;
 
+    public LeaderboardFragment() {
     }
-
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        leaderboardList = new ArrayList<>();
-        getLeaderboardList();
+
+
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup containe, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_leaderboard, container, false);
+        View view = inflater.inflate(R.layout.fragment_leaderboard, containe, false);
 
+        container = view.findViewById(R.id.container);
+        lottieAnimationView = view.findViewById(R.id.loadingAnim);
         firstUser = view.findViewById(R.id.first_user);
         secondUser = view.findViewById(R.id.second_user);
         thirdUser = view.findViewById(R.id.third_user);
@@ -95,14 +91,14 @@ public class LeaderboardFragment extends Fragment {
         secondUserPoints = view.findViewById(R.id.secondUserPoints);
         thirdUserPoints = view.findViewById(R.id.thirdUserPoints);
 
-
+        leaderboardList = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         leaderboard_recycler_view = view.findViewById(R.id.leaderboard_recycler_view);
         leaderboard_recycler_view.setLayoutManager(layoutManager);
         adapter = new LeaderboardAdapter(getContext(), leaderboardList);
         leaderboard_recycler_view.setAdapter(adapter);
 
-        if (leaderboardList.size()==3) {
+        if (leaderboardList.size()>=3) {
             LeaderboardModel leaderboardModel = leaderboardList.get(0);
             LeaderboardModel leaderboardModel1 = leaderboardList.get(1);
             LeaderboardModel leaderboardModel2 = leaderboardList.get(2);
@@ -147,6 +143,14 @@ public class LeaderboardFragment extends Fragment {
             firstUserPoints.setText(leaderboardModel.getWellpoints());
         }
 
+        if (ConnectivityUtils.isConnectedToInternet(requireContext())) {
+            if (leaderboardList != null) {
+                leaderboardList.clear();
+            }
+            getLeaderboardList();
+        } else {
+            Toast.makeText(getContext(), "Please check your internet connection", Toast.LENGTH_SHORT).show();
+        }
 
         return view;
     }
@@ -156,7 +160,6 @@ public class LeaderboardFragment extends Fragment {
         lottieAnimationView.setVisibility(View.VISIBLE);
 
         String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/get-leaderboardlist";
-
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -181,7 +184,7 @@ public class LeaderboardFragment extends Fragment {
                         container.setVisibility(View.VISIBLE);
                         lottieAnimationView.setVisibility(View.INVISIBLE);
 
-                        if (leaderboardList.size()==3) {
+                        if (leaderboardList.size()>=3) {
                             LeaderboardModel leaderboardModel = leaderboardList.get(0);
                             LeaderboardModel leaderboardModel1 = leaderboardList.get(1);
                             LeaderboardModel leaderboardModel2 = leaderboardList.get(2);

@@ -1,12 +1,11 @@
 package com.example.wellbeing;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.TextView;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
 
@@ -27,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (accessToken.isEmpty()){
-                    startActivity(new Intent(MainActivity.this, RegisterActivity.class));
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
                     finish();
                 }else {
                     startActivity(new Intent(MainActivity.this, HomeActivity.class));

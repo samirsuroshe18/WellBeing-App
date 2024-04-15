@@ -8,12 +8,8 @@ import android.widget.Button;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
-import com.example.wellbeing.fragments.TaskFragment;
 
 public class TaskIncompletedActivity extends AppCompatActivity {
 

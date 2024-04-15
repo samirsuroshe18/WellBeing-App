@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@drawable/gradient_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -21,19 +20,22 @@
             android:id="@+id/back_arrow"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_gravity="start"
             android:layout_marginStart="13dp"
             android:src="@drawable/arrow"
+            app:tint="?attr/colorOnSurface"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/back_button" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Comments"
-            android:textSize="25dp"
+            android:text="@string/commentsTV"
+            android:textSize="25sp"
             android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@+id/back_arrow"
             app:layout_constraintRight_toRightOf="parent" />
 
@@ -50,28 +52,33 @@
         android:id="@+id/comment_et"
         android:layout_width="0dp"
         android:layout_height="40dp"
+        android:inputType="text"
         android:layout_marginStart="13dp"
         android:layout_marginEnd="13dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/img_round_shape_bg"
         android:ems="12"
-        android:hint="enter comment"
+        android:hint="@string/commentsET"
         android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/send_comment_btn"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:autofillHints="" />
 
     <ImageView
         android:id="@+id/send_comment_btn"
         android:layout_width="40dp"
         android:layout_height="36dp"
-        android:layout_alignParentRight="true"
+        app:tint="?attr/colorOnSurface"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="13dp"
         android:layout_marginBottom="22dp"
         android:src="@drawable/send"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/sendBtn" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

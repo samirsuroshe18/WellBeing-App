@@ -12,7 +12,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -48,7 +47,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,9 +62,7 @@ public class HomeActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     String accessToken, fragmentTagName;
     SharedPreferenceClass sharedPreferenceClass;
-    ArrayList<PostModel> postList;
     ArrayList<UserModel> userList;
-    PostsAdapter adapter;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     FrameLayout container;
@@ -76,30 +72,30 @@ public class HomeActivity extends AppCompatActivity {
     LeaderboardFragment leaderboardFragment;
     ProfileFragment profileFragment;
     CircleImageView userProfileCV;
-    LottieAnimationView lottieAnimationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
 
-        //Initialization and finding id's of views
-
         bottomNavigationView = findViewById(R.id.bottomNav2);
-        lottieAnimationView = findViewById(R.id.loadingAnim);
         container = findViewById(R.id.container);
-        postList = new ArrayList<>();
-        userList = new ArrayList<>();
+        userProfileCV = findViewById(R.id.userProfileCV);
         sharedPreferenceClass = new SharedPreferenceClass(this);
         accessToken = sharedPreferenceClass.getValue_string("accessToken");
-        adapter = new PostsAdapter(postList, this, accessToken);
-        userProfileCV = findViewById(R.id.userProfileCV);
+        userList = new ArrayList<>();
 
         // Home fragment will be shown on home activity as we open our app
 
+        if (ConnectivityUtils.isConnectedToInternet(this)) {
+            getUserInfo();
+        } else {
+            Toast.makeText(this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
+        }
+
         homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("homeFragment");
         if (homeFragment == null){
-            homeFragment = new HomeFragment(postList, adapter);
+            homeFragment = new HomeFragment();
         }
         loadFrag(homeFragment, "homeFragment", true);
         bottomNavigationView.setSelectedItemId(R.id.navigation_home);
@@ -109,12 +105,12 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 profileFragment = (ProfileFragment) getSupportFragmentManager().findFragmentByTag("profileFragment");
                 if ( profileFragment == null){
-                    profileFragment = new ProfileFragment(container, lottieAnimationView);
+                    profileFragment = new ProfileFragment();
                     loadFrag(profileFragment, "profileFragment", false);
                     bottomNavigationView.setSelectedItemId(R.id.navigation_profile);
                 }else  {
                     if (profileFragment.isVisible()){
-                        profileFragment = new ProfileFragment(container, lottieAnimationView);
+                        profileFragment = new ProfileFragment();
                         loadFrag(profileFragment, "profileFragment", false);
                     }
                     loadFrag(profileFragment, "profileFragment", false);
@@ -123,15 +119,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        // It checks wheather internet connection is on or not
-
-        if (ConnectivityUtils.isConnectedToInternet(getApplicationContext())) {
-            getPosts();
-            getUserInfo();
-        } else {
-            Toast.makeText(this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
-        }
-
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -139,13 +126,11 @@ public class HomeActivity extends AppCompatActivity {
                 if(id==R.id.navigation_home){
                     homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("homeFragment");
                     if ( homeFragment == null){
-                        homeFragment = new HomeFragment(postList, adapter);
+                        homeFragment = new HomeFragment();
                         loadFrag(homeFragment, "homeFragment", false);
                     }else  {
                         if (homeFragment.isVisible()){
-                            postList.clear();
-                            getUpdatedPosts();
-                            homeFragment = new HomeFragment(postList, adapter);
+                            homeFragment = new HomeFragment();
                             loadFrag(homeFragment, "homeFragment", false);
                         }
                         loadFrag(homeFragment, "homeFragment", false);
@@ -153,11 +138,11 @@ public class HomeActivity extends AppCompatActivity {
                 } else if (id==R.id.navigation_task) {
                     taskFragment = (TaskFragment) getSupportFragmentManager().findFragmentByTag("taskFragment");
                     if ( taskFragment == null){
-                        taskFragment = new TaskFragment(container, lottieAnimationView);
+                        taskFragment = new TaskFragment();
                         loadFrag(taskFragment, "taskFragment", false);
                     }else  {
                         if (taskFragment.isVisible()){
-                            taskFragment = new TaskFragment(container, lottieAnimationView);
+                            taskFragment = new TaskFragment();
                             loadFrag(taskFragment, "taskFragment", false);
                         }
                         loadFrag(taskFragment, "taskFragment", false);
@@ -173,11 +158,11 @@ public class HomeActivity extends AppCompatActivity {
                 } else if (id==R.id.navigation_leaderboard) {
                     leaderboardFragment = (LeaderboardFragment) getSupportFragmentManager().findFragmentByTag("leaderboardFragment");
                     if ( leaderboardFragment == null){
-                        leaderboardFragment = new LeaderboardFragment(container, lottieAnimationView);
+                        leaderboardFragment = new LeaderboardFragment();
                         loadFrag(leaderboardFragment, "leaderboardFragment", false);
                     }else  {
                         if (leaderboardFragment.isVisible()){
-                            leaderboardFragment = new LeaderboardFragment(container, lottieAnimationView);
+                            leaderboardFragment = new LeaderboardFragment();
                             loadFrag(leaderboardFragment, "leaderboardFragment", false);
                         }
                         loadFrag(leaderboardFragment, "leaderboardFragment", false);
@@ -185,11 +170,11 @@ public class HomeActivity extends AppCompatActivity {
                 }else {
                     profileFragment = (ProfileFragment) getSupportFragmentManager().findFragmentByTag("profileFragment");
                     if ( profileFragment == null){
-                        profileFragment = new ProfileFragment(container, lottieAnimationView);
+                        profileFragment = new ProfileFragment();
                         loadFrag(profileFragment, "profileFragment", false);
                     }else  {
                         if (profileFragment.isVisible()){
-                            profileFragment = new ProfileFragment(container, lottieAnimationView);
+                            profileFragment = new ProfileFragment();
                             loadFrag(profileFragment, "profileFragment", false);
                         }
                         loadFrag(profileFragment, "profileFragment", false);
@@ -200,26 +185,28 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // This callback is only called when MyFragment is at least started
-        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
-            @Override
-            public void handleOnBackPressed() {
-                // Handle the back button event
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                Fragment currentFragment = fragmentManager.findFragmentById(R.id.container);
-                assert currentFragment != null;
-                String currentFragmentTag = currentFragment.getTag();
 
-                // Check if the current fragment is the home fragment
-                if (currentFragmentTag != null && currentFragmentTag.equals("homeFragment")) {
-                    // Clear the back stack
-                    finishAffinity();
-                } else {
-                    fragmentManager.popBackStack();
-                }
-            }
-        };
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
+
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            // Handle the back button event
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            Fragment currentFragment = fragmentManager.findFragmentById(R.id.container);
+            assert currentFragment != null;
+            String currentFragmentTag = currentFragment.getTag();
+
+            // Check if the current fragment is the home fragment
+            if (currentFragmentTag != null && currentFragmentTag.equals("homeFragment")) {
+                // Clear the back stack
+                finishAffinity();
+            } else {
+                fragmentManager.popBackStack();
+            }
+        }
+    };
 
     @Override
     protected void onResume() {
@@ -229,7 +216,7 @@ public class HomeActivity extends AppCompatActivity {
         fragmentTagName = intent.getStringExtra("fragmentTagName");
         if (fragmentTagName != null){
             if (fragmentTagName.equals("taskFragment")){
-                taskFragment = new TaskFragment(container, lottieAnimationView);
+                taskFragment = new TaskFragment();
                 loadFrag(taskFragment, "taskFragment", false);
                 bottomNavigationView.setSelectedItemId(R.id.navigation_task);
             }
@@ -237,282 +224,36 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+
     public void loadFrag(Fragment fragment, String tagName, boolean flag){
         fragmentManager = getSupportFragmentManager();
+        Fragment existingFragment = fragmentManager.findFragmentByTag(tagName);
+        if (existingFragment != null && existingFragment.isAdded()) {
+            // Fragment already added, no need to add it again
+            return;
+        }
         fragmentTransaction = fragmentManager.beginTransaction();
         if (flag){
             fragmentTransaction.add(R.id.container, fragment, tagName);
         }else {
             fragmentTransaction.replace(R.id.container, fragment, tagName);
         }
-
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
-    private void getPosts() {
-        lottieAnimationView.setVisibility(View.VISIBLE);
-        container.setVisibility(View.INVISIBLE);
 
-        String apiKey = "https://wellbeing-backend-blush.vercel.app/api/v1/upload/get-post";
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    if (response != null) {
-                        JSONArray dataObject = response.getJSONArray("data");
-                        for (int i=0; i<dataObject.length(); i++){
-                            PostModel postModel = new PostModel();
-
-                            postModel.set_id(dataObject.getJSONObject(i).getString("_id"));
-                            postModel.setUserProfile(dataObject.getJSONObject(i).getJSONObject("uploadedBy").getString("profilePicture"));
-                            postModel.setUserName(dataObject.getJSONObject(i).getJSONObject("uploadedBy").getString("userName"));
-                            postModel.setCreatedAt(dataObject.getJSONObject(i).getString("createdAt"));
-                            postModel.setDescription(dataObject.getJSONObject(i).getString("description"));
-                            postModel.setMedia(dataObject.getJSONObject(i).getString("multiMedia"));
-                            postModel.setTotalLikes(dataObject.getJSONObject(i).getInt("likes"));
-                            postModel.setTotalDislikes(dataObject.getJSONObject(i).getInt("dislikes"));
-                            postModel.setTotalComments(dataObject.getJSONObject(i).getInt("comments"));
-                            postModel.setMediaType(dataObject.getJSONObject(i).getString("mediaType"));
-                            postModel.setTaskId(dataObject.getJSONObject(i).getString("task"));
-                            postModel.setDuration(dataObject.getJSONObject(i).getString("duration"));
-
-                            postList.add(postModel);
-                            adapter.notifyDataSetChanged();
-                            Log.d("getPostData : ", String.valueOf(dataObject));
-
-                        }
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                    lottieAnimationView.setVisibility(View.INVISIBLE);
-                    container.setVisibility(View.VISIBLE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                NetworkResponse networkResponse = error.networkResponse;
-                String errorMessage = "Unknown error";
-                if (networkResponse == null) {
-                    if (error.getClass().equals(TimeoutError.class)) {
-                        errorMessage = "Request timeout";
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    } else if (error.getClass().equals(NoConnectionError.class)) {
-                        errorMessage = "Failed to connect server";
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    String result = null;
-                    try {
-                        result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                        Log.d("Error : ", result);
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    Toast.makeText(HomeActivity.this, result, Toast.LENGTH_SHORT).show();
-                    try {
-                        JSONObject response = new JSONObject(result);
-                        String status = response.getString("status");
-                        String message = response.getString("message");
-
-                        Log.e("Error Status", status);
-                        Log.e("Error Message", message);
-
-                        if (networkResponse.statusCode == 404) {
-                            errorMessage = "Resource not found";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        } else if (networkResponse.statusCode == 401) {
-                            errorMessage = message+" Unauthorized";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        } else if (networkResponse.statusCode == 400) {
-                            errorMessage = message+ "Bad request";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        } else if (networkResponse.statusCode == 500) {
-                            errorMessage = message+" Something is getting wrong";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    }
-                }
-                Log.i("Error", errorMessage);
-                Toast.makeText(HomeActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                error.printStackTrace();
-                lottieAnimationView.setVisibility(View.INVISIBLE);
-                container.setVisibility(View.VISIBLE);
-            }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer "+accessToken);
-                return headers;
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(HomeActivity.this);
-        requestQueue.add(jsonObjectRequest);
-
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_MS,
-                MAX_RETRIES,
-                BACKOFF_MULT
-        ));
-    }
-
-    private void getUpdatedPosts() {
-        lottieAnimationView.setVisibility(View.VISIBLE);
-        container.setVisibility(View.INVISIBLE);
-
-        String apiKey = "https://wellbeing-backend-blush.vercel.app/api/v1/upload/get-post";
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    if (response != null) {
-                        JSONArray dataObject = response.getJSONArray("data");
-
-                        for (int i=0; i<dataObject.length(); i++){
-                            PostModel postModel = new PostModel();
-
-                            postModel.set_id(dataObject.getJSONObject(i).getString("_id"));
-                            postModel.setUserProfile(dataObject.getJSONObject(i).getJSONObject("uploadedBy").getString("profilePicture"));
-                            postModel.setUserName(dataObject.getJSONObject(i).getJSONObject("uploadedBy").getString("userName"));
-                            postModel.setCreatedAt(dataObject.getJSONObject(i).getString("createdAt"));
-                            postModel.setDescription(dataObject.getJSONObject(i).getString("description"));
-                            postModel.setMedia(dataObject.getJSONObject(i).getString("multiMedia"));
-                            postModel.setTotalLikes(dataObject.getJSONObject(i).getInt("likes"));
-                            postModel.setTotalDislikes(dataObject.getJSONObject(i).getInt("dislikes"));
-                            postModel.setTotalComments(dataObject.getJSONObject(i).getInt("comments"));
-                            postModel.setMediaType(dataObject.getJSONObject(i).getString("mediaType"));
-                            postModel.setTaskId(dataObject.getJSONObject(i).getString("task"));
-                            postModel.setDuration(dataObject.getJSONObject(i).getString("duration"));
-
-                            postList.add(postModel);
-                            adapter.notifyDataSetChanged();
-                        }
-                        Log.d("getUpdatedPostData : ", String.valueOf(dataObject));
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                    lottieAnimationView.setVisibility(View.INVISIBLE);
-                    container.setVisibility(View.VISIBLE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                NetworkResponse networkResponse = error.networkResponse;
-                String errorMessage = "Unknown error";
-                if (networkResponse == null) {
-                    if (error.getClass().equals(TimeoutError.class)) {
-                        errorMessage = "Request timeout";
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    } else if (error.getClass().equals(NoConnectionError.class)) {
-                        errorMessage = "Failed to connect server";
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    String result = null;
-                    try {
-                        result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                        Log.d("Error : ", result);
-
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    Toast.makeText(HomeActivity.this, result, Toast.LENGTH_SHORT).show();
-                    try {
-                        JSONObject response = new JSONObject(result);
-                        String status = response.getString("status");
-                        String message = response.getString("message");
-
-                        Log.e("Error Status", status);
-                        Log.e("Error Message", message);
-
-                        if (networkResponse.statusCode == 404) {
-                            errorMessage = "Resource not found";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        } else if (networkResponse.statusCode == 401) {
-                            errorMessage = message+" Unauthorized";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        } else if (networkResponse.statusCode == 400) {
-                            errorMessage = message+ "Bad request";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        } else if (networkResponse.statusCode == 500) {
-                            errorMessage = message+" Something is getting wrong";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    }
-                }
-                Log.i("Error", errorMessage);
-                Toast.makeText(HomeActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                error.printStackTrace();
-                lottieAnimationView.setVisibility(View.INVISIBLE);
-                container.setVisibility(View.VISIBLE);
-            }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer "+accessToken);
-                return headers;
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(HomeActivity.this);
-        requestQueue.add(jsonObjectRequest);
-
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_MS,
-                MAX_RETRIES,
-                BACKOFF_MULT
-        ));
-    }
 
     public void getUserInfo(){
 
-        container.setVisibility(View.INVISIBLE);
-        lottieAnimationView.setVisibility(View.VISIBLE);
 
-        String apiKey = "https://wellbeing-backend-blush.vercel.app/api/v1/users/get-userinfo";
+        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/get-userinfo";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
                     if (response != null) {
-
-                        String resMsg = response.getString("message");
-                        Toast.makeText(HomeActivity.this, resMsg, Toast.LENGTH_SHORT).show();
-
                         JSONObject dataObject = (JSONObject) response.getJSONArray("data").get(0);
                         UserModel userModel = new UserModel();
 
@@ -530,19 +271,13 @@ public class HomeActivity extends AppCompatActivity {
 
                         Picasso.get().load(userList.get(userList.size()-1).getProfilePicture()).into(userProfileCV);
 
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
                     } else {
                         // Handle the case where "accessToken" key is not present in the JSON response
                         Toast.makeText(HomeActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
                     }
 
                 }catch (Exception e){
                     e.printStackTrace();
-                    lottieAnimationView.setVisibility(View.INVISIBLE);
-                    container.setVisibility(View.VISIBLE);
                 }
             }
         }, new Response.ErrorListener() {
@@ -554,20 +289,14 @@ public class HomeActivity extends AppCompatActivity {
                 if (networkResponse == null) {
                     if (error.getClass().equals(TimeoutError.class)) {
                         errorMessage = "Request timeout";
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
                     } else if (error.getClass().equals(NoConnectionError.class)) {
                         errorMessage = "Failed to connect server";
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
                     }
                 } else {
                     String result = null;
                     try {
                         result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
                         Log.d("Error : ", result);
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
                     } catch (UnsupportedEncodingException e) {
                         throw new RuntimeException(e);
                     }
@@ -582,32 +311,20 @@ public class HomeActivity extends AppCompatActivity {
 
                         if (networkResponse.statusCode == 404) {
                             errorMessage = "Resource not found";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
                         } else if (networkResponse.statusCode == 401) {
                             errorMessage = message+" Unauthorized";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
                         } else if (networkResponse.statusCode == 400) {
                             errorMessage = message+ "Bad request";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
                         } else if (networkResponse.statusCode == 500) {
                             errorMessage = message+" Something is getting wrong";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
                     }
                 }
                 Log.i("Error", errorMessage);
                 Toast.makeText(HomeActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                 error.printStackTrace();
-                lottieAnimationView.setVisibility(View.INVISIBLE);
-                container.setVisibility(View.VISIBLE);
             }
         }){
             @Override

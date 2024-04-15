@@ -1,8 +1,5 @@
 package com.example.wellbeing;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +9,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -25,14 +25,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.wellbeing.UtilsServices.ParseHtmlClass;
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,6 +83,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void LoginUser(View view) {
         progressDialog.show();
+
         final HashMap<String, String> params = new HashMap<>();
         params.put("email", email);
         params.put("password", password);
@@ -126,8 +125,10 @@ public class LoginActivity extends AppCompatActivity {
                 if (networkResponse == null) {
                     if (error.getClass().equals(TimeoutError.class)) {
                         errorMessage = "Request timeout";
+                        progressDialog.dismiss();
                     } else if (error.getClass().equals(NoConnectionError.class)) {
                         errorMessage = "Failed to connect server";
+                        progressDialog.dismiss();
                     }
                 } else {
                     String result = null;
@@ -148,20 +149,28 @@ public class LoginActivity extends AppCompatActivity {
 
                         if (networkResponse.statusCode == 404) {
                             errorMessage = "Resource not found";
+                            progressDialog.dismiss();
                         } else if (networkResponse.statusCode == 401) {
                             errorMessage = message+" Unauthorized";
+                            progressDialog.dismiss();
                         } else if (networkResponse.statusCode == 400) {
                             errorMessage = message+ "Bad request";
+                            progressDialog.dismiss();
                         } else if (networkResponse.statusCode == 500) {
                             errorMessage = message+" Something is getting wrong";
+                            progressDialog.dismiss();
+                            progressDialog.dismiss();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        progressDialog.dismiss();
                     }
+                    progressDialog.dismiss();
                 }
                 Log.i("Error", errorMessage);
                 Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                 error.printStackTrace();
+                progressDialog.dismiss();
             }
         }){
             @Override

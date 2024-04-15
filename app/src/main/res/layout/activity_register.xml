@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -20,6 +21,7 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:src="@drawable/profile_img"
+            app:civ_circle_background_color="@color/white"
             app:civ_border_color="#80B379DF"
             app:civ_border_width="3dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -36,14 +38,16 @@
             android:src="@drawable/plus"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/circleImageView"
-            android:background="@drawable/profile_btn_bg" />
+            android:background="@drawable/profile_btn_bg"
+            android:contentDescription="@string/get_image_from_gallary" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/front_shapes2" />
+            app:srcCompat="@drawable/front_shapes2"
+            android:contentDescription="@string/shape" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -51,7 +55,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/front_shapes" />
+            app:srcCompat="@drawable/front_shapes"
+            android:contentDescription="@string/shape_22" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -71,21 +76,23 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/front_shapes3" />
+                app:srcCompat="@drawable/front_shapes3"
+                android:contentDescription="@string/shape_33" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/front_shapes4" />
+                app:srcCompat="@drawable/front_shapes4"
+                android:contentDescription="@string/shape_44" />
 
             <TextView
                 android:layout_width="300dp"
                 android:layout_height="60dp"
                 android:layout_marginTop="44dp"
                 android:gravity="center"
-                android:text="Register"
+                android:text="@string/register"
                 android:textSize="40sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -106,7 +113,7 @@
                 android:layout_width="93dp"
                 android:layout_height="21dp"
                 android:layout_marginStart="48dp"
-                android:text="Email Address"
+                android:text="@string/email_address2"
                 android:layout_marginTop="10dp"/>
 
             <EditText
@@ -115,13 +122,15 @@
                 android:layout_height="55dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/input_bg"
-                android:drawableLeft="@drawable/email"
+                android:drawableStart="@drawable/email"
                 android:drawablePadding="10dp"
                 android:ems="10"
-                android:hint="Email"
+                android:hint="@string/email2"
                 android:inputType="textEmailAddress"
                 android:paddingStart="20dp"
-                android:layout_gravity="center_horizontal"/>
+                android:paddingEnd="10dp"
+                android:layout_gravity="center_horizontal"
+                android:autofillHints="emailAddress" />
         </LinearLayout>
 
         <LinearLayout
@@ -135,7 +144,7 @@
                 android:layout_width="93dp"
                 android:layout_height="21dp"
                 android:layout_marginStart="48dp"
-                android:text="Your Name"
+                android:text="@string/your_name"
                 android:layout_marginTop="10dp"/>
 
             <EditText
@@ -144,13 +153,15 @@
                 android:layout_height="55dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/input_bg"
-                android:drawableLeft="@drawable/user"
+                android:drawableStart="@drawable/user"
                 android:drawablePadding="10dp"
                 android:ems="10"
-                android:hint="Name"
+                android:hint="@string/name"
                 android:inputType="text"
                 android:paddingStart="20dp"
-                android:layout_gravity="center_horizontal"/>
+                android:paddingEnd="10dp"
+                android:layout_gravity="center_horizontal"
+                android:autofillHints="password" />
         </LinearLayout>
 
         <LinearLayout
@@ -164,7 +175,7 @@
                 android:layout_width="93dp"
                 android:layout_height="21dp"
                 android:layout_marginStart="48dp"
-                android:text="Password"
+                android:text="@string/password2"
                 android:layout_marginTop="10dp"/>
 
             <EditText
@@ -173,13 +184,15 @@
                 android:layout_height="55dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/input_bg"
-                android:drawableLeft="@drawable/pass"
+                android:drawableStart="@drawable/pass"
                 android:drawablePadding="10dp"
                 android:ems="10"
-                android:hint="Password"
+                android:hint="@string/password22"
                 android:inputType="textPassword"
                 android:paddingStart="20dp"
-                android:layout_gravity="center_horizontal"/>
+                android:paddingEnd="10dp"
+                android:layout_gravity="center_horizontal"
+                android:autofillHints="password" />
         </LinearLayout>
 
 
@@ -189,7 +202,7 @@
             android:layout_height="55dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="35dp"
-            android:text="Sign Up"
+            android:text="@string/sign_up2"
             android:textSize="20sp"
             android:gravity="center"
             android:textAllCaps="false"
@@ -203,7 +216,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Do you have an account? "
+                android:text="@string/do_you_have_an_account"
                 android:layout_gravity="end"
                 android:layout_marginTop="8dp"/>
 
@@ -211,7 +224,7 @@
                 android:id="@+id/mov_to_logIn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sign In"
+                android:text="@string/sign_in2"
                 android:textColor="#C65647"
                 android:layout_gravity="end"
                 android:layout_marginTop="8dp"/>

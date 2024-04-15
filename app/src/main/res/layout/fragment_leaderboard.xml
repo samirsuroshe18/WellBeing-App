@@ -1,180 +1,219 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.LeaderboardFragment">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-<!--        <ImageView-->
-<!--            android:id="@+id/back_btn"-->
-<!--            android:layout_width="24dp"-->
-<!--            android:layout_height="24dp"-->
-<!--            android:src="@drawable/arrow"-->
-<!--            android:layout_alignParentLeft="true"/>-->
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Leaderboard"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:padding="5dp"
-            android:layout_centerHorizontal="true"/>
-
-    </RelativeLayout>
-
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/second_user"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_marginStart="36dp"
-            android:layout_marginTop="48dp"
-            android:layout_toLeftOf="@+id/first_user"
-            android:src="@drawable/profile_img"
-            app:civ_border_color="#363F2C"
-            app:civ_border_width="2dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/secondUserName"
-            android:layout_width="90dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/second_user"
-            android:layout_toLeftOf="@+id/first_user"
-            android:ellipsize="end"
-            android:maxLines="1"
-            app:layout_constraintEnd_toEndOf="@+id/second_user"
-            app:layout_constraintStart_toStartOf="@+id/second_user"
-            app:layout_constraintTop_toBottomOf="@+id/second_user" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/first_user"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/profile_img"
-            app:civ_border_color="#363F2C"
-            app:civ_border_width="2dp"
-            app:layout_constraintEnd_toStartOf="@+id/third_user"
-            app:layout_constraintStart_toEndOf="@+id/second_user"
-            app:layout_constraintTop_toTopOf="parent" />
+                <!--        <ImageView-->
+                <!--            android:id="@+id/back_btn"-->
+                <!--            android:layout_width="24dp"-->
+                <!--            android:layout_height="24dp"-->
+                <!--            android:src="@drawable/arrow"-->
+                <!--            android:layout_alignParentLeft="true"/>-->
 
-        <TextView
-            android:id="@+id/firstUserName"
-            android:layout_width="90dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/first_user"
-            android:layout_centerHorizontal="true"
-            android:ellipsize="end"
-            android:maxLines="1"
-            app:layout_constraintEnd_toEndOf="@+id/first_user"
-            app:layout_constraintStart_toStartOf="@+id/first_user"
-            app:layout_constraintTop_toBottomOf="@+id/first_user" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/leaderboard2"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:padding="5dp"
+                    android:layout_centerHorizontal="true"/>
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/third_user"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_marginTop="48dp"
-            android:layout_marginEnd="36dp"
-            android:layout_toRightOf="@+id/first_user"
-            android:src="@drawable/profile_img"
-            app:civ_border_color="#363F2C"
-            app:civ_border_width="2dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            </RelativeLayout>
 
-        <TextView
-            android:id="@+id/thirdUserName"
-            android:layout_width="90dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/third_user"
-            android:layout_toRightOf="@+id/first_user"
-            android:ellipsize="end"
-            android:maxLines="1"
-            app:layout_constraintEnd_toEndOf="@+id/third_user"
-            app:layout_constraintStart_toStartOf="@+id/third_user"
-            app:layout_constraintTop_toBottomOf="@+id/third_user" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/secondUserRank"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:background="@drawable/rankno_bg"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="@+id/second_user"
-            app:layout_constraintEnd_toEndOf="@+id/second_user"
-            app:layout_constraintHorizontal_bias="0.55"
-            app:layout_constraintStart_toStartOf="@+id/second_user" />
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/second_user"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:layout_marginStart="36dp"
+                    app:civ_circle_background_color="@color/white"
+                    android:layout_marginTop="48dp"
+                    android:layout_toStartOf="@+id/first_user"
+                    android:src="@drawable/profile_img"
+                    app:civ_border_color="#363F2C"
+                    app:civ_border_width="2dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/firstUserRank"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:background="@drawable/rankno_bg"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="@+id/first_user"
-            app:layout_constraintEnd_toEndOf="@+id/first_user"
-            app:layout_constraintStart_toStartOf="@+id/first_user" />
+                <TextView
+                    android:id="@+id/secondUserName"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/second_user"
+                    android:layout_toStartOf="@+id/first_user"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    app:layout_constraintEnd_toEndOf="@+id/second_user"
+                    app:layout_constraintStart_toStartOf="@+id/second_user"
+                    app:layout_constraintTop_toBottomOf="@+id/second_user" />
 
-        <TextView
-            android:id="@+id/thirdUserRank"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:background="@drawable/rankno_bg"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="@+id/third_user"
-            app:layout_constraintEnd_toEndOf="@+id/third_user"
-            app:layout_constraintStart_toStartOf="@+id/third_user" />
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/first_user"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    app:civ_circle_background_color="@color/white"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/profile_img"
+                    app:civ_border_color="#363F2C"
+                    app:civ_border_width="2dp"
+                    app:layout_constraintEnd_toStartOf="@+id/third_user"
+                    app:layout_constraintStart_toEndOf="@+id/second_user"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/firstUserPoints"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@+id/firstUserName"
-            app:layout_constraintStart_toStartOf="@+id/firstUserName"
-            app:layout_constraintTop_toBottomOf="@+id/firstUserName" />
+                <TextView
+                    android:id="@+id/firstUserName"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/first_user"
+                    android:layout_centerHorizontal="true"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    app:layout_constraintEnd_toEndOf="@+id/first_user"
+                    app:layout_constraintStart_toStartOf="@+id/first_user"
+                    app:layout_constraintTop_toBottomOf="@+id/first_user" />
 
-        <TextView
-            android:id="@+id/thirdUserPoints"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@+id/thirdUserName"
-            app:layout_constraintStart_toStartOf="@+id/thirdUserName"
-            app:layout_constraintTop_toBottomOf="@+id/thirdUserName" />
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/third_user"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:layout_marginTop="48dp"
+                    android:layout_marginEnd="36dp"
+                    android:layout_toEndOf="@+id/first_user"
+                    app:civ_circle_background_color="@color/white"
+                    android:src="@drawable/profile_img"
+                    app:civ_border_color="#363F2C"
+                    app:civ_border_width="2dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/secondUserPoints"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@+id/secondUserName"
-            app:layout_constraintStart_toStartOf="@+id/secondUserName"
-            app:layout_constraintTop_toBottomOf="@+id/secondUserName" />
+                <TextView
+                    android:id="@+id/thirdUserName"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/third_user"
+                    android:layout_toEndOf="@+id/first_user"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    app:layout_constraintEnd_toEndOf="@+id/third_user"
+                    app:layout_constraintStart_toStartOf="@+id/third_user"
+                    app:layout_constraintTop_toBottomOf="@+id/third_user" />
+
+                <TextView
+                    android:id="@+id/secondUserRank"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:background="@drawable/rankno_bg"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/second_user"
+                    app:layout_constraintEnd_toEndOf="@+id/second_user"
+                    app:layout_constraintHorizontal_bias="0.55"
+                    app:layout_constraintStart_toStartOf="@+id/second_user" />
+
+                <TextView
+                    android:id="@+id/firstUserRank"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:background="@drawable/rankno_bg"
+                    android:gravity="center"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/first_user"
+                    app:layout_constraintEnd_toEndOf="@+id/first_user"
+                    app:layout_constraintStart_toStartOf="@+id/first_user" />
+
+                <TextView
+                    android:id="@+id/thirdUserRank"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:background="@drawable/rankno_bg"
+                    android:gravity="center"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/third_user"
+                    app:layout_constraintEnd_toEndOf="@+id/third_user"
+                    app:layout_constraintStart_toStartOf="@+id/third_user" />
+
+                <TextView
+                    android:id="@+id/firstUserPoints"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="@+id/firstUserName"
+                    app:layout_constraintStart_toStartOf="@+id/firstUserName"
+                    app:layout_constraintTop_toBottomOf="@+id/firstUserName" />
+
+                <TextView
+                    android:id="@+id/thirdUserPoints"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="@+id/thirdUserName"
+                    app:layout_constraintStart_toStartOf="@+id/thirdUserName"
+                    app:layout_constraintTop_toBottomOf="@+id/thirdUserName" />
+
+                <TextView
+                    android:id="@+id/secondUserPoints"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="@+id/secondUserName"
+                    app:layout_constraintStart_toStartOf="@+id/secondUserName"
+                    app:layout_constraintTop_toBottomOf="@+id/secondUserName" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp"
+                android:background="@drawable/leaderboard_list_bg">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/leaderboard_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="20dp"
-        android:background="@drawable/leaderboard_list_bg">
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loadingAnim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/loading_animation" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/leaderboard_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

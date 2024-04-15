@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,6 +15,7 @@ import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -43,7 +43,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,14 +62,10 @@ public class TaskFragment extends Fragment {
     String acceptFlag, statusFlag, accessToken, taskId;
     LinearLayout timer;
     ArrayList<TaskModel> tasks;
-    TaskModel taskModel;
-    FrameLayout container;
+    ConstraintLayout container;
     LottieAnimationView lottieAnimationView;
-
-    public TaskFragment(FrameLayout container, LottieAnimationView lottieAnimationView) {
-        // Required empty public constructor
-        this.container = container;
-        this.lottieAnimationView = lottieAnimationView;
+    private static TaskFragment instance;
+    public TaskFragment() {
     }
 
     @Override
@@ -80,10 +75,12 @@ public class TaskFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup containe, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_task, container, false);
+        View view = inflater.inflate(R.layout.fragment_task, containe, false);
 
+        container = view.findViewById(R.id.container);
+        lottieAnimationView = view.findViewById(R.id.loadingAnim);
         describeTV = view.findViewById(R.id.describeTV);
         taskTitleTV = view.findViewById(R.id.taskTitleTV);
         timelineTV = view.findViewById(R.id.timelineTV);
@@ -177,16 +174,13 @@ public class TaskFragment extends Fragment {
         container.setVisibility(View.INVISIBLE);
         lottieAnimationView.setVisibility(View.VISIBLE);
 
-        String apiKey = "https://wellbeing-backend-blush.vercel.app/api/v1/usertaskinfo/get-task";
+        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/usertaskinfo/get-task";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
                     if (response != null) {
-
-                        String resMsg = response.getString("message");
-                        Toast.makeText(getContext(), resMsg, Toast.LENGTH_SHORT).show();
                         JSONObject dataObject = (JSONObject) response.getJSONArray("data").get(0);
                         TaskModel taskModel = new TaskModel();
 
@@ -324,7 +318,7 @@ public class TaskFragment extends Fragment {
         container.setVisibility(View.INVISIBLE);
         lottieAnimationView.setVisibility(View.VISIBLE);
 
-        String apiKey = "https://wellbeing-backend-blush.vercel.app/api/v1/usertaskinfo/accept-task";
+        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/usertaskinfo/accept-task";
 
         final HashMap<String, String> params = new HashMap<>();
         params.put("taskInfo", taskId);
@@ -445,8 +439,7 @@ public class TaskFragment extends Fragment {
     public void getTaskCurrentStatus(){
         container.setVisibility(View.INVISIBLE);
         lottieAnimationView.setVisibility(View.VISIBLE);
-
-        String apiKey = "https://wellbeing-backend-blush.vercel.app/api/v1/usertaskinfo/get-status";
+        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/usertaskinfo/get-status";
 
         String _id = sharedPreferenceClass.getValue_string("acceptedTaskId");
         final HashMap<String, String> params = new HashMap<>();
@@ -459,8 +452,13 @@ public class TaskFragment extends Fragment {
                     if (response != null) {
                         JSONObject dataObject = response.getJSONObject("data");
                         String status = dataObject.getString("status");
-
+                        Log.d("currentTaskStatusData : ", String.valueOf(dataObject));
                         if (status.equals("incompleted")){
+                            sharedPreferenceClass.setValue_string("statusFlag", "incompleted");
+                        }
+
+                        String time = dataObject.getString("remainingTime");
+                        if (time.contains("-")){
                             sharedPreferenceClass.setValue_string("statusFlag", "incompleted");
                         }
 
@@ -483,7 +481,7 @@ public class TaskFragment extends Fragment {
                         taskCreatedUserName.setText(dataObject.getJSONObject("taskInfo").getJSONObject("createdBy").getString("userName"));
                         timelineTV.setText(String.valueOf(dataObject.getJSONObject("taskInfo").getInt("timeToComplete")));
 
-                        Log.d("currentTaskStatusData : ", String.valueOf(dataObject));
+
                         container.setVisibility(View.VISIBLE);
                         lottieAnimationView.setVisibility(View.INVISIBLE);
                     } else {

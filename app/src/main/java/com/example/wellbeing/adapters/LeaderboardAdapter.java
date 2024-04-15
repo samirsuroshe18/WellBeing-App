@@ -1,7 +1,6 @@
 package com.example.wellbeing.adapters;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.wellbeing.R;
 import com.example.wellbeing.models.LeaderboardModel;
-import com.example.wellbeing.models.PostModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -32,8 +30,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.leaderboard_list_recy_layout, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view);
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     @Override
@@ -52,7 +49,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder{
         TextView rankNo, userName, wellpoints;
         CircleImageView profilePicture;
         public ViewHolder(@NonNull View itemView) {

@@ -29,7 +29,6 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.wellbeing.CommentActivity;
-import com.example.wellbeing.HomeActivity;
 import com.example.wellbeing.R;
 import com.example.wellbeing.models.PostModel;
 import com.squareup.picasso.Picasso;
@@ -39,20 +38,20 @@ import org.json.JSONObject;
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class PostsAdapter extends RecyclerView.Adapter {
-
+public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<PostModel> postModel;
     Context context;
     int IMAGE_VIEW_TYPE = 0;
@@ -84,9 +83,7 @@ public class PostsAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
         posts = postModel.get(position);
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -98,11 +95,13 @@ public class PostsAdapter extends RecyclerView.Adapter {
         if (holder.getClass() == ImageViewHolder.class) {
 
             try {
-                Picasso.get().load(posts.getUserProfile()).placeholder(R.drawable.avatar).into(((ImageViewHolder) holder).user_profile);
+                Picasso.get().load(posts.getUserProfile()).into(((ImageViewHolder) holder).user_profile);
                 Picasso.get().load(posts.getMedia()).into(((ImageViewHolder) holder).post_image);
                 ((ImageViewHolder) holder).user_name.setText(posts.getUserName());
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // Set time zone to UTC
                 Date date = sdf.parse(posts.getCreatedAt());
+                Log.d("onBindViewHolder: ", String.valueOf(date));
                 PrettyTime prettyTime = new PrettyTime();
                 ((ImageViewHolder) holder).time.setText(prettyTime.format(date));
                 ((ImageViewHolder) holder).description.setText(posts.getDescription());
@@ -137,7 +136,6 @@ public class PostsAdapter extends RecyclerView.Adapter {
                                     // Handle the case where "accessToken" key is not present in the JSON response
                                     Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                                 }
-
                             }catch (Exception e){
                                 e.printStackTrace();
                             }
@@ -225,7 +223,7 @@ public class PostsAdapter extends RecyclerView.Adapter {
                             try {
                                 if (response != null) {
                                     JSONObject dataObject = response.getJSONObject("data");
-                                    currentPost.setTotalDislikes(dataObject.getInt("totalDislikes"));
+                                    currentPost.setTotalDislikes(dataObject.getInt("totalDislike"));
                                     postModel.set(holder.getAdapterPosition(), currentPost);
                                     notifyItemChanged(holder.getAdapterPosition());
                                     String resMsg = response.getString("message");
@@ -478,7 +476,7 @@ public class PostsAdapter extends RecyclerView.Adapter {
                             try {
                                 if (response != null) {
                                     JSONObject dataObject = response.getJSONObject("data");
-                                    currentPost.setTotalDislikes(dataObject.getInt("totalDislikes"));
+                                    currentPost.setTotalDislikes(dataObject.getInt("totalDislike"));
                                     postModel.set(holder.getAdapterPosition(), currentPost);
                                     notifyItemChanged(holder.getAdapterPosition());
                                     String resMsg = response.getString("message");
@@ -487,7 +485,6 @@ public class PostsAdapter extends RecyclerView.Adapter {
                                     // Handle the case where "accessToken" key is not present in the JSON response
                                     Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                                 }
-
                             }catch (Exception e){
                                 e.printStackTrace();
                             }
@@ -576,7 +573,6 @@ public class PostsAdapter extends RecyclerView.Adapter {
                 }
             });
 
-
         }
 
     }
@@ -597,7 +593,7 @@ public class PostsAdapter extends RecyclerView.Adapter {
         return postModel.size();
     }
 
-    public class ImageViewHolder extends RecyclerView.ViewHolder {
+    public static class ImageViewHolder extends RecyclerView.ViewHolder {
         CircleImageView user_profile;
         TextView user_name, time, description, like_count, dislike_count, comment_count;
         ImageView post_image, like_icon, dislike_icon, comment_icon;
@@ -619,7 +615,7 @@ public class PostsAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public class VideoViewHolder extends RecyclerView.ViewHolder {
+    public static class VideoViewHolder extends RecyclerView.ViewHolder {
 
         CircleImageView user_profile;
         TextView user_name, time, description, like_count, dislike_count, comment_count, duration;
@@ -642,8 +638,6 @@ public class PostsAdapter extends RecyclerView.Adapter {
             play = itemView.findViewById(R.id.play);
             pause = itemView.findViewById(R.id.pause);
             duration = itemView.findViewById(R.id.duration);
-
-
         }
     }
 

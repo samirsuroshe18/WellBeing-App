@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".PostActivity">
 
     <EditText
@@ -12,10 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
+        android:paddingHorizontal="10dp"
+        android:layout_marginTop="10dp"
         android:minHeight="50dp"
         android:background="@drawable/img_round_shape_bg"
         android:layout_alignParentTop="true"
-        android:hint="write about how did you complete a task.."/>
+        android:hint="@string/write_about_how_did_you_complete_a_task"
+        android:autofillHints="" />
 
     <ImageView
         android:id="@+id/image"
@@ -23,7 +25,8 @@
         android:layout_height="350dp"
         android:scaleType="centerCrop"
         android:layout_below="@+id/description_et"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        android:contentDescription="@string/upload_post_image" />
 
     <VideoView
         android:id="@+id/video"
@@ -36,7 +39,6 @@
         android:id="@+id/container1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:padding="13dp"
         android:layout_alignParentBottom="true">
 
@@ -45,28 +47,34 @@
             android:id="@+id/image_upload"
             android:layout_width="32dp"
             android:layout_height="32dp"
+            app:tint="?attr/colorOnSurface"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/video_upload"
-            android:src="@drawable/image_icon" />
+            android:layout_toStartOf="@+id/video_upload"
+            android:src="@drawable/image_icon"
+            android:contentDescription="@string/uploadIV" />
 
         <ImageView
             android:id="@+id/video_upload"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:src="@drawable/video_icon"
-            android:layout_marginLeft="5dp"
-            android:layout_toLeftOf="@+id/upload_post"
-            android:layout_centerVertical="true"/>
+            app:tint="?attr/colorOnSurface"
+            android:layout_marginStart="5dp"
+            android:layout_toStartOf="@+id/upload_post"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/uploadVV" />
 
         <ImageView
             android:id="@+id/upload_post"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/send"/>
+            app:tint="?attr/colorOnSurface"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/send"
+            android:contentDescription="@string/uploadBtn" />
 
     </RelativeLayout>
 

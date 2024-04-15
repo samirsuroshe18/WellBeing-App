@@ -2,6 +2,7 @@ package com.example.wellbeing;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -39,6 +41,7 @@ import java.util.Map;
 
 public class PostActivity extends AppCompatActivity {
     private static final int gallery_pic_id = 100;
+    Uri imgUri, videoUri;
     private static final int gallery_vid_id = 200;
     public static final int TIMEOUT_MS = 10000;
     public static final int MAX_RETRIES = 2;
@@ -47,9 +50,10 @@ public class PostActivity extends AppCompatActivity {
     EditText descriptionET;
     ImageView image, send, imageUpload, videoUpload;
     VideoView video;
-    String task, description, multiMedia, mediaType, accessToken, fileName, fileType;
+    String task, description, mediaType, accessToken, fileName, fileType;
     SharedPreferenceClass sharedPreferenceClass;
     ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,8 +75,15 @@ public class PostActivity extends AppCompatActivity {
         imageUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && android.os.ext.SdkExtensions.getExtensionVersion(android.os.Build.VERSION_CODES.R) >= 2) {
-                    Intent gallery_intent = new Intent(MediaStore.ACTION_PICK_IMAGES);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    // For Android 11 and above, use the new storage access framework
+                    Intent gallery_intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    gallery_intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    gallery_intent.setType("image/*");
+                    startActivityForResult(gallery_intent, gallery_pic_id);
+                } else {
+                    // For Android 9 and below, use the older ACTION_PICK intent
+                    Intent gallery_intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     startActivityForResult(gallery_intent, gallery_pic_id);
                 }
             }
@@ -81,9 +92,18 @@ public class PostActivity extends AppCompatActivity {
         videoUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
-                intent.setType("video/*");
-                startActivityForResult(intent, gallery_vid_id);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    // For Android 11 and above, use the new storage access framework
+                    Intent gallery_intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    gallery_intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    gallery_intent.setType("video/*");
+                    startActivityForResult(gallery_intent, gallery_vid_id);
+                } else {
+                    // For Android 10 and below, use the older ACTION_PICK intent
+                    Intent gallery_intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+                    gallery_intent.setType("video/*");
+                    startActivityForResult(gallery_intent, gallery_vid_id);
+                }
             }
         });
 
@@ -91,7 +111,13 @@ public class PostActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 description = descriptionET.getText().toString();
-                uploadPost();
+                if (description.isEmpty()) {
+                    Toast.makeText(PostActivity.this, "Description is required", Toast.LENGTH_SHORT).show();
+                } else if (imgUri == null && videoUri == null) {
+                    Toast.makeText(PostActivity.this, "Please provide media reference", Toast.LENGTH_SHORT).show();
+                } else {
+                    uploadPost();
+                }
             }
         });
 
@@ -101,46 +127,50 @@ public class PostActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode==gallery_pic_id){
-            fileName = FileUtils.getFileName(this, data.getData());
-            fileType = FileUtils.getMimeType(this, data.getData());
-            Toast.makeText(this, fileType, Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, fileName, Toast.LENGTH_SHORT).show();
-            try {
-                multiMediaByteArray = UriToByteArrayConverter.convertUriToByteArray(PostActivity.this, data.getData());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-//            if you want to see the size of the file
-            long sizeInBytes = multiMediaByteArray.length;
-            double sizeInKB = sizeInBytes / 1024.0;
-            double sizeInMB = sizeInKB / 1024.0;
-            video.setVisibility(View.INVISIBLE);
-            image.setVisibility(View.VISIBLE);
+        if (requestCode == gallery_pic_id) {
+            if (resultCode == RESULT_OK) {
+                try {
+                    imgUri = data.getData();
+                    fileName = FileUtils.getFileName(this, imgUri);
+                    fileType = FileUtils.getMimeType(this, imgUri);
+                    multiMediaByteArray = UriToByteArrayConverter.convertUriToByteArray(PostActivity.this, imgUri);
+                    video.setVisibility(View.INVISIBLE);
+                    image.setVisibility(View.VISIBLE);
+                    image.setImageURI(imgUri);
 //            Bitmap gallery_photo = (Bitmap) data.getExtras().get("data");
-            image.setImageURI(data.getData());
-            mediaType = "image";
+                    mediaType = "image";
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+//            if you want to see the size of the file
+                long sizeInBytes = multiMediaByteArray.length;
+                double sizeInKB = sizeInBytes / 1024.0;
+                double sizeInMB = sizeInKB / 1024.0;
+            }
+
         }
 
-        if (requestCode==gallery_vid_id){
-            fileName = FileUtils.getFileName(this, data.getData());
-            fileType = FileUtils.getMimeType(this, data.getData());
-            Toast.makeText(this, fileType, Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, fileName, Toast.LENGTH_SHORT).show();
-            try {
-                multiMediaByteArray = UriToByteArrayConverter.convertUriToByteArray(PostActivity.this, data.getData());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        if (requestCode == gallery_vid_id) {
+            if (resultCode == RESULT_OK) {
+
+                try {
+                    videoUri = data.getData();
+                    fileName = FileUtils.getFileName(this, videoUri);
+                    fileType = FileUtils.getMimeType(this, videoUri);
+                    multiMediaByteArray = UriToByteArrayConverter.convertUriToByteArray(PostActivity.this, videoUri);
+                    mediaType = "video";
+                    video.setVisibility(View.VISIBLE);
+                    image.setVisibility(View.INVISIBLE);
+                    video.setVideoURI(videoUri);
+                    video.start();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-            mediaType = "video";
-            video.setVisibility(View.VISIBLE);
-            image.setVisibility(View.INVISIBLE);
-            video.setVideoURI(data.getData());
-            video.start();
         }
     }
 
-    public void uploadPost(){
+    public void uploadPost() {
         progressDialog.show();
         String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/upload/upload-post";
         VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, apiKey,
@@ -210,13 +240,13 @@ public class PostActivity extends AppCompatActivity {
                                     errorMessage = "Resource not found";
                                     progressDialog.dismiss();
                                 } else if (networkResponse.statusCode == 401) {
-                                    errorMessage = message+" Please login again";
+                                    errorMessage = message + " Please login again";
                                     progressDialog.dismiss();
                                 } else if (networkResponse.statusCode == 400) {
-                                    errorMessage = message+ " Check your inputs";
+                                    errorMessage = message + " Check your inputs";
                                     progressDialog.dismiss();
                                 } else if (networkResponse.statusCode == 500) {
-                                    errorMessage = message+" Something is getting wrong";
+                                    errorMessage = message + " Something is getting wrong";
                                     progressDialog.dismiss();
                                 }
                             } catch (JSONException e) {
@@ -228,8 +258,7 @@ public class PostActivity extends AppCompatActivity {
                         error.printStackTrace();
                         progressDialog.dismiss();
                     }
-                })
-        {
+                }) {
             @Override
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
@@ -237,7 +266,7 @@ public class PostActivity extends AppCompatActivity {
                 return params;
             }
 
-            @Nullable
+            @NonNull
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> text = new HashMap<>();
@@ -250,7 +279,7 @@ public class PostActivity extends AppCompatActivity {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer "+accessToken);
+                headers.put("Authorization", "Bearer " + accessToken);
                 return headers;
             }
         };

@@ -1,10 +1,7 @@
 package com.example.wellbeing.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +10,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
@@ -28,8 +31,12 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.wellbeing.HomeActivity;
+import com.example.wellbeing.LoginActivity;
 import com.example.wellbeing.R;
+import com.example.wellbeing.RegisterActivity;
+import com.example.wellbeing.UtilsServices.ConnectivityUtils;
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
+import com.example.wellbeing.UtilsServices.VolleyMultipartRequest;
 import com.example.wellbeing.models.UserModel;
 import com.squareup.picasso.Picasso;
 
@@ -37,15 +44,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import de.hdodenhof.circleimageview.CircleImageView;
+import java.util.Objects;
 
 public class ProfileFragment extends Fragment {
     public static final int TIMEOUT_MS = 10000;
@@ -56,30 +61,28 @@ public class ProfileFragment extends Fragment {
     SharedPreferenceClass sharedPreferenceClass;
     ImageView userProfileCV;
     TextView nameTV, emailTV, userNameTV, dateTV, wellpointTV, rankTV, completedTaskTV, successRateTV;
-    FrameLayout container;
+    AppCompatButton logout;
+    ConstraintLayout container;
     LottieAnimationView lottieAnimationView;
-    public ProfileFragment(FrameLayout container, LottieAnimationView lottieAnimationView) {
-        // Required empty public constructor
-        this.container = container;
-        this.lottieAnimationView = lottieAnimationView;
+    public ProfileFragment() {
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        userInfo = new ArrayList<>();
-        sharedPreferenceClass = new SharedPreferenceClass(requireContext());
-        accessToken = sharedPreferenceClass.getValue_string("accessToken");
-
-        getUserInfo();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup contain, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, contain, false);
 
+        userInfo = new ArrayList<>();
+        sharedPreferenceClass = new SharedPreferenceClass(requireContext());
+        accessToken = sharedPreferenceClass.getValue_string("accessToken");
+        container = view.findViewById(R.id.container);
+        lottieAnimationView = view.findViewById(R.id.loadingAnim);
         nameTV = view.findViewById(R.id.nameTV);
         userProfileCV = view.findViewById(R.id.profilePictureCV);
         emailTV = view.findViewById(R.id.emailTV);
@@ -89,6 +92,14 @@ public class ProfileFragment extends Fragment {
         rankTV = view.findViewById(R.id.rankTV);
         completedTaskTV = view.findViewById(R.id.completedTaskTV);
         successRateTV = view.findViewById(R.id.successRateTV);
+        logout = view.findViewById(R.id.logoutBtn);
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                logoutUser();
+            }
+        });
 
         if (!userInfo.isEmpty()){
             Picasso.get().load(userInfo.get(userInfo.size()-1).getProfilePicture()).into(userProfileCV);
@@ -102,13 +113,18 @@ public class ProfileFragment extends Fragment {
             successRateTV.setText(userInfo.get(userInfo.size()-1).getSuccessRate());
         }
 
+        if (ConnectivityUtils.isConnectedToInternet(requireContext())) {
+            getUserInfo();
+        } else {
+            Toast.makeText(getContext(), "Please check your internet connection", Toast.LENGTH_SHORT).show();
+        }
+
         return  view;
     }
 
     public void getUserInfo(){
         container.setVisibility(View.INVISIBLE);
         lottieAnimationView.setVisibility(View.VISIBLE);
-
         String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/get-userinfo";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
@@ -116,10 +132,6 @@ public class ProfileFragment extends Fragment {
             public void onResponse(JSONObject response) {
                 try {
                     if (response != null) {
-
-                        String resMsg = response.getString("message");
-                        Toast.makeText(getContext(), resMsg, Toast.LENGTH_SHORT).show();
-
                         JSONObject dataObject = (JSONObject) response.getJSONArray("data").get(0);
                         UserModel userModel = new UserModel();
 
@@ -131,14 +143,14 @@ public class ProfileFragment extends Fragment {
 
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH);
                         Date createDate = dateFormat.parse(dataObject.getString("createdAt"));
-
                         SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
                         String formattedDate = outputFormat.format(createDate);
+                        userModel.setCreatedAt(formattedDate);
 
-                        userModel.setCreatedAt(String.valueOf(formattedDate));
                         userModel.setWellpoints(String.valueOf(dataObject.getJSONObject("wellpoints").getInt("wellpoints")));
                         userModel.setSuccessRate(String.valueOf(dataObject.getInt("successRate")));
-                        userModel.setRank(String.valueOf(dataObject.getInt("rank")+1));
+                        int rank = dataObject.getInt("rank")+1;
+                        userModel.setRank(String.valueOf(rank));
 
                         userInfo.add(userModel);
                         container.setVisibility(View.VISIBLE);
@@ -153,6 +165,8 @@ public class ProfileFragment extends Fragment {
                         rankTV.setText(userInfo.get(userInfo.size()-1).getRank());
                         completedTaskTV.setText(userInfo.get(userInfo.size()-1).getTask_completed());
                         successRateTV.setText(userInfo.get(userInfo.size()-1).getSuccessRate());
+
+                        Log.d( "profile Response : ", String.valueOf(dataObject));
                     } else {
                         // Handle the case where "accessToken" key is not present in the JSON response
                         Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
@@ -234,6 +248,114 @@ public class ProfileFragment extends Fragment {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer "+accessToken);
+                return headers;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(requireContext());
+        requestQueue.add(jsonObjectRequest);
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                TIMEOUT_MS,
+                MAX_RETRIES,
+                BACKOFF_MULT
+        ));
+    }
+
+    public void logoutUser(){
+        container.setVisibility(View.INVISIBLE);
+        lottieAnimationView.setVisibility(View.VISIBLE);
+        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/logout";
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    String resMsg;
+                    if (response != null) {
+                        resMsg = response.getString("message");
+                        Toast.makeText(getContext(), resMsg, Toast.LENGTH_SHORT).show();
+                        sharedPreferenceClass.remove("accessToken");
+                        startActivity(new Intent(getContext(), LoginActivity.class));
+                        requireActivity().finishAffinity();
+                        container.setVisibility(View.VISIBLE);
+                        lottieAnimationView.setVisibility(View.INVISIBLE);
+                    } else {
+                        // Handle the case where "accessToken" key is not present in the JSON response
+                        Toast.makeText(getContext(), "No accessToken found in the response", Toast.LENGTH_SHORT).show();
+                        container.setVisibility(View.VISIBLE);
+                        lottieAnimationView.setVisibility(View.INVISIBLE);
+                    }
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                    container.setVisibility(View.VISIBLE);
+                    lottieAnimationView.setVisibility(View.INVISIBLE);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                NetworkResponse networkResponse = error.networkResponse;
+                String errorMessage = "Unknown error";
+                if (networkResponse == null) {
+                    if (error.getClass().equals(TimeoutError.class)) {
+                        errorMessage = "Request timeout";
+                        container.setVisibility(View.VISIBLE);
+                        lottieAnimationView.setVisibility(View.INVISIBLE);
+                    } else if (error.getClass().equals(NoConnectionError.class)) {
+                        errorMessage = "Failed to connect server";
+                        container.setVisibility(View.VISIBLE);
+                        lottieAnimationView.setVisibility(View.INVISIBLE);
+                    }
+                } else {
+                    String result = null;
+                    try {
+                        result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
+                        Log.d("Error : ", result);
+                        container.setVisibility(View.VISIBLE);
+                        lottieAnimationView.setVisibility(View.INVISIBLE);
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+                    try {
+                        JSONObject response = new JSONObject(result);
+                        String status = response.getString("status");
+                        String message = response.getString("message");
+
+                        Log.e("Error Status", status);
+                        Log.e("Error Message", message);
+
+                        if (networkResponse.statusCode == 404) {
+                            errorMessage = "Resource not found";
+                        } else if (networkResponse.statusCode == 401) {
+                            errorMessage = message+" Unauthorized";
+                        } else if (networkResponse.statusCode == 400) {
+                            errorMessage = message+ "Bad request";
+                        } else if (networkResponse.statusCode == 500) {
+                            errorMessage = message+" Something is getting wrong";
+                        }
+                        container.setVisibility(View.VISIBLE);
+                        lottieAnimationView.setVisibility(View.INVISIBLE);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        container.setVisibility(View.VISIBLE);
+                        lottieAnimationView.setVisibility(View.INVISIBLE);
+                    }
+                }
+                Log.i("Error", errorMessage);
+                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                container.setVisibility(View.VISIBLE);
+                lottieAnimationView.setVisibility(View.INVISIBLE);
+                error.printStackTrace();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
                 headers.put("Authorization", "Bearer "+accessToken);
                 return headers;
             }

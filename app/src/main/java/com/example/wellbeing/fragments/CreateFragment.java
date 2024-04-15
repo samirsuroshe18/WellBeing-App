@@ -1,12 +1,11 @@
 package com.example.wellbeing.fragments;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +15,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -27,9 +30,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
-import com.example.wellbeing.PostActivity;
 import com.example.wellbeing.R;
-import com.example.wellbeing.RegisterActivity;
 import com.example.wellbeing.UtilsServices.FileUtils;
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
 import com.example.wellbeing.UtilsServices.UriToByteArrayConverter;
@@ -50,6 +51,7 @@ public class CreateFragment extends Fragment {
     public static final int TIMEOUT_MS = 10000;
     public static final int MAX_RETRIES = 2;
     public static final float BACKOFF_MULT = 2.0f;
+    Uri imgUri, videoUri;
     byte[] multiMediaByteArray;
     EditText taskTitle, taskDescription, taskTime;
     ImageView image, send, imageUpload, videoUpload;
@@ -74,7 +76,7 @@ public class CreateFragment extends Fragment {
         taskTitle = view.findViewById(R.id.taskTitle);
         taskDescription = view.findViewById(R.id.taskDescription);
         taskTime = view.findViewById(R.id.taskTime);
-        sharedPreferenceClass = new SharedPreferenceClass(getContext());
+        sharedPreferenceClass = new SharedPreferenceClass(requireContext());
         accessToken = sharedPreferenceClass.getValue_string("accessToken");
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setTitle("Create Task");
@@ -83,8 +85,15 @@ public class CreateFragment extends Fragment {
         imageUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && android.os.ext.SdkExtensions.getExtensionVersion(android.os.Build.VERSION_CODES.R) >= 2) {
-                    Intent gallery_intent = new Intent(MediaStore.ACTION_PICK_IMAGES);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    // For Android 11 and above, use the new storage access framework
+                    Intent gallery_intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    gallery_intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    gallery_intent.setType("image/*");
+                    startActivityForResult(gallery_intent, gallery_pic_id);
+                } else {
+                    // For Android 9 and below, use the older ACTION_PICK intent
+                    Intent gallery_intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     startActivityForResult(gallery_intent, gallery_pic_id);
                 }
             }
@@ -93,9 +102,18 @@ public class CreateFragment extends Fragment {
         videoUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
-                intent.setType("video/*");
-                startActivityForResult(intent, gallery_vid_id);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    // For Android 11 and above, use the new storage access framework
+                    Intent gallery_intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    gallery_intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    gallery_intent.setType("video/*");
+                    startActivityForResult(gallery_intent, gallery_vid_id);
+                } else {
+                    // For Android 10 and below, use the older ACTION_PICK intent
+                    Intent gallery_intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+                    gallery_intent.setType("video/*");
+                    startActivityForResult(gallery_intent, gallery_vid_id);
+                }
             }
         });
 
@@ -105,10 +123,15 @@ public class CreateFragment extends Fragment {
                 title = taskTitle.getText().toString();
                 description = taskDescription.getText().toString();
                 time = taskTime.getText().toString();
-                uploadTask();
+                if (title.isEmpty() || description.isEmpty() || time.isEmpty()) {
+                    Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_SHORT).show();
+                } else if (imgUri == null && videoUri == null) {
+                    Toast.makeText(getContext(), "Please provide media reference", Toast.LENGTH_SHORT).show();
+                } else {
+                    uploadTask();
+                }
             }
         });
-
         return view;
     }
 
@@ -117,35 +140,51 @@ public class CreateFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode==gallery_pic_id){
-            fileName = FileUtils.getFileName(getContext(), data.getData());
-            try {
-                multiMediaByteArray = UriToByteArrayConverter.convertUriToByteArray(getContext(), data.getData());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            if (resultCode == RESULT_OK){
+                imgUri = data.getData();
+                if (imgUri != null){
+                    try {
+                        fileName = FileUtils.getFileName(getContext(), imgUri);
+                        multiMediaByteArray = UriToByteArrayConverter.convertUriToByteArray(requireContext(), imgUri);
+                        video.setVisibility(View.INVISIBLE);
+                        image.setVisibility(View.VISIBLE);
+                        image.setImageURI(imgUri);
+                        mediaType = "image";
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
 //            if you want to see the size of the file
-            long sizeInBytes = multiMediaByteArray.length;
-            double sizeInKB = sizeInBytes / 1024.0;
-            double sizeInMB = sizeInKB / 1024.0;
-            video.setVisibility(View.INVISIBLE);
-            image.setVisibility(View.VISIBLE);
+                    long sizeInBytes = multiMediaByteArray.length;
+                    double sizeInKB = sizeInBytes / 1024.0;
+                    double sizeInMB = sizeInKB / 1024.0;
+
 //            Bitmap gallery_photo = (Bitmap) data.getExtras().get("data");
-            image.setImageURI(data.getData());
-            mediaType = "image";
+
+                }else {
+                    Toast.makeText(getContext(), "Please Select an image", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
 
         if (requestCode==gallery_vid_id){
-            fileName = FileUtils.getFileName(getContext(), data.getData());
-            try {
-                multiMediaByteArray = UriToByteArrayConverter.convertUriToByteArray(getContext(), data.getData());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (resultCode == RESULT_OK){
+                videoUri = data.getData();
+                if (videoUri!=null){
+                    fileName = FileUtils.getFileName(getContext(), videoUri);
+                    try {
+                        multiMediaByteArray = UriToByteArrayConverter.convertUriToByteArray(requireContext(), videoUri);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    mediaType = "video";
+                    video.setVisibility(View.VISIBLE);
+                    image.setVisibility(View.INVISIBLE);
+                    video.setVideoURI(data.getData());
+                    video.start();
+                }else {
+                    Toast.makeText(getContext(), "Please Select an image", Toast.LENGTH_SHORT).show();
+                }
             }
-            mediaType = "video";
-            video.setVisibility(View.VISIBLE);
-            image.setVisibility(View.INVISIBLE);
-            video.setVideoURI(data.getData());
-            video.start();
         }
     }
 
@@ -236,7 +275,7 @@ public class CreateFragment extends Fragment {
                 return params;
             }
 
-            @Nullable
+            @NonNull
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> text = new HashMap<>();

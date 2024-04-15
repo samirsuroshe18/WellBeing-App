@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,12 +23,10 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.wellbeing.UtilsServices.FileUtils;
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
@@ -39,9 +38,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -53,7 +53,7 @@ public class RegisterActivity extends AppCompatActivity {
     TextView mov_to_logIn;
     EditText email_editText, name_editText, pass_editText;
     Button sign_up_btn;
-    String name, email, password, accessToken, refreshToken, resMsg, fileName, fileType;
+    String name, email, password, accessToken, refreshToken, fileName, fileType;
     SharedPreferenceClass sharedPreference;
     ProgressDialog progressDialog;
     ImageView plusIconIv;
@@ -81,8 +81,15 @@ public class RegisterActivity extends AppCompatActivity {
         plusIconIv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && android.os.ext.SdkExtensions.getExtensionVersion(android.os.Build.VERSION_CODES.R) >= 2) {
-                    Intent gallery_intent = new Intent(MediaStore.ACTION_PICK_IMAGES);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    // For Android 11 and above, use the new storage access framework
+                    Intent gallery_intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    gallery_intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    gallery_intent.setType("image/*");
+                    startActivityForResult(gallery_intent, gallery_pic_id);
+                } else {
+                    // For Android 9 and below, use the older ACTION_PICK intent
+                    Intent gallery_intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     startActivityForResult(gallery_intent, gallery_pic_id);
                 }
             }
@@ -99,15 +106,20 @@ public class RegisterActivity extends AppCompatActivity {
         sign_up_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String regex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+                Pattern pattern = Pattern.compile(regex);
                 name = name_editText.getText().toString();
                 email = email_editText.getText().toString();
                 password = pass_editText.getText().toString();
-                if(selectedImageUri == null){
-                    Toast.makeText(RegisterActivity.this, "Please select your profile", Toast.LENGTH_SHORT).show();
-                } else if (name.isEmpty() && email.isEmpty() && password.isEmpty()) {
+                Matcher matcher = pattern.matcher(email);
+                if (name.isEmpty() && email.isEmpty() && password.isEmpty()) {
                     Toast.makeText(RegisterActivity.this, "All fields are required!!", Toast.LENGTH_SHORT).show();
-                } else {
-                    registerUser(view);
+                }else if(selectedImageUri == null){
+                    Toast.makeText(RegisterActivity.this, "Please select your profile", Toast.LENGTH_SHORT).show();
+                } else if (!matcher.matches()) {
+                    Toast.makeText(RegisterActivity.this, "Invalid email", Toast.LENGTH_SHORT).show();
+                }else {
+                    registerUser();
                 }
             }
         });
@@ -119,23 +131,26 @@ public class RegisterActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode==gallery_pic_id){
-            assert data != null;
-            selectedImageUri = data.getData();
-            if (selectedImageUri!=null){
-                fileName = FileUtils.getFileName(this, selectedImageUri);
-                fileType = FileUtils.getMimeType(this, selectedImageUri);
-                try {
-                    multiMediaByteArray = UriToByteArrayConverter.convertUriToByteArray(RegisterActivity.this, selectedImageUri);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+            if (resultCode == RESULT_OK){
+                selectedImageUri = data.getData();
+                if (selectedImageUri!=null){
+                    try {
+                        fileName = FileUtils.getFileName(this, selectedImageUri);
+                        fileType = FileUtils.getMimeType(this, selectedImageUri);
+                        multiMediaByteArray = UriToByteArrayConverter.convertUriToByteArray(RegisterActivity.this, selectedImageUri);
+                        circleImageView.setImageURI(selectedImageUri);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }else {
+                    Toast.makeText(this, "Please Select image", Toast.LENGTH_SHORT).show();
                 }
-                circleImageView.setImageURI(data.getData());
             }
         }
     }
 
 
-    private void registerUser(View view) {
+    private void registerUser() {
         progressDialog.show();
         String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/register";
 
@@ -147,7 +162,7 @@ public class RegisterActivity extends AppCompatActivity {
                         JSONObject result = null;
                         try {
                             result = new JSONObject(resultResponse);
-                            String status = result.getString("statusCode");
+                            String status = result.getString("status");
                             String message = result.getString("message");
                             if (status.equals("200")) {
                                 // tell everybody you have succeed upload image and post strings
@@ -155,10 +170,10 @@ public class RegisterActivity extends AppCompatActivity {
                                 refreshToken = result.getJSONObject("data").getString("refreshToken");
                                 sharedPreference.setValue_string("accessToken", accessToken);
                                 sharedPreference.setValue_string("refreshToken", refreshToken);
-                                startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
-                                finish();
                                 Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
+                                startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
+                                finish();
                             } else {
                                 Log.i("Unexpected", message);
                                 progressDialog.dismiss();
@@ -177,8 +192,10 @@ public class RegisterActivity extends AppCompatActivity {
                         if (networkResponse == null) {
                             if (error.getClass().equals(TimeoutError.class)) {
                                 errorMessage = "Request timeout";
+                                progressDialog.dismiss();
                             } else if (error.getClass().equals(NoConnectionError.class)) {
                                 errorMessage = "Failed to connect server";
+                                progressDialog.dismiss();
                             }
                         } else {
                             String result = null;
@@ -199,21 +216,26 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 if (networkResponse.statusCode == 404) {
                                     errorMessage = "Resource not found";
+                                    progressDialog.dismiss();
                                 } else if (networkResponse.statusCode == 401) {
                                     errorMessage = message+" Unauthorized";
+                                    progressDialog.dismiss();
                                 } else if (networkResponse.statusCode == 400) {
                                     errorMessage = message+ "Bad request";
+                                    progressDialog.dismiss();
                                 } else if (networkResponse.statusCode == 500) {
                                     errorMessage = message+" Something is getting wrong";
+                                    progressDialog.dismiss();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                progressDialog.dismiss();
                             }
                         }
                         Log.i("Error", errorMessage);
                         Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                         error.printStackTrace();
-
+                        progressDialog.dismiss();
                     }
                 }) {
             @Override
@@ -223,7 +245,7 @@ public class RegisterActivity extends AppCompatActivity {
                 return params;
             }
 
-            @Nullable
+            @NonNull
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> text = new HashMap<>();

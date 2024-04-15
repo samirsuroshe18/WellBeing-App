@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="5dp"
-    android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
@@ -15,13 +14,14 @@
         android:layout_alignParentTop="true">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:id="@+id/user_profile"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/profile_img"
+            app:civ_circle_background_color="@color/white"
             app:civ_border_width="1dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
             app:civ_border_color="#FF323131"
             android:layout_gravity="center_vertical"/>
 
@@ -36,8 +36,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="Samir Suroshe"
-                android:textColor="@color/black"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -46,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="10 s"
-                android:textSize="16dp"/>
+                android:textSize="16sp"/>
 
         </LinearLayout>
 
@@ -62,7 +61,7 @@
         android:layout_below="@+id/linearLayout1"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="5dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:paddingVertical="5dp"
         android:ellipsize="end"
         android:maxLines="5"
@@ -79,12 +78,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="10"
-        android:textSize="25dp"
-        android:textColor="@color/white"
+        android:textSize="25sp"
         android:textStyle="bold"
         android:layout_above="@+id/line"
-        android:layout_toLeftOf="@+id/play"
-        android:layout_marginRight="20dp"
+        android:layout_toStartOf="@+id/play"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"/>
 
     <ImageView
@@ -93,8 +91,8 @@
         android:layout_height="24dp"
         android:src="@drawable/play_button"
         android:layout_above="@+id/line"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="15dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp"
         android:layout_marginBottom="15dp"
         android:visibility="visible"
         app:tint="@color/white" />
@@ -105,10 +103,10 @@
         android:layout_height="24dp"
         android:src="@drawable/pause"
         android:layout_above="@+id/line"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="15dp"
+        android:layout_alignParentEnd="true"
+        app:tint="?attr/colorOnSurface"
+        android:layout_marginEnd="15dp"
         android:layout_marginBottom="15dp"
-        app:tint="@color/white"
         android:visibility="invisible"/>
 
     <LinearLayout
@@ -122,7 +120,8 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="25dp"
+            app:tint="?attr/colorOnSurface"
+            android:layout_marginStart="25dp"
             android:src="@drawable/like_icon"/>
 
         <TextView
@@ -131,7 +130,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="10"
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:layout_marginStart="5dp"/>
 
         <ImageView
@@ -139,6 +138,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
+            app:tint="?attr/colorOnSurface"
             android:src="@drawable/dislike_icon"
             android:layout_marginStart="35dp"/>
 
@@ -148,7 +148,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="10"
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:layout_marginStart="5dp"/>
 
         <ImageView
@@ -156,6 +156,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
+            app:tint="?attr/colorOnSurface"
             android:src="@drawable/comment_icon"
             android:layout_marginStart="35dp"/>
 
@@ -165,7 +166,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="10"
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:layout_marginStart="5dp"/>
 
     </LinearLayout>
