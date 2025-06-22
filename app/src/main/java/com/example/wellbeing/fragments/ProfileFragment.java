@@ -1,20 +1,25 @@
 package com.example.wellbeing.fragments;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -30,14 +35,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.wellbeing.HomeActivity;
 import com.example.wellbeing.LoginActivity;
 import com.example.wellbeing.R;
-import com.example.wellbeing.RegisterActivity;
+import com.example.wellbeing.UpdateAccountDetails;
 import com.example.wellbeing.UtilsServices.ConnectivityUtils;
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
-import com.example.wellbeing.UtilsServices.VolleyMultipartRequest;
 import com.example.wellbeing.models.UserModel;
+import com.google.android.material.button.MaterialButton;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -50,7 +54,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 public class ProfileFragment extends Fragment {
     public static final int TIMEOUT_MS = 10000;
@@ -62,10 +65,26 @@ public class ProfileFragment extends Fragment {
     ImageView userProfileCV;
     TextView nameTV, emailTV, userNameTV, dateTV, wellpointTV, rankTV, completedTaskTV, successRateTV;
     AppCompatButton logout;
-    ConstraintLayout container;
+    NestedScrollView container;
+    MaterialButton editBtn;
+    ProgressDialog progressDialog;
     LottieAnimationView lottieAnimationView;
     public ProfileFragment() {
     }
+
+    private final ActivityResultLauncher<Intent> launcher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    String userName = result.getData().getStringExtra("userName");
+                    String profilePic = result.getData().getStringExtra("profilePic");
+                    userInfo.get(userInfo.size()-1).setProfilePicture(profilePic);
+                    userNameTV.setText(userName.replaceAll("\\s", "").toLowerCase());
+                    nameTV.setText(userName);
+                    Picasso.get().load(profilePic).into(userProfileCV);
+                }
+            }
+    );
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,11 +112,38 @@ public class ProfileFragment extends Fragment {
         completedTaskTV = view.findViewById(R.id.completedTaskTV);
         successRateTV = view.findViewById(R.id.successRateTV);
         logout = view.findViewById(R.id.logoutBtn);
+        editBtn = view.findViewById(R.id.editBtn);
+        progressDialog = new ProgressDialog(requireContext());
+        progressDialog.setTitle("Register");
+        progressDialog.setMessage("Registering to your account");
+
+        editBtn.setOnClickListener(v -> {
+            if(!userInfo.isEmpty()){
+                Intent intent = new Intent(getContext(), UpdateAccountDetails.class);
+                intent.putExtra("userName", nameTV.getText().toString());
+                intent.putExtra("profilePic", userInfo.get(userInfo.size()-1).getProfilePicture());
+                launcher.launch(intent);
+            }
+        });
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                logoutUser();
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Confirm Logout")
+                        .setMessage("Are you sure you want to log out?")
+                        .setCancelable(true)
+                        .setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                logoutUser(); // Proceed to log out
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss(); // Cancel logout
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -264,14 +310,14 @@ public class ProfileFragment extends Fragment {
     }
 
     public void logoutUser(){
-        container.setVisibility(View.INVISIBLE);
-        lottieAnimationView.setVisibility(View.VISIBLE);
+        progressDialog.show();
         String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/logout";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    progressDialog.dismiss();
                     String resMsg;
                     if (response != null) {
                         resMsg = response.getString("message");
@@ -297,6 +343,7 @@ public class ProfileFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
                 NetworkResponse networkResponse = error.networkResponse;
                 String errorMessage = "Unknown error";
                 if (networkResponse == null) {

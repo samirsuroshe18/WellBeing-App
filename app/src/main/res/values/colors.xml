@@ -1,7 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="mystic_lavender">#151316</color>
+    <!-- Light Mode Colors -->
+    <color name="sage_green_primary">#4A7C59</color>
+    <color name="sage_green_container_light">#D7F0DB</color>
+    <color name="sage_green_on_container_light">#1A3A22</color>
 
+    <color name="coral_secondary">#E07A5F</color>
+    <color name="coral_container_light">#FFEEE9</color>
+    <color name="coral_on_container_light">#5D2414</color>
+
+    <color name="lavender_tertiary">#8B7CC8</color>
+    <color name="lavender_container_light">#EFEAF4</color>
+    <color name="lavender_on_container_light">#3E2B5C</color>
+
+    <color name="background_light">#FEFEFE</color>
+    <color name="on_background_light">#1C1B1F</color>
+    <color name="surface_light">#FEFEFE</color>
+    <color name="on_surface_light">#1C1B1F</color>
+    <color name="surface_variant_light">#F5F5F5</color>
+    <color name="on_surface_variant_light">#49454F</color>
+
+    <color name="gold_accent">#FFD700</color>
+    <color name="silver_accent">#C0C0C0</color>
+    <color name="bronze_accent">#CD7F32</color>
+
+    <color name="gradient_start">@color/sage_green_primary</color>
+    <color name="gradient_end">#7CB342</color>
+
+    <!-- Dark Mode Colors -->
+    <color name="sage_green_primary_dark">#8BC59D</color>
+    <color name="sage_green_on_primary_dark">#1A3A22</color>
+    <color name="sage_green_container_dark">#2D5A37</color>
+    <color name="sage_green_on_container_dark">#D7F0DB</color>
+
+    <color name="coral_secondary_dark">#F4A688</color>
+    <color name="coral_on_secondary_dark">#5D2414</color>
+    <color name="coral_container_dark">#8B4513</color>
+    <color name="coral_on_container_dark">#FFEEE9</color>
+
+    <color name="lavender_tertiary_dark">#B5A7E6</color>
+    <color name="lavender_on_tertiary_dark">#3E2B5C</color>
+    <color name="lavender_container_dark">#5D4E7A</color>
+    <color name="lavender_on_container_dark">#EFEAF4</color>
+
+    <color name="background_dark">#1C1B1F</color>
+    <color name="on_background_dark">#E6E1E5</color>
+    <color name="surface_dark">#1C1B1F</color>
+    <color name="on_surface_dark">#E6E1E5</color>
+    <color name="surface_variant_dark">#2B2930</color>
+    <color name="on_surface_variant_dark">#CAC4D0</color>
+
+    <!-- System Colors -->
+    <color name="error_light">#D32F2F</color>
+    <color name="error_dark">#F44336</color>
+    <color name="success_light">#2E7D32</color>
+    <color name="success_dark">#4CAF50</color>
+
+    <!-- Common Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <color name="gold_accent_dark">#FFA000</color>
+    <color name="silver_accent_dark">#9E9E9E</color>
+    <color name="bronze_accent_dark">#A0522D</color>
+
+    <color name="gradient_start_dark">#4A5D23</color>
+    <color name="gradient_end_dark">#5D7A2A</color>
 </resources>

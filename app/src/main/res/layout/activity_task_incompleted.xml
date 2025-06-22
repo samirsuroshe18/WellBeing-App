@@ -1,30 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:fillViewport="true"
+    android:background="?attr/android:colorBackground"
     tools:context=".TaskIncompletedActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/sorry_time_is_over"
-        app:layout_constraintBottom_toTopOf="@+id/selectTaskBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp">
 
-    <Button
-        android:id="@+id/selectTaskBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="244dp"
-        android:text="@string/select_new_task2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <!-- Supportive Visual Element -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:gravity="center">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Gentle Reminder Icon -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="70dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <!-- Clock Icon for Time -->
+                    <ImageView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@drawable/ic_schedule"
+                        app:tint="?attr/colorSecondary"
+                        android:layout_marginBottom="8dp" />
+
+                    <!-- Gentle pause symbol -->
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/pause"
+                        android:background="?attr/colorSecondary"
+                        app:tint="?attr/colorOnSecondary"
+                        app:shapeAppearanceOverlay="@style/CircularImageView"
+                        android:padding="4dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Soft floating elements -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/circle"
+                android:layout_gravity="center|start"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="-30dp"
+                app:tint="?attr/colorTertiary"
+                android:alpha="0.4"/>
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/ic_check_circle"
+                android:layout_gravity="center|end"
+                android:layout_marginEnd="50dp"
+                android:layout_marginTop="40dp"
+                app:tint="?attr/colorSecondary"
+                android:alpha="0.3" />
+
+        </FrameLayout>
+
+        <!-- Supportive Content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="20dp">
+
+            <!-- Gentle Heading -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time's Up! 🕐"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorSecondary"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center" />
+
+            <!-- Understanding Message -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sorry_time_is_over"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnBackground"
+                android:gravity="center"
+                android:layout_marginBottom="16dp"
+                android:lineSpacingMultiplier="1.2" />
+
+            <!-- Encouraging Message -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="That's okay! Every attempt is a step forward. Progress isn't always linear, and that's perfectly normal."
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:gravity="center"
+                android:layout_marginBottom="24dp"
+                android:lineSpacingMultiplier="1.3"
+                android:fontStyle="italic" />
+
+        </LinearLayout>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- Secondary Action - Select New Task -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/selectTaskBtn"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/select_new_task2"
+                android:textSize="14sp"
+                android:textColor="?attr/colorSecondary"
+                app:cornerRadius="24dp"
+                app:strokeColor="?attr/colorSecondary"
+                app:strokeWidth="1dp"
+                app:icon="@drawable/task_alt"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.Material3.Button.OutlinedButton" />
+
+            <!-- Tertiary Action - Take a Break -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/take_break_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Take a Mindful Break"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:icon="@drawable/self_care"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                android:minWidth="0dp"
+                style="@style/Widget.Material3.Button.TextButton" />
+
+        </LinearLayout>
+
+        <!-- Encouraging Quote -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutline"
+            app:cardBackgroundColor="?attr/colorSurfaceVariant"
+            android:alpha="0.8">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/favorite"
+                    app:tint="?attr/colorSecondary"
+                    android:layout_marginEnd="12dp"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Remember: Every setback is a setup for a comeback. You're learning and growing with each try!"
+                    android:textSize="12sp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:lineSpacingMultiplier="1.2"
+                    android:fontStyle="italic" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</ScrollView>

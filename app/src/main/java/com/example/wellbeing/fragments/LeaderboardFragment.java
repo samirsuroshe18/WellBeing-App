@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -57,7 +58,7 @@ public class LeaderboardFragment extends Fragment {
     RecyclerView leaderboard_recycler_view;
     CircleImageView firstUser, secondUser, thirdUser;
     TextView firstUserName, secondUserName, thirdUserName, firstUserRank, secondUserRank, thirdUserRank,firstUserPoints, secondUserPoints, thirdUserPoints;
-    ConstraintLayout container;
+    NestedScrollView container;
     LottieAnimationView lottieAnimationView;
 
     public LeaderboardFragment() {
@@ -66,8 +67,6 @@ public class LeaderboardFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
 
     }
 

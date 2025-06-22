@@ -41,7 +41,6 @@ public class FileUtils {
 
     public static String getMimeType(Context context, Uri uri) {
         ContentResolver contentResolver = context.getContentResolver();
-        String mimeType = contentResolver.getType(uri);
-        return mimeType;
+        return contentResolver.getType(uri);
     }
 }

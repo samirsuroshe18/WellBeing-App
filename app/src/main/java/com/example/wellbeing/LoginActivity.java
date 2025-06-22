@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,12 +39,13 @@ public class LoginActivity extends AppCompatActivity {
     public static final int TIMEOUT_MS = 10000;
     public static final int MAX_RETRIES = 2;
     public static final float BACKOFF_MULT = 2.0f;
-    TextView mov_to_signUp;
+    TextView mov_to_signUp, forgot_password;
     EditText email_editText, pass_editText;
     Button sign_in_btn;
     String email, password, accessToken, refreshToken, resMsg;
     SharedPreferenceClass sharedPreference;
     ProgressDialog progressDialog;
+    ProgressBar login_progress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -54,15 +56,25 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setTitle("Login");
         progressDialog.setMessage("Login to your account");
         mov_to_signUp = findViewById(R.id.mov_to_signUp);
+        forgot_password = findViewById(R.id.forgot_password);
         email_editText = findViewById(R.id.email_editText);
         pass_editText = findViewById(R.id.pass_editText);
         sign_in_btn = findViewById(R.id.sign_in_btn);
+        login_progress = findViewById(R.id.login_progress);
         sharedPreference = new SharedPreferenceClass(LoginActivity.this);
 
         mov_to_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+                finish();
+            }
+        });
+
+        forgot_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
                 finish();
             }
         });
@@ -82,7 +94,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void LoginUser(View view) {
-        progressDialog.show();
+        sign_in_btn.setEnabled(false);
+        sign_in_btn.setText("");
+        login_progress.setVisibility(View.VISIBLE);
 
         final HashMap<String, String> params = new HashMap<>();
         params.put("email", email);
@@ -103,18 +117,24 @@ public class LoginActivity extends AppCompatActivity {
                         resMsg = response.getString("message");
                         Log.d("Response : ", accessToken);
                         Toast.makeText(LoginActivity.this, resMsg, Toast.LENGTH_SHORT).show();
+                        login_progress.setVisibility(View.GONE);
+                        sign_in_btn.setText("Login");
+                        sign_in_btn.setEnabled(true);
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         finish();
-                        progressDialog.dismiss();
                     } else {
                         // Handle the case where "accessToken" key is not present in the JSON response
                         Toast.makeText(LoginActivity.this, "No accessToken found in the response", Toast.LENGTH_SHORT).show();
-                        progressDialog.dismiss();
+                        login_progress.setVisibility(View.GONE);
+                        sign_in_btn.setText("Login");
+                        sign_in_btn.setEnabled(true);
                     }
 
                 }catch (Exception e){
                     e.printStackTrace();
-                    progressDialog.dismiss();
+                    login_progress.setVisibility(View.GONE);
+                    sign_in_btn.setText("Login");
+                    sign_in_btn.setEnabled(true);
                 }
             }
         }, new Response.ErrorListener() {
@@ -125,10 +145,14 @@ public class LoginActivity extends AppCompatActivity {
                 if (networkResponse == null) {
                     if (error.getClass().equals(TimeoutError.class)) {
                         errorMessage = "Request timeout";
-                        progressDialog.dismiss();
+                        login_progress.setVisibility(View.GONE);
+                        sign_in_btn.setText("Login");
+                        sign_in_btn.setEnabled(true);
                     } else if (error.getClass().equals(NoConnectionError.class)) {
                         errorMessage = "Failed to connect server";
-                        progressDialog.dismiss();
+                        login_progress.setVisibility(View.GONE);
+                        sign_in_btn.setText("Login");
+                        sign_in_btn.setEnabled(true);
                     }
                 } else {
                     String result = null;
@@ -149,28 +173,41 @@ public class LoginActivity extends AppCompatActivity {
 
                         if (networkResponse.statusCode == 404) {
                             errorMessage = "Resource not found";
-                            progressDialog.dismiss();
+                            login_progress.setVisibility(View.GONE);
+                            sign_in_btn.setText("Login");
+                            sign_in_btn.setEnabled(true);
                         } else if (networkResponse.statusCode == 401) {
                             errorMessage = message+" Unauthorized";
-                            progressDialog.dismiss();
+                            login_progress.setVisibility(View.GONE);
+                            sign_in_btn.setText("Login");
+                            sign_in_btn.setEnabled(true);
                         } else if (networkResponse.statusCode == 400) {
                             errorMessage = message+ "Bad request";
-                            progressDialog.dismiss();
+                            login_progress.setVisibility(View.GONE);
+                            sign_in_btn.setText("Login");
+                            sign_in_btn.setEnabled(true);
                         } else if (networkResponse.statusCode == 500) {
                             errorMessage = message+" Something is getting wrong";
-                            progressDialog.dismiss();
-                            progressDialog.dismiss();
+                            login_progress.setVisibility(View.GONE);
+                            sign_in_btn.setText("Login");
+                            sign_in_btn.setEnabled(true);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        progressDialog.dismiss();
+                        login_progress.setVisibility(View.GONE);
+                        sign_in_btn.setText("Login");
+                        sign_in_btn.setEnabled(true);
                     }
-                    progressDialog.dismiss();
+                    login_progress.setVisibility(View.GONE);
+                    sign_in_btn.setText("Login");
+                    sign_in_btn.setEnabled(true);
                 }
                 Log.i("Error", errorMessage);
                 Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                 error.printStackTrace();
-                progressDialog.dismiss();
+                login_progress.setVisibility(View.GONE);
+                sign_in_btn.setText("Login");
+                sign_in_btn.setEnabled(true);
             }
         }){
             @Override

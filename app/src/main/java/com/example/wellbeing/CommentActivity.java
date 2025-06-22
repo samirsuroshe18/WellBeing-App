@@ -10,7 +10,10 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +32,9 @@ import com.android.volley.toolbox.Volley;
 import com.example.wellbeing.UtilsServices.HideKeyboardClass;
 import com.example.wellbeing.adapters.CommentAdapter;
 import com.example.wellbeing.models.CommentModel;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,15 +54,22 @@ public class CommentActivity extends AppCompatActivity {
     RecyclerView commentRecyclerView;
     String multiMedia, accessToken, content;
     EditText commentInput;
-    ImageView sendCommentBtn, backBtn;
+    MaterialButton backBtn;
+    MaterialToolbar toolbar;
+    FloatingActionButton sendCommentBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_comment);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         commentInput = findViewById(R.id.comment_et);
         sendCommentBtn = findViewById(R.id.send_comment_btn);
-        backBtn = findViewById(R.id.back_arrow);
 
         Intent intent = getIntent();
         multiMedia = intent.getStringExtra("_id");
@@ -64,7 +77,22 @@ public class CommentActivity extends AppCompatActivity {
 
         commentList = new ArrayList<>();
         commentRecyclerView = findViewById(R.id.comment_recycler_view);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
+        // Handle back button click
+        toolbar.setNavigationOnClickListener(v -> {
+            // Option 1: Use onBackPressed() (traditional way)
+//            onBackPressed();
+
+            // Option 2: Or simply finish the activity
+            finish();
+
+            // Option 3: Or navigate to specific activity
+            // Intent intent = new Intent(AcceptedTaskActivity.this, MainActivity.class);
+            // startActivity(intent);
+            // finish();
+        });
         getComments();
 
         adapter = new CommentAdapter(commentList, this);
@@ -81,13 +109,6 @@ public class CommentActivity extends AppCompatActivity {
                 commentInput.setText("");
                 new HideKeyboardClass(view, CommentActivity.this);
 
-            }
-        });
-
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
             }
         });
     }

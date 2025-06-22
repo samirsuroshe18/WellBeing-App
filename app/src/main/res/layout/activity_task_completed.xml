@@ -8,25 +8,200 @@
     android:orientation="vertical"
     tools:context=".TaskCompletedActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/congratulation_you_have_completed_your_task"
-        app:layout_constraintBottom_toTopOf="@+id/selectTaskBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/android:colorBackground"
+        android:fillViewport="true"
+        tools:context=".TaskCompletedActivity">
 
-    <Button
-        android:id="@+id/selectTaskBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="244dp"
-        android:text="@string/select_new_task"
-        android:background="@drawable/image_bg"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="32dp">
+
+            <!-- Celebration Animation Area -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:gravity="center">
+
+                <!-- Achievement Badge -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="20dp"
+                    app:cardBackgroundColor="?attr/colorPrimaryContainer"
+                    app:cardCornerRadius="80dp"
+                    app:cardElevation="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <!-- Trophy/Achievement Icon -->
+                        <ImageView
+                            android:layout_width="72dp"
+                            android:layout_height="72dp"
+                            android:layout_marginBottom="8dp"
+                            android:src="@drawable/ic_trophy"
+                            app:tint="?attr/colorPrimary" />
+
+                        <!-- Checkmark for completion -->
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="?attr/colorPrimary"
+                            android:padding="6dp"
+                            android:src="@drawable/ic_check_circle"
+                            app:shapeAppearanceOverlay="@style/CircularImageView"
+                            app:tint="?attr/colorOnPrimary" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Floating celebration elements -->
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center|start"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="-40dp"
+                    android:alpha="0.8"
+                    android:src="@drawable/ic_star"
+                    app:tint="?attr/colorSecondary" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center|end"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="60dp"
+                    android:alpha="0.6"
+                    android:src="@drawable/ic_star"
+                    app:tint="?attr/colorTertiary" />
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center|start"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginBottom="30dp"
+                    android:alpha="0.7"
+                    android:src="@drawable/ic_star"
+                    app:tint="?attr/colorSecondary" />
+
+            </FrameLayout>
+
+            <!-- Congratulations Content -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <!-- Main Congratulations Text -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="🎉 Congratulations!"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
+
+                <!-- Achievement Description -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.2"
+                    android:text="@string/congratulation_you_have_completed_your_task"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="18sp" />
+
+                <!-- Motivational Message -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
+                    android:fontStyle="italic"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.3"
+                    android:text="You're making amazing progress on your wellbeing journey. Every step counts!"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/selectTaskBtn"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="12dp"
+                android:backgroundTint="?attr/colorPrimary"
+                android:text="@string/select_new_task"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="28dp"
+                app:icon="@drawable/task_alt"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
+
+            <!-- Motivational Quote/Tip -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:alpha="0.7"
+                app:cardBackgroundColor="?attr/colorSurfaceVariant"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/lightbulb"
+                        app:tint="?attr/colorPrimary" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:lineSpacingMultiplier="1.2"
+                        android:text="Tip: Consistency is key! Try to complete at least one task daily to build lasting habits."
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

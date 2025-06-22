@@ -9,7 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class UriToByteArrayConverter {
+public class UriToByteArrayConverterUtil {
 
     public static byte[] convertUriToByteArray(Context context, Uri uri) throws IOException {
         ContentResolver contentResolver = context.getContentResolver();
