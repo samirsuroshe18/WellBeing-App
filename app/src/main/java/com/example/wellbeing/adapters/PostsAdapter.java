@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -28,9 +30,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.wellbeing.AcceptedTaskActivity;
 import com.example.wellbeing.CommentActivity;
 import com.example.wellbeing.R;
 import com.example.wellbeing.models.PostModel;
+import com.google.android.material.button.MaterialButton;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -52,6 +56,9 @@ import java.util.TimeZone;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private final Handler handler = new Handler();
+    private Runnable updateTimeRunnable;
+    private static final String TAG = "PostsAdapter";
     ArrayList<PostModel> postModel;
     Context context;
     int IMAGE_VIEW_TYPE = 0;
@@ -109,8 +116,16 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 ((ImageViewHolder) holder).dislike_count.setText(String.valueOf(posts.getTotalDislikes()));
                 ((ImageViewHolder) holder).comment_count.setText(String.valueOf(posts.getTotalComments()));
             } catch (ParseException e) {
-                throw new RuntimeException(e);
+                Log.e(TAG, "Error parsing date: " + e.getMessage());
             }
+
+            ((ImageViewHolder) holder).description.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int lines = ((ImageViewHolder) holder).description.getMaxLines() + 2;
+                    ((ImageViewHolder) holder).description.setMaxLines(lines);
+                }
+            });
 
             ((ImageViewHolder) holder).like_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -316,14 +331,66 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     context.startActivity(intent);
                 }
             });
+
+            ((ImageViewHolder) holder).view_img_task.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, AcceptedTaskActivity.class);
+                    intent.putExtra("post_id", posts.getTaskId());
+                    context.startActivity(intent);
+                }
+            });
         } else {
+// Your existing code with updates
+            String videoUrl = posts.getMedia();
+            Log.d(TAG, "Setting video URL: " + videoUrl);
+
+// Reset the VideoView first
+            ((VideoViewHolder) holder).post_video.stopPlayback();
+            ((VideoViewHolder) holder).post_video.clearFocus();
+
+// Stop any existing timer for this holder
+            if (updateTimeRunnable != null) {
+                handler.removeCallbacks(updateTimeRunnable);
+            }
+
+            ((VideoViewHolder) holder).post_video.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    Log.e(TAG, "VideoView Error - What: " + what + ", Extra: " + extra);
+                    Log.e(TAG, "Failed URL: " + videoUrl);
+                    return false;
+                }
+            });
+
+            ((VideoViewHolder) holder).post_video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    Log.d(TAG, "Video prepared successfully");
+                    // Set video scaling
+                    mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+
+                    // Initialize the duration display and progress bar
+                    int totalDuration = ((VideoViewHolder) holder).post_video.getDuration();
+                    updateRemainingTime((VideoViewHolder) holder, totalDuration, totalDuration);
+                    ((VideoViewHolder) holder).video_progress_bar.setMax(totalDuration);
+                    ((VideoViewHolder) holder).video_progress_bar.setProgress(0);
+                }
+            });
+
+// Now set the video
+            Uri videoUri = Uri.parse(videoUrl);
+            ((VideoViewHolder) holder).post_video.setVideoURI(videoUri);
+
+// Request focus to ensure it's ready
+            ((VideoViewHolder) holder).post_video.requestFocus();
 
             Picasso.get().load(posts.getUserProfile()).into(((VideoViewHolder) holder).user_profile);
-            ((VideoViewHolder) holder).post_video.setVideoURI(Uri.parse(posts.getMedia()));
             ((VideoViewHolder) holder).user_name.setText(posts.getUserName());
             ((VideoViewHolder) holder).user_name.setText(posts.getUserName());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
             Date date = null;
+
             try {
                 date = sdf.parse(posts.getCreatedAt());
             } catch (ParseException e) {
@@ -335,23 +402,32 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((VideoViewHolder) holder).like_count.setText(String.valueOf(posts.getTotalLikes()));
             ((VideoViewHolder) holder).dislike_count.setText(String.valueOf(posts.getTotalDislikes()));
             ((VideoViewHolder) holder).comment_count.setText(String.valueOf(posts.getTotalComments()));
+
+// Initial duration setup - show total duration until video starts
             int duration1 = Integer.parseInt(posts.getDuration());
-            if (duration1>60){
-                int time = duration1/60;
-                DecimalFormat df = new DecimalFormat("#.##");
-                String duration = df.format(time)+" M";
-                ((VideoViewHolder) holder).duration.setText(duration);
-            }else {
-                String duration = posts.getDuration()+" S";
-                ((VideoViewHolder) holder).duration.setText(duration);
-            }
+            String initialDurationText = formatDuration(duration1 * 1000); // Convert to milliseconds
+            ((VideoViewHolder) holder).duration.setText(initialDurationText);
 
             ((VideoViewHolder) holder).play.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ((VideoViewHolder) holder).post_video.start();
-                    ((VideoViewHolder) holder).play.setVisibility(View.INVISIBLE);
-                    ((VideoViewHolder) holder).pause.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "Play button clicked");
+
+                    // Check if video is prepared
+                    if (((VideoViewHolder) holder).post_video.canSeekForward() ||
+                            ((VideoViewHolder) holder).post_video.canSeekBackward()) {
+                        ((VideoViewHolder) holder).post_video.start();
+                        ((VideoViewHolder) holder).play.setVisibility(View.INVISIBLE);
+                        ((VideoViewHolder) holder).pause.setVisibility(View.VISIBLE);
+
+                        // Start updating remaining time and progress
+                        startUpdatingProgress((VideoViewHolder)holder);
+                        Log.d(TAG, "Video started successfully");
+                    } else {
+                        Log.d(TAG, "Video not ready yet, trying to prepare again");
+                        // Try to reload the video
+                        ((VideoViewHolder) holder).post_video.setVideoURI(Uri.parse(posts.getMedia()));
+                    }
                 }
             });
 
@@ -359,11 +435,26 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 @Override
                 public void onClick(View view) {
                     ((VideoViewHolder) holder).post_video.pause();
+                    Log.d(TAG, "Video pause button click");
                     ((VideoViewHolder) holder).play.setVisibility(View.VISIBLE);
                     ((VideoViewHolder) holder).pause.setVisibility(View.INVISIBLE);
+
+                    // Stop updating progress when paused
+                    if (updateTimeRunnable != null) {
+                        handler.removeCallbacks(updateTimeRunnable);
+                    }
                 }
             });
 
+            ((VideoViewHolder) holder).description.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int lines = ((VideoViewHolder) holder).description.getMaxLines() + 2;
+                    ((VideoViewHolder) holder).description.setMaxLines(lines);
+                }
+            });
+
+// Your existing like button click listener code remains the same...
             ((VideoViewHolder) holder).like_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -385,10 +476,8 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                                     Toast.makeText(context, resMsg, Toast.LENGTH_SHORT).show();
                                     notifyItemChanged(holder.getAdapterPosition());
                                 } else {
-                                    // Handle the case where "accessToken" key is not present in the JSON response
                                     Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                                 }
-
                             }catch (Exception e){
                                 e.printStackTrace();
                             }
@@ -396,7 +485,6 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-
                             NetworkResponse networkResponse = error.networkResponse;
                             String errorMessage = "Unknown error";
                             if (networkResponse == null) {
@@ -438,7 +526,6 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                             Log.i("Error", errorMessage);
                             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
                             error.printStackTrace();
-
                         }
                     }){
                         @Override
@@ -461,6 +548,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }
             });
 
+// Your existing dislike button click listener code remains the same...
             ((VideoViewHolder) holder).dislike_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -482,7 +570,6 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                                     String resMsg = response.getString("message");
                                     Toast.makeText(context, resMsg, Toast.LENGTH_SHORT).show();
                                 } else {
-                                    // Handle the case where "accessToken" key is not present in the JSON response
                                     Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                                 }
                             }catch (Exception e){
@@ -492,7 +579,6 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-
                             NetworkResponse networkResponse = error.networkResponse;
                             String errorMessage = "Unknown error";
                             if (networkResponse == null) {
@@ -534,7 +620,6 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                             Log.i("Error", errorMessage);
                             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
                             error.printStackTrace();
-
                         }
                     }){
                         @Override
@@ -570,9 +655,27 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 public void onCompletion(MediaPlayer mediaPlayer) {
                     ((VideoViewHolder) holder).play.setVisibility(View.VISIBLE);
                     ((VideoViewHolder) holder).pause.setVisibility(View.INVISIBLE);
+
+                    // Stop updating progress when video completes
+                    if (updateTimeRunnable != null) {
+                        handler.removeCallbacks(updateTimeRunnable);
+                    }
+
+                    // Reset to show total duration
+                    int totalDuration = ((VideoViewHolder) holder).post_video.getDuration();
+                    updateRemainingTime((VideoViewHolder) holder, totalDuration, totalDuration);
+                    ((VideoViewHolder) holder).video_progress_bar.setProgress(0);
                 }
             });
 
+            ((VideoViewHolder) holder).view_vid_task.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, AcceptedTaskActivity.class);
+                    intent.putExtra("post_id", posts.getTaskId());
+                    context.startActivity(intent);
+                }
+            });
         }
 
     }
@@ -597,6 +700,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         CircleImageView user_profile;
         TextView user_name, time, description, like_count, dislike_count, comment_count;
         ImageView post_image, like_icon, dislike_icon, comment_icon;
+        MaterialButton view_img_task;
 
         public ImageViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -611,7 +715,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             like_icon = itemView.findViewById(R.id.like_icon);
             dislike_icon = itemView.findViewById(R.id.dislike_icon);
             comment_icon = itemView.findViewById(R.id.comment_icon);
-
+            view_img_task = itemView.findViewById(R.id.view_img_task);
         }
     }
 
@@ -621,6 +725,8 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         TextView user_name, time, description, like_count, dislike_count, comment_count, duration;
         ImageView like_icon, dislike_icon, comment_icon, play, pause;
         VideoView post_video;
+        ProgressBar video_progress_bar;
+        MaterialButton view_vid_task;
 
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -638,7 +744,73 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             play = itemView.findViewById(R.id.play);
             pause = itemView.findViewById(R.id.pause);
             duration = itemView.findViewById(R.id.duration);
+            video_progress_bar = itemView.findViewById(R.id.video_progress_bar);
+            view_vid_task = itemView.findViewById(R.id.view_vid_task);
         }
     }
 
+    private void startUpdatingProgress(VideoViewHolder holder) {
+        updateTimeRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (holder.post_video.isPlaying()) {
+                        int currentPosition = holder.post_video.getCurrentPosition();
+                        int totalDuration = holder.post_video.getDuration();
+                        int remainingTime = totalDuration - currentPosition;
+
+                        // Update remaining time display
+                        updateRemainingTime(holder, remainingTime, totalDuration);
+
+                        // Update progress bar
+                        holder.video_progress_bar.setProgress(currentPosition);
+
+                        // Schedule next update
+                        handler.postDelayed(this, 1000); // Update every second
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        handler.post(updateTimeRunnable);
+    }
+
+    private void updateRemainingTime(VideoViewHolder holder, int remainingMillis, int totalMillis) {
+        if (remainingMillis <= 0) {
+            holder.duration.setText("0s");
+            return;
+        }
+
+        String remainingText = "-" + formatDuration(remainingMillis);
+        holder.duration.setText(remainingText);
+    }
+
+    private String formatDuration(int millis) {
+        int seconds = millis / 1000;
+        int minutes = seconds / 60;
+        int hours = minutes / 60;
+
+        if (hours > 0) {
+            return String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes % 60, seconds % 60);
+        } else if (minutes > 0) {
+            return String.format(Locale.getDefault(), "%d:%02d", minutes, seconds % 60);
+        } else {
+            return String.format(Locale.getDefault(), "%ds", seconds);
+        }
+    }
+
+    // Don't forget to add cleanup in your adapter to prevent memory leaks
+    @Override
+    public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
+        super.onViewRecycled(holder);
+        if (holder instanceof VideoViewHolder) {
+            // Stop any running timers
+            if (updateTimeRunnable != null) {
+                handler.removeCallbacks(updateTimeRunnable);
+            }
+            // Stop video playback
+            ((VideoViewHolder) holder).post_video.stopPlayback();
+        }
+    }
 }

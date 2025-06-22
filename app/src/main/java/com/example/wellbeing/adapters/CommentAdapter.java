@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.wellbeing.R;
 import com.example.wellbeing.models.CommentModel;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.squareup.picasso.Picasso;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -69,7 +70,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         TextView user_name, content, time;
-        CircleImageView user_profile;
+        ShapeableImageView user_profile;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             user_profile = itemView.findViewById(R.id.user_profile);

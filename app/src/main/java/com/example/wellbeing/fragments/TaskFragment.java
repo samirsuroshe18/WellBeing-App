@@ -1,24 +1,28 @@
 package com.example.wellbeing.fragments;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -36,6 +40,7 @@ import com.example.wellbeing.R;
 import com.example.wellbeing.TaskCompletedActivity;
 import com.example.wellbeing.TaskIncompletedActivity;
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
+import com.example.wellbeing.adapters.PostsAdapter;
 import com.example.wellbeing.models.TaskModel;
 import com.squareup.picasso.Picasso;
 
@@ -45,16 +50,20 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class TaskFragment extends Fragment {
+    private final Handler handler = new Handler();
+    private Runnable updateTimeRunnable;
+    private static final String TAG = "TaskFragment";
     public static final int TIMEOUT_MS = 10000;
     public static final int MAX_RETRIES = 2;
     public static final float BACKOFF_MULT = 2.0f;
-    TextView describeTV, timeLeftTV, taskTitleTV, taskCreatedUserName, timelineTV;
-    ImageView taskImage;
+    TextView describeTV, timeLeftTV, taskTitleTV, taskCreatedUserName, timelineTV, duration;
+    ImageView taskImage, pause, play;
     VideoView taskVideo;
     CircleImageView taskCreatedProfile;
     AppCompatButton nextBtn,acceptBtn, acceptedBtn, postBtn;
@@ -63,8 +72,8 @@ public class TaskFragment extends Fragment {
     LinearLayout timer;
     ArrayList<TaskModel> tasks;
     ConstraintLayout container;
-    LottieAnimationView lottieAnimationView;
-    private static TaskFragment instance;
+    ConstraintLayout lottieAnimationView, videoContainer;
+    ProgressBar video_progress_bar;
     public TaskFragment() {
     }
 
@@ -80,7 +89,7 @@ public class TaskFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_task, containe, false);
 
         container = view.findViewById(R.id.container);
-        lottieAnimationView = view.findViewById(R.id.loadingAnim);
+        lottieAnimationView = view.findViewById(R.id.loadingOverlay);
         describeTV = view.findViewById(R.id.describeTV);
         taskTitleTV = view.findViewById(R.id.taskTitleTV);
         timelineTV = view.findViewById(R.id.timelineTV);
@@ -94,6 +103,11 @@ public class TaskFragment extends Fragment {
         postBtn = view.findViewById(R.id.postBtn);
         timeLeftTV = view.findViewById(R.id.timeLeftTV);
         timer = view.findViewById(R.id.timer);
+        videoContainer = view.findViewById(R.id.videoContainer);
+        video_progress_bar = view.findViewById(R.id.video_progress_bar);
+        play = view.findViewById(R.id.play);
+        pause = view.findViewById(R.id.pause);
+        duration = view.findViewById(R.id.duration);
 
         sharedPreferenceClass = new SharedPreferenceClass(requireContext());
         tasks = new ArrayList<>();
@@ -173,7 +187,6 @@ public class TaskFragment extends Fragment {
     public void getTask(){
         container.setVisibility(View.INVISIBLE);
         lottieAnimationView.setVisibility(View.VISIBLE);
-
         String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/usertaskinfo/get-task";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
@@ -203,11 +216,104 @@ public class TaskFragment extends Fragment {
                         describeTV.setText(tasks.get(tasks.size()-1).getDescription());
                         if (tasks.get(tasks.size()-1).getMediaType().equals("video")){
                             taskImage.setVisibility(View.INVISIBLE);
-                            taskVideo.setVisibility(View.VISIBLE);
-                            taskVideo.setVideoURI(Uri.parse(tasks.get(tasks.size()-1).getTaskReference()));
+                            videoContainer.setVisibility(View.VISIBLE);
+
+                            String videoUrl = tasks.get(tasks.size()-1).getTaskReference();
+                            Log.d(TAG, "Setting video URL: " + videoUrl);
+
+                            taskVideo.stopPlayback();
+                            taskVideo.clearFocus();
+
+                            if (updateTimeRunnable != null) {
+                                handler.removeCallbacks(updateTimeRunnable);
+                            }
+
+                            taskVideo.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                                @Override
+                                public boolean onError(MediaPlayer mp, int what, int extra) {
+                                    Log.e(TAG, "VideoView Error - What: " + what + ", Extra: " + extra);
+                                    Log.e(TAG, "Failed URL: " + videoUrl);
+                                    return false;
+                                }
+                            });
+
+                            taskVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mp) {
+                                    Log.d(TAG, "Video prepared successfully");
+                                    // Set video scaling
+                                    mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+
+                                    // Initialize the duration display and progress bar
+                                    int totalDuration = taskVideo.getDuration();
+                                    updateRemainingTime(totalDuration, totalDuration);
+                                    video_progress_bar.setMax(totalDuration);
+                                    video_progress_bar.setProgress(0);
+                                }
+                            });
+
+                            Uri videoUri = Uri.parse(videoUrl);
+                            taskVideo.setVideoURI(videoUri);
+
+                            taskVideo.requestFocus();
+
+                            play.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.d(TAG, "Play button clicked");
+
+                                    // Check if video is prepared
+                                    if (taskVideo.canSeekForward() || taskVideo.canSeekBackward()) {
+                                        taskVideo.start();
+                                        play.setVisibility(View.INVISIBLE);
+                                        pause.setVisibility(View.VISIBLE);
+
+                                        // Start updating remaining time and progress
+                                        startUpdatingProgress();
+                                        Log.d(TAG, "Video started successfully");
+                                    } else {
+                                        Log.d(TAG, "Video not ready yet, trying to prepare again");
+                                        // Try to reload the video
+                                        taskVideo.setVideoURI(videoUri);
+                                    }
+                                }
+                            });
+
+                            pause.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    taskVideo.pause();
+                                    Log.d(TAG, "Video pause button click");
+                                    play.setVisibility(View.VISIBLE);
+                                    pause.setVisibility(View.INVISIBLE);
+
+                                    // Stop updating progress when paused
+                                    if (updateTimeRunnable != null) {
+                                        handler.removeCallbacks(updateTimeRunnable);
+                                    }
+                                }
+                            });
+
+                            taskVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mediaPlayer) {
+                                    play.setVisibility(View.VISIBLE);
+                                    pause.setVisibility(View.INVISIBLE);
+
+                                    // Stop updating progress when video completes
+                                    if (updateTimeRunnable != null) {
+                                        handler.removeCallbacks(updateTimeRunnable);
+                                    }
+
+                                    // Reset to show total duration
+                                    int totalDuration = taskVideo.getDuration();
+                                    updateRemainingTime(totalDuration, totalDuration);
+                                    video_progress_bar.setProgress(0);
+                                }
+                            });
                         }else {
                             taskImage.setVisibility(View.VISIBLE);
-                            taskVideo.setVisibility(View.INVISIBLE);
+                            videoContainer.setVisibility(View.INVISIBLE);
                             Picasso.get().load(tasks.get(tasks.size()-1).getTaskReference()).into(taskImage);
                         }
                         Picasso.get().load(tasks.get(tasks.size()-1).getPofilePicture()).into(taskCreatedProfile);
@@ -225,7 +331,7 @@ public class TaskFragment extends Fragment {
                     }
 
                 }catch (Exception e){
-                    e.printStackTrace();
+                    Log.e(TAG, "Exception occured", e);
                     container.setVisibility(View.VISIBLE);
                     lottieAnimationView.setVisibility(View.INVISIBLE);
                 }
@@ -281,7 +387,7 @@ public class TaskFragment extends Fragment {
                             lottieAnimationView.setVisibility(View.INVISIBLE);
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "Animation loading failed", e);
                         container.setVisibility(View.VISIBLE);
                         lottieAnimationView.setVisibility(View.INVISIBLE);
                     }
@@ -290,7 +396,6 @@ public class TaskFragment extends Fragment {
                 }
                 Log.i("Error", errorMessage);
                 Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
-                error.printStackTrace();
                 container.setVisibility(View.VISIBLE);
                 lottieAnimationView.setVisibility(View.INVISIBLE);
 
@@ -346,7 +451,7 @@ public class TaskFragment extends Fragment {
                     }
 
                 }catch (Exception e){
-                    e.printStackTrace();
+                    Log.e(TAG, "Task Accepted : ", e);
                     container.setVisibility(View.VISIBLE);
                     lottieAnimationView.setVisibility(View.INVISIBLE);
                 }
@@ -402,16 +507,15 @@ public class TaskFragment extends Fragment {
                             lottieAnimationView.setVisibility(View.INVISIBLE);
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "Task Accepted : ", e);
                         container.setVisibility(View.VISIBLE);
                         lottieAnimationView.setVisibility(View.INVISIBLE);
                     }
                     container.setVisibility(View.VISIBLE);
                     lottieAnimationView.setVisibility(View.INVISIBLE);
                 }
-                Log.i("Error", errorMessage);
+                Log.e(TAG, "Task Accepted : ", error);
                 Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
-                error.printStackTrace();
                 container.setVisibility(View.VISIBLE);
                 lottieAnimationView.setVisibility(View.INVISIBLE);
 
@@ -469,11 +573,105 @@ public class TaskFragment extends Fragment {
                         String mediaType = dataObject.getJSONObject("taskInfo").getString("mediaType");
                         if (mediaType.equals("video")){
                             taskImage.setVisibility(View.INVISIBLE);
-                            taskVideo.setVisibility(View.VISIBLE);
-                            taskVideo.setVideoURI(Uri.parse(dataObject.getJSONObject("taskInfo").getString("taskReference")));
+                            videoContainer.setVisibility(View.VISIBLE);
+
+                            String videoUrl = dataObject.getJSONObject("taskInfo").getString("taskReference");
+                            Log.d(TAG, "Setting video URL: " + videoUrl);
+
+                            taskVideo.stopPlayback();
+                            taskVideo.clearFocus();
+
+                            if (updateTimeRunnable != null) {
+                                handler.removeCallbacks(updateTimeRunnable);
+                            }
+
+                            taskVideo.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                                @Override
+                                public boolean onError(MediaPlayer mp, int what, int extra) {
+                                    Log.e(TAG, "VideoView Error - What: " + what + ", Extra: " + extra);
+                                    Log.e(TAG, "Failed URL: " + videoUrl);
+                                    return false;
+                                }
+                            });
+
+                            taskVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mp) {
+                                    Log.d(TAG, "Video prepared successfully");
+                                    // Set video scaling
+                                    mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+
+                                    // Initialize the duration display and progress bar
+                                    int totalDuration = taskVideo.getDuration();
+                                    updateRemainingTime(totalDuration, totalDuration);
+                                    video_progress_bar.setMax(totalDuration);
+                                    video_progress_bar.setProgress(0);
+                                }
+                            });
+
+                            Uri videoUri = Uri.parse(videoUrl);
+                            taskVideo.setVideoURI(videoUri);
+
+                            taskVideo.requestFocus();
+
+                            play.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.d(TAG, "Play button clicked");
+
+                                    // Check if video is prepared
+                                    if (taskVideo.canSeekForward() || taskVideo.canSeekBackward()) {
+                                        taskVideo.start();
+                                        play.setVisibility(View.INVISIBLE);
+                                        pause.setVisibility(View.VISIBLE);
+
+                                        // Start updating remaining time and progress
+                                        startUpdatingProgress();
+                                        Log.d(TAG, "Video started successfully");
+                                    } else {
+                                        Log.d(TAG, "Video not ready yet, trying to prepare again");
+                                        // Try to reload the video
+                                        taskVideo.setVideoURI(videoUri);
+                                    }
+                                }
+                            });
+
+                            pause.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    taskVideo.pause();
+                                    Log.d(TAG, "Video pause button click");
+                                    play.setVisibility(View.VISIBLE);
+                                    pause.setVisibility(View.INVISIBLE);
+
+                                    // Stop updating progress when paused
+                                    if (updateTimeRunnable != null) {
+                                        handler.removeCallbacks(updateTimeRunnable);
+                                    }
+                                }
+                            });
+
+                            taskVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mediaPlayer) {
+                                    play.setVisibility(View.VISIBLE);
+                                    pause.setVisibility(View.INVISIBLE);
+
+                                    // Stop updating progress when video completes
+                                    if (updateTimeRunnable != null) {
+                                        handler.removeCallbacks(updateTimeRunnable);
+                                    }
+
+                                    // Reset to show total duration
+                                    int totalDuration = taskVideo.getDuration();
+                                    updateRemainingTime(totalDuration, totalDuration);
+                                    video_progress_bar.setProgress(0);
+                                }
+                            });
+//                            taskVideo.setVideoURI(Uri.parse(dataObject.getJSONObject("taskInfo").getString("taskReference")));
                         }else {
                             taskImage.setVisibility(View.VISIBLE);
-                            taskVideo.setVisibility(View.INVISIBLE);
+                            videoContainer.setVisibility(View.INVISIBLE);
                             Picasso.get().load(dataObject.getJSONObject("taskInfo").getString("taskReference")).into(taskImage);
                         }
 
@@ -492,7 +690,7 @@ public class TaskFragment extends Fragment {
                     }
 
                 }catch (Exception e){
-                    e.printStackTrace();
+                    Log.e(TAG, "Get Task Current Status : ", e);
                     container.setVisibility(View.VISIBLE);
                     lottieAnimationView.setVisibility(View.INVISIBLE);
                 }
@@ -548,16 +746,15 @@ public class TaskFragment extends Fragment {
                             lottieAnimationView.setVisibility(View.INVISIBLE);
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "Get Task Current status : ", e);
                         container.setVisibility(View.VISIBLE);
                         lottieAnimationView.setVisibility(View.INVISIBLE);
                     }
                     container.setVisibility(View.VISIBLE);
                     lottieAnimationView.setVisibility(View.INVISIBLE);
                 }
-                Log.i("Error", errorMessage);
+                Log.e(TAG, "Get Task Current status : ", error);
                 Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
-                error.printStackTrace();
                 container.setVisibility(View.VISIBLE);
                 lottieAnimationView.setVisibility(View.INVISIBLE);
 
@@ -580,5 +777,64 @@ public class TaskFragment extends Fragment {
                 MAX_RETRIES,
                 BACKOFF_MULT
         ));
+    }
+
+    private void startUpdatingProgress() {
+        updateTimeRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (taskVideo.isPlaying()) {
+                        int currentPosition = taskVideo.getCurrentPosition();
+                        int totalDuration = taskVideo.getDuration();
+                        int remainingTime = totalDuration - currentPosition;
+
+                        // Update remaining time display
+                        updateRemainingTime(remainingTime, totalDuration);
+
+                        // Update progress bar
+                        video_progress_bar.setProgress(currentPosition);
+
+                        // Schedule next update
+                        handler.postDelayed(this, 1000); // Update every second
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        handler.post(updateTimeRunnable);
+    }
+
+    private void updateRemainingTime(int remainingMillis, int totalMillis) {
+        if (remainingMillis <= 0) {
+            duration.setText("0s");
+            return;
+        }
+
+        String remainingText = "-" + formatDuration(remainingMillis);
+        duration.setText(remainingText);
+    }
+
+    private String formatDuration(int millis) {
+        int seconds = millis / 1000;
+        int minutes = seconds / 60;
+        int hours = minutes / 60;
+
+        if (hours > 0) {
+            return String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes % 60, seconds % 60);
+        } else if (minutes > 0) {
+            return String.format(Locale.getDefault(), "%d:%02d", minutes, seconds % 60);
+        } else {
+            return String.format(Locale.getDefault(), "%ds", seconds);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (updateTimeRunnable != null) {
+            handler.removeCallbacks(updateTimeRunnable);
+        }
     }
 }

@@ -1,175 +1,432 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_margin="12dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="6dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeColor="?attr/colorOutlineVariant"
+    app:strokeWidth="1dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
-        android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_alignParentTop="true">
+        android:orientation="vertical"
+        android:background="?attr/colorSurface">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_marginStart="8dp"
-            android:id="@+id/user_profile"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/profile_img"
-            app:civ_circle_background_color="@color/white"
-            app:civ_border_width="1dp"
-            android:layout_marginEnd="10dp"
-            app:civ_border_color="#FF323131"
-            android:layout_gravity="center_vertical"/>
-
+        <!-- Header Section with User Info -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/user_name"
+            <!-- User Profile Image -->
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/user_profile"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/profile_img"
+                app:civ_circle_background_color="?attr/colorPrimaryContainer"
+                app:civ_border_width="2dp"
+                app:civ_border_color="?attr/colorPrimary"
+                android:layout_marginEnd="12dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <!-- User Name -->
+                <TextView
+                    android:id="@+id/user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sarah Johnson"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textStyle="bold" />
+
+                <!-- Time and Wellpoints Badge -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="2dp">
+
+                    <TextView
+                        android:id="@+id/time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2h ago"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginEnd="12dp" />
+
+                    <!-- Wellpoints Earned Badge -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="10dp"
+                        app:cardElevation="1dp"
+                        app:cardBackgroundColor="?attr/colorSecondaryContainer">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp">
+
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:src="@drawable/ic_wellpoint_star"
+                                app:tint="?attr/colorOnSecondaryContainer"
+                                android:layout_marginEnd="4dp" />
+
+                            <TextView
+                                android:id="@+id/wellpoints_earned"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="+25"
+                                android:textAppearance="?attr/textAppearanceLabelSmall"
+                                android:textColor="?attr/colorOnSecondaryContainer"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Task Category Badge -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Samir Suroshe"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorPrimaryContainer">
 
-            <TextView
-                android:id="@+id/time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="10 s"
-                android:textSize="16sp"/>
+                <TextView
+                    android:id="@+id/task_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Creative"
+                    android:textColor="?attr/colorOnPrimaryContainer"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:fontFamily="sans-serif-medium"/>
+
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 
+        <!-- Task Description -->
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp"
+            android:text="Just finished my 15-minute mindful sketching session! 🎨✨ Drew some peaceful nature scenes and it really helped me unwind after a busy day. Feeling so much more centered now! #MindfulArt #Wellbeing"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurface"
+            android:lineSpacingExtra="2dp"
+            android:maxLines="4"
+            android:ellipsize="end" />
 
+        <!-- Post Video -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="?attr/colorSurfaceVariant">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/colorSurface"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <VideoView
+                        android:id="@+id/post_video"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:keepScreenOn="true" />
+                </FrameLayout>
+
+                <!-- Remaining Time Display with Background -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="50dp"
+                    android:layout_marginBottom="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="?attr/colorSurfaceVariant"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <TextView
+                        android:id="@+id/duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-15s"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="4dp"
+                        android:fontFamily="sans-serif-medium" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Video Progress Bar -->
+                <ProgressBar
+                    android:id="@+id/video_progress_bar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="3dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="4dp"
+                    android:progress="30"
+                    android:max="100"
+                    android:progressTint="?attr/colorPrimary"
+                    android:progressBackgroundTint="?attr/colorSurfaceVariant"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <!-- Play Button -->
+                <ImageView
+                    android:id="@+id/play"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/play_button"
+                    android:visibility="visible"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="11dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:tint="?attr/colorOnSurface" />
+
+                <!-- Pause Button -->
+                <ImageView
+                    android:id="@+id/pause"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/pause"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="11dp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:tint="?attr/colorOnSurface" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Progress Section (for ongoing tasks) -->
+        <LinearLayout
+            android:id="@+id/progress_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="6dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Weekly Goal Progress"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/progress_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4/7 days"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="?attr/colorPrimary"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:progress="57"
+                android:max="100"
+                app:indicatorColor="?attr/colorPrimary"
+                app:trackColor="?attr/colorSurfaceVariant"
+                app:trackCornerRadius="10dp" />
+
+        </LinearLayout>
+
+        <!-- Social Interaction Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
+            android:gravity="center_vertical"
+            android:background="?attr/colorSurfaceVariant">
+
+            <!-- Like Button -->
+            <LinearLayout
+                android:id="@+id/like_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/like_icon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_heart_outline"
+                    app:tint="?attr/colorError"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:id="@+id/like_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="24"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+            </LinearLayout>
+
+            <!-- Dislike Button -->
+            <LinearLayout
+                android:id="@+id/dislike_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/dislike_icon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="4dp"
+                    android:src="@drawable/heart_broken"
+                    app:tint="?attr/colorError" />
+
+                <TextView
+                    android:id="@+id/dislike_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="24"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+            </LinearLayout>
+
+            <!-- Comment Button -->
+            <LinearLayout
+                android:id="@+id/comment_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="8dp"
+                android:layout_marginStart="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/comment_icon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_comment"
+                    app:tint="?attr/colorPrimary"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:id="@+id/comment_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="8"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+            </LinearLayout>
+
+            <!-- Spacer -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Inspire Others Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/view_vid_task"
+                style="@style/Widget.Material3.Button.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="View Task"
+                app:icon="@drawable/ic_star"
+                app:iconSize="14dp"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                app:backgroundTint="?attr/colorPrimary"
+                app:iconTint="?attr/colorOnPrimary"
+                android:textColor="?attr/colorOnPrimary"
+                app:cornerRadius="16dp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-
-    <TextView
-        android:id="@+id/description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/linearLayout1"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginStart="8dp"
-        android:paddingVertical="5dp"
-        android:ellipsize="end"
-        android:maxLines="5"
-        android:text="This task was amazing i ha v" />
-
-    <VideoView
-        android:id="@+id/post_video"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_below="@+id/description"/>
-
-    <TextView
-        android:id="@+id/duration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="10"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        android:layout_above="@+id/line"
-        android:layout_toStartOf="@+id/play"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="10dp"/>
-
-    <ImageView
-        android:id="@+id/play"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/play_button"
-        android:layout_above="@+id/line"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="15dp"
-        android:visibility="visible"
-        app:tint="@color/white" />
-
-    <ImageView
-        android:id="@+id/pause"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/pause"
-        android:layout_above="@+id/line"
-        android:layout_alignParentEnd="true"
-        app:tint="?attr/colorOnSurface"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="15dp"
-        android:visibility="invisible"/>
-
-    <LinearLayout
-        android:id="@+id/line"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_below="@+id/post_video">
-
-        <ImageView
-            android:id="@+id/like_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            app:tint="?attr/colorOnSurface"
-            android:layout_marginStart="25dp"
-            android:src="@drawable/like_icon"/>
-
-        <TextView
-            android:id="@+id/like_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="10"
-            android:textSize="18sp"
-            android:layout_marginStart="5dp"/>
-
-        <ImageView
-            android:id="@+id/dislike_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            app:tint="?attr/colorOnSurface"
-            android:src="@drawable/dislike_icon"
-            android:layout_marginStart="35dp"/>
-
-        <TextView
-            android:id="@+id/dislike_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="10"
-            android:textSize="18sp"
-            android:layout_marginStart="5dp"/>
-
-        <ImageView
-            android:id="@+id/comment_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            app:tint="?attr/colorOnSurface"
-            android:src="@drawable/comment_icon"
-            android:layout_marginStart="35dp"/>
-
-        <TextView
-            android:id="@+id/comment_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="10"
-            android:textSize="18sp"
-            android:layout_marginStart="5dp"/>
-
-    </LinearLayout>
-
-
-</RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,17 +1,51 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <!-- Base application theme. -->
     <style name="Base.Theme.WellBeing" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor">?attr/colorSurface</item>
-        <item name="android:windowLightStatusBar">true</item>
-<!--        <item name="colorPrimary">#605690</item>-->
-<!--        <item name="colorSecondary">#605C71</item>-->
-<!--        <item name="colorSurface">#ffffff</item>-->
-<!--        <item name="colorTertiary">#7C5263</item>-->
-<!--        <item name="colorError">#BA1B1A</item>-->
-<!--        <item name="android:navigationBarColor">?attr/colorSecondary</item>-->
-<!--        <item name="colorPrimary">@color/white</item>-->
+            <item name="android:statusBarColor">@color/sage_green_primary</item>
+            <item name="android:windowLightStatusBar">true</item>
 
+            <!-- Primary Colors -->
+            <item name="colorPrimary">@color/sage_green_primary</item>
+            <item name="colorOnPrimary">@color/white</item>
+            <item name="colorPrimaryContainer">@color/sage_green_container_light</item>
+            <item name="colorOnPrimaryContainer">@color/sage_green_on_container_light</item>
+
+            <!-- Secondary Colors -->
+            <item name="colorSecondary">@color/coral_secondary</item>
+            <item name="colorOnSecondary">@color/white</item>
+            <item name="colorSecondaryContainer">@color/coral_container_light</item>
+            <item name="colorOnSecondaryContainer">@color/coral_on_container_light</item>
+
+            <!-- Tertiary Colors -->
+            <item name="colorTertiary">@color/lavender_tertiary</item>
+            <item name="colorOnTertiary">@color/white</item>
+            <item name="colorTertiaryContainer">@color/lavender_container_light</item>
+            <item name="colorOnTertiaryContainer">@color/lavender_on_container_light</item>
+
+            <!-- Background & Surface -->
+            <item name="android:colorBackground">@color/background_light</item>
+            <item name="colorOnBackground">@color/on_background_light</item>
+            <item name="colorSurface">@color/surface_light</item>
+            <item name="colorOnSurface">@color/on_surface_light</item>
+            <item name="colorSurfaceVariant">@color/surface_variant_light</item>
+            <item name="colorOnSurfaceVariant">@color/on_surface_variant_light</item>
+
+            <!-- System Colors -->
+            <item name="colorError">@color/error_light</item>
+            <item name="colorOnError">@color/white</item>
+
+            <!-- Shape Theme -->
+            <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
+            <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.MediumComponent</item>
+            <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.App.LargeComponent</item>
     </style>
+
+        <!-- Custom style for the active indicator of BottomNavigationView -->
+        <style name="CustomActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+                <item name="android:color">?attr/colorPrimaryContainer</item>
+                <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Full</item>
+        </style>
 
     <style name="Theme.WellBeing" parent="Base.Theme.WellBeing" />
 </resources>

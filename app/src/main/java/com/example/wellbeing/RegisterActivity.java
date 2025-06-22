@@ -1,19 +1,26 @@
 package com.example.wellbeing;
 
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,7 +37,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.Volley;
 import com.example.wellbeing.UtilsServices.FileUtils;
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
-import com.example.wellbeing.UtilsServices.UriToByteArrayConverter;
+import com.example.wellbeing.UtilsServices.UriToByteArrayConverterUtil;
 import com.example.wellbeing.UtilsServices.VolleyMultipartRequest;
 
 import org.json.JSONException;
@@ -46,16 +53,18 @@ import java.util.regex.Pattern;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RegisterActivity extends AppCompatActivity {
-    private static final int gallery_pic_id = 100;
+    private static final String TAG = "RegisterActivity";
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
     public static final int TIMEOUT_MS = 10000;
     public static final int MAX_RETRIES = 2;
     public static final float BACKOFF_MULT = 2.0f;
-    TextView mov_to_logIn;
+    TextView mov_to_logIn, forgot_password;
     EditText email_editText, name_editText, pass_editText;
     Button sign_up_btn;
     String name, email, password, accessToken, refreshToken, fileName, fileType;
     SharedPreferenceClass sharedPreference;
     ProgressDialog progressDialog;
+    ProgressBar login_progress;
     ImageView plusIconIv;
     CircleImageView circleImageView;
     byte[] multiMediaByteArray;
@@ -70,28 +79,47 @@ public class RegisterActivity extends AppCompatActivity {
         progressDialog.setTitle("Register");
         progressDialog.setMessage("Registering to your account");
         mov_to_logIn = findViewById(R.id.mov_to_logIn);
+        forgot_password = findViewById(R.id.forgot_password);
         email_editText = findViewById(R.id.email_editText);
         name_editText = findViewById(R.id.name_editText);
         pass_editText = findViewById(R.id.pass_editText);
         sign_up_btn = findViewById(R.id.sign_in_btn);
+        login_progress = findViewById(R.id.login_progress);
         plusIconIv = findViewById(R.id.plusIconIV);
         circleImageView = findViewById(R.id.circleImageView);
         sharedPreference = new SharedPreferenceClass(RegisterActivity.this);
 
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        selectedImageUri = result.getData().getData();
+                        if (selectedImageUri != null) {
+                            try {
+                                multiMediaByteArray = UriToByteArrayConverterUtil.convertUriToByteArray(getApplicationContext(), selectedImageUri);
+                                fileName = getFileName(selectedImageUri);
+                                fileType = getFileType(selectedImageUri);
+                                circleImageView.setImageURI(selectedImageUri);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                }
+        );
+
+        forgot_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(RegisterActivity.this, ForgotPasswordActivity.class));
+                finish();
+            }
+        });
+
         plusIconIv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                    // For Android 11 and above, use the new storage access framework
-                    Intent gallery_intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    gallery_intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    gallery_intent.setType("image/*");
-                    startActivityForResult(gallery_intent, gallery_pic_id);
-                } else {
-                    // For Android 9 and below, use the older ACTION_PICK intent
-                    Intent gallery_intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(gallery_intent, gallery_pic_id);
-                }
+                pickImage();
             }
         });
 
@@ -126,32 +154,10 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode==gallery_pic_id){
-            if (resultCode == RESULT_OK){
-                selectedImageUri = data.getData();
-                if (selectedImageUri!=null){
-                    try {
-                        fileName = FileUtils.getFileName(this, selectedImageUri);
-                        fileType = FileUtils.getMimeType(this, selectedImageUri);
-                        multiMediaByteArray = UriToByteArrayConverter.convertUriToByteArray(RegisterActivity.this, selectedImageUri);
-                        circleImageView.setImageURI(selectedImageUri);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }else {
-                    Toast.makeText(this, "Please Select image", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
-
     private void registerUser() {
-        progressDialog.show();
+        sign_up_btn.setEnabled(false);
+        sign_up_btn.setText("");
+        login_progress.setVisibility(View.VISIBLE);
         String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/register";
 
         VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, apiKey,
@@ -165,21 +171,26 @@ public class RegisterActivity extends AppCompatActivity {
                             String status = result.getString("status");
                             String message = result.getString("message");
                             if (status.equals("200")) {
+                                selectedImageUri = null;
+                                name_editText.setText("");
+                                email_editText.setText("");
+                                pass_editText.setText("");
                                 // tell everybody you have succeed upload image and post strings
-                                accessToken = result.getJSONObject("data").getString("accessToken");
-                                refreshToken = result.getJSONObject("data").getString("refreshToken");
-                                sharedPreference.setValue_string("accessToken", accessToken);
-                                sharedPreference.setValue_string("refreshToken", refreshToken);
-                                Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
-                                progressDialog.dismiss();
-                                startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
-                                finish();
+                                Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_LONG).show();
+                                login_progress.setVisibility(View.GONE);
+                                sign_up_btn.setText("Sign up");
+                                sign_up_btn.setEnabled(true);
                             } else {
                                 Log.i("Unexpected", message);
-                                progressDialog.dismiss();
+                                login_progress.setVisibility(View.GONE);
+                                sign_up_btn.setText("Sign up");
+                                sign_up_btn.setEnabled(true);
                             }
                         } catch (JSONException e) {
-                            throw new RuntimeException(e);
+                            login_progress.setVisibility(View.GONE);
+                            sign_up_btn.setText("Sign up");
+                            sign_up_btn.setEnabled(true);
+                            Log.e(TAG, "Error parsing JSON response: ", e);
                         }
                     }
                 },
@@ -192,10 +203,14 @@ public class RegisterActivity extends AppCompatActivity {
                         if (networkResponse == null) {
                             if (error.getClass().equals(TimeoutError.class)) {
                                 errorMessage = "Request timeout";
-                                progressDialog.dismiss();
+                                login_progress.setVisibility(View.GONE);
+                                sign_up_btn.setText("Sign up");
+                                sign_up_btn.setEnabled(true);
                             } else if (error.getClass().equals(NoConnectionError.class)) {
                                 errorMessage = "Failed to connect server";
-                                progressDialog.dismiss();
+                                login_progress.setVisibility(View.GONE);
+                                sign_up_btn.setText("Sign up");
+                                sign_up_btn.setEnabled(true);
                             }
                         } else {
                             String result = null;
@@ -216,26 +231,38 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 if (networkResponse.statusCode == 404) {
                                     errorMessage = "Resource not found";
-                                    progressDialog.dismiss();
+                                    login_progress.setVisibility(View.GONE);
+                                    sign_up_btn.setText("Sign up");
+                                    sign_up_btn.setEnabled(true);
                                 } else if (networkResponse.statusCode == 401) {
                                     errorMessage = message+" Unauthorized";
-                                    progressDialog.dismiss();
+                                    login_progress.setVisibility(View.GONE);
+                                    sign_up_btn.setText("Sign up");
+                                    sign_up_btn.setEnabled(true);
                                 } else if (networkResponse.statusCode == 400) {
                                     errorMessage = message+ "Bad request";
-                                    progressDialog.dismiss();
+                                    login_progress.setVisibility(View.GONE);
+                                    sign_up_btn.setText("Sign up");
+                                    sign_up_btn.setEnabled(true);
                                 } else if (networkResponse.statusCode == 500) {
                                     errorMessage = message+" Something is getting wrong";
-                                    progressDialog.dismiss();
+                                    login_progress.setVisibility(View.GONE);
+                                    sign_up_btn.setText("Sign up");
+                                    sign_up_btn.setEnabled(true);
                                 }
                             } catch (JSONException e) {
-                                e.printStackTrace();
-                                progressDialog.dismiss();
+                                login_progress.setVisibility(View.GONE);
+                                sign_up_btn.setText("Sign up");
+                                sign_up_btn.setEnabled(true);
+                                Log.e(TAG, "Error parsing JSON response: ", e);
                             }
                         }
                         Log.i("Error", errorMessage);
                         Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                        error.printStackTrace();
-                        progressDialog.dismiss();
+                        login_progress.setVisibility(View.GONE);
+                        sign_up_btn.setText("Sign up");
+                        sign_up_btn.setEnabled(true);
+                        Log.e(TAG, "Error parsing JSON response: ", error);
                     }
                 }) {
             @Override
@@ -265,4 +292,82 @@ public class RegisterActivity extends AppCompatActivity {
                 BACKOFF_MULT
         ));
     }
+
+    /**
+     * Handle image selection from file storage
+     */
+    private void pickImage() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        // Add extra MIME types for better compatibility
+        String[] mimeTypes = {"image/jpeg", "image/png", "image/jpg", "image/gif", "image/webp", "image/bmp", "image/tiff"};
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+
+        // Allow multiple file managers and gallery apps
+        Intent chooser = Intent.createChooser(intent, "Select Image");
+
+        try {
+            imagePickerLauncher.launch(chooser);
+        } catch (Exception e) {
+            Log.e(TAG, "Error launching image picker", e);
+            Toast.makeText(getApplicationContext(), "Unable to open file picker", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Get the display name of a file from its URI
+     * @param uri The file URI
+     * @return The file name or a default name if unable to retrieve
+     */
+    private String getFileName(Uri uri) {
+        String fileName = "Unknown file";
+
+        try (Cursor cursor = getApplicationContext().getContentResolver().query(uri, null, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (nameIndex != -1) {
+                    fileName = cursor.getString(nameIndex);
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Unable to get file name from URI", e);
+            // Fallback: try to get filename from URI path
+            String path = uri.getLastPathSegment();
+            if (path != null && path.contains("/")) {
+                fileName = path.substring(path.lastIndexOf("/") + 1);
+            }
+        }
+
+        return fileName != null ? fileName : "Unknown file";
+    }
+
+    private String getFileType(Uri uri) {
+        String fileType = "application/octet-stream"; // default binary stream type
+
+        try {
+            // Try to get the MIME type from the content resolver
+            ContentResolver contentResolver = getApplicationContext().getContentResolver();
+            String type = contentResolver.getType(uri);
+            if (type != null) {
+                fileType = type;
+            } else {
+                // Fallback: Try to guess from file extension
+                String fileName = getFileName(uri);
+                String extension = MimeTypeMap.getFileExtensionFromUrl(fileName);
+                if (extension != null) {
+                    String guessedType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
+                    if (guessedType != null) {
+                        fileType = guessedType;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Unable to get file type from URI", e);
+        }
+
+        return fileType;
+    }
+
 }

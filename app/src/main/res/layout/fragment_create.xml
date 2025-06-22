@@ -5,174 +5,334 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
     tools:context="fragments.CreateFragment">
 
-    <ScrollView
+    <!-- App Bar with elevated design -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        app:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/container1">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorSurface"
+            app:title="Create New Task"
+            app:titleTextAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+            app:titleTextColor="?attr/colorOnSurface" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp">
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:paddingBottom="120dp">
 
-            <LinearLayout
-                android:id="@+id/layout1"
+            <!-- Header Section with motivational text -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_marginBottom="24dp"
+                app:cardBackgroundColor="?attr/colorPrimaryContainer"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/title"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                <EditText
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="✨ Create Something Amazing"
+                        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:alpha="0.8"
+                        android:text="Share a positive task that inspires creativity, kindness, or personal growth"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="?attr/colorOnPrimaryContainer" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/titleInputLayout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Task Title"
+                app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                app:boxStrokeColor="?attr/colorPrimary"
+                app:counterEnabled="true"
+                app:counterMaxLength="50"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/colorOnSurfaceVariant"
+                app:hintTextColor="?attr/colorOnSurfaceVariant"
+                app:startIconDrawable="@drawable/task_alt"
+                app:startIconTint="?attr/colorPrimary">
+
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/taskTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:autofillHints=""
-                    android:layout_marginTop="5dp"
-                    android:hint="Task name"
-                    android:inputType="text"
-                    android:textSize="15sp"/>
+                    android:inputType="textCapSentences"
+                    android:maxLength="50"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textColorHint="?attr/colorOnSurfaceVariant" />
 
-            </LinearLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
+            <!-- Task Description Section -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/descriptionInputLayout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/layout2"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@+id/layout1">
+                android:layout_marginBottom="16dp"
+                android:hint="Task Description"
+                app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                app:boxStrokeColor="?attr/colorPrimary"
+                app:counterEnabled="true"
+                app:counterMaxLength="200"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/colorOnSurfaceVariant"
+                app:helperText="Describe what makes this task special and meaningful"
+                app:hintTextColor="?attr/colorOnSurfaceVariant"
+                app:startIconDrawable="@drawable/ic_description"
+                app:startIconTint="?attr/colorPrimary">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/description"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/taskDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textMultiLine"
-                    android:hint="Description"
-                    android:textSize="15sp"
-                    android:layout_marginTop="5dp"
-                    android:autofillHints="" />
+                    android:gravity="top|start"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:lines="3"
+                    android:maxLength="200"
+                    android:scrollbars="vertical"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textColorHint="?attr/colorOnSurfaceVariant" />
 
-            </LinearLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
+            <!-- Timeline Section -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/timelineInputLayout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/layout3"
-                android:layout_marginTop="10dp"
-                app:layout_constraintTop_toBottomOf="@+id/layout2"
-                android:orientation="vertical">
+                android:layout_marginBottom="24dp"
+                android:hint="Timeline (Days)"
+                app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                app:boxStrokeColor="?attr/colorPrimary"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/colorOnSurfaceVariant"
+                app:hintTextColor="?attr/colorOnSurfaceVariant"
+                app:startIconDrawable="@drawable/task_alt"
+                app:startIconTint="?attr/colorPrimary"
+                app:suffixText="days">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/timeline_to_complete"
-                    android:textSize="18sp"
-                    android:textStyle="bold"/>
-
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/taskTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/enter_days"
                     android:inputType="number"
-                    android:textSize="15sp"
-                    android:layout_marginTop="5dp"
-                    android:autofillHints="" />
+                    android:maxLength="3"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textColorHint="?attr/colorOnSurfaceVariant" />
 
-            </LinearLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-
-
-
-            <ImageView
-                android:id="@+id/image"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_buttons"
                 android:layout_width="match_parent"
-                android:layout_height="288dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintTop_toBottomOf="@+id/layout3"
-                android:visibility="invisible"
-                android:layout_marginTop="10dp"
-                android:contentDescription="@string/create_task_image" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
 
-            <VideoView
-                android:id="@+id/video"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <!-- Pick Image Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_pick_image"
+                        style="@style/Widget.Material3.Button.Icon"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="Pick Image"
+                        android:textSize="16sp"
+                        app:backgroundTint="?attr/colorPrimary"
+                        app:icon="@drawable/ic_image"
+                        app:iconGravity="textStart"
+                        app:iconPadding="12dp" />
+
+                    <!-- Pick Video Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_pick_video"
+                        style="@style/Widget.Material3.Button.Icon"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="Pick Video"
+                        android:textSize="16sp"
+                        app:backgroundTint="?attr/colorSecondary"
+                        app:icon="@drawable/ic_video"
+                        app:iconGravity="textStart"
+                        app:iconPadding="12dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_selected_file"
                 android:layout_width="match_parent"
-                android:layout_height="288dp"
-                app:layout_constraintTop_toBottomOf="@+id/layout3"
-                android:visibility="invisible"
-                android:layout_marginTop="10dp"/>
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                tools:visibility="visible">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
-    </ScrollView>
+                    <!-- File Type Icon -->
+                    <ImageView
+                        android:id="@+id/iv_file_type"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_image"
+                        app:tint="?attr/colorPrimary" />
 
+                    <!-- File Name Text -->
+                    <TextView
+                        android:id="@+id/tv_file_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:ellipsize="middle"
+                        android:singleLine="true"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="14sp"
+                        tools:text="sample_image.jpg" />
 
+                    <!-- Cancel Button -->
+                    <ImageButton
+                        android:id="@+id/btn_cancel_file"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="8dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Remove selected file"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_close"
+                        app:tint="?attr/colorError" />
 
-    <RelativeLayout
-        android:id="@+id/container1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="13dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+                </LinearLayout>
 
+            </com.google.android.material.card.MaterialCardView>
 
-        <ImageView
-            android:id="@+id/image_upload"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/video_upload"
-            app:tint="?attr/colorOnSurface"
-            android:contentDescription="@string/get_image_from_gallery_btn"
-            android:src="@drawable/image_icon" />
+            <!-- Tips Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
-        <ImageView
-            android:id="@+id/video_upload"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="5dp"
-            android:layout_toStartOf="@+id/upload_post"
-            app:tint="?attr/colorOnSurface"
-            android:contentDescription="@string/get_video_from_galley_btn"
-            android:src="@drawable/video_icon" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/upload_post"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="5dp"
-            app:tint="?attr/colorOnSurface"
-            android:layout_marginEnd="15dp"
-            android:contentDescription="@string/upload_task_btn"
-            android:src="@drawable/send" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="💡 Quick Tips"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        android:textColor="?attr/colorOnSecondaryContainer"
+                        android:textStyle="bold" />
 
-    </RelativeLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:alpha="0.9"
+                        android:text="• Be specific and inspiring\n• Focus on positive outcomes\n• Set realistic timelines\n• Add media to make it engaging"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                        android:textColor="?attr/colorOnSecondaryContainer" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Create Task Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/upload_post"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:layout_gravity="end"
+                android:text="Create Task"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                app:backgroundTint="?attr/colorPrimary"
+                app:cornerRadius="28dp"
+                app:icon="@drawable/send"
+                app:iconGravity="textEnd"
+                app:iconSize="20dp"
+                app:iconTint="?attr/colorOnPrimary" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

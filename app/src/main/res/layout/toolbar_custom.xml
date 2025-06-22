@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="?attr/colorPrimary"
+    android:elevation="4dp"
+    app:contentInsetStart="0dp"
+    app:contentInsetEnd="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
+
+        <!-- Start Icon (App Logo) -->
+        <ImageView
+            android:id="@+id/start_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/app_logo"
+            android:contentDescription="App Logo"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- Center Title -->
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Wellbeing"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="18sp"
+            android:gravity="center" />
+
+        <!-- End Icon (Profile Picture) -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/userProfileCV"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_profile"
+            android:contentDescription="Profile Icon"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+</androidx.appcompat.widget.Toolbar>

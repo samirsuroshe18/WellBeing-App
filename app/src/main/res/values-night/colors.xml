@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Mode Colors -->
+    <color name="sage_green_primary_dark">#8BC59D</color>
+    <color name="sage_green_on_primary_dark">#1A3A22</color>
+    <color name="sage_green_container_dark">#2D5A37</color>
+    <color name="sage_green_on_container_dark">#D7F0DB</color>
+
+    <color name="coral_secondary_dark">#F4A688</color>
+    <color name="coral_on_secondary_dark">#5D2414</color>
+    <color name="coral_container_dark">#8B4513</color>
+    <color name="coral_on_container_dark">#FFEEE9</color>
+
+    <color name="lavender_tertiary_dark">#B5A7E6</color>
+    <color name="lavender_on_tertiary_dark">#3E2B5C</color>
+    <color name="lavender_container_dark">#5D4E7A</color>
+    <color name="lavender_on_container_dark">#EFEAF4</color>
+
+    <color name="background_dark">#1C1B1F</color>
+    <color name="on_background_dark">#E6E1E5</color>
+    <color name="surface_dark">#1C1B1F</color>
+    <color name="on_surface_dark">#E6E1E5</color>
+    <color name="surface_variant_dark">#2B2930</color>
+    <color name="on_surface_variant_dark">#CAC4D0</color>
+
+    <color name="gold_accent_dark">#FFA000</color>
+    <color name="silver_accent_dark">#9E9E9E</color>
+    <color name="bronze_accent_dark">#A0522D</color>
+
+    <color name="gradient_start_dark">#4A5D23</color>
+    <color name="gradient_end_dark">#5D7A2A</color>
+</resources>

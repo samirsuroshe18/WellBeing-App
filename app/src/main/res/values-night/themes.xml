@@ -1,6 +1,38 @@
 <resources
     xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.Theme.WellBeing" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor">?attr/colorSurface</item>
+            <item name="android:statusBarColor">@color/sage_green_primary_dark</item>
+            <item name="android:windowLightStatusBar">false</item>
+
+            <!-- Primary Colors -->
+            <item name="colorPrimary">@color/sage_green_primary_dark</item>
+            <item name="colorOnPrimary">@color/sage_green_on_primary_dark</item>
+            <item name="colorPrimaryContainer">@color/sage_green_container_dark</item>
+            <item name="colorOnPrimaryContainer">@color/sage_green_on_container_dark</item>
+
+            <!-- Secondary Colors -->
+            <item name="colorSecondary">@color/coral_secondary_dark</item>
+            <item name="colorOnSecondary">@color/coral_on_secondary_dark</item>
+            <item name="colorSecondaryContainer">@color/coral_container_dark</item>
+            <item name="colorOnSecondaryContainer">@color/coral_on_container_dark</item>
+
+            <!-- Tertiary Colors -->
+            <item name="colorTertiary">@color/lavender_tertiary_dark</item>
+            <item name="colorOnTertiary">@color/lavender_on_tertiary_dark</item>
+            <item name="colorTertiaryContainer">@color/lavender_container_dark</item>
+            <item name="colorOnTertiaryContainer">@color/lavender_on_container_dark</item>
+
+            <!-- Background & Surface -->
+            <item name="android:colorBackground">@color/background_dark</item>
+            <item name="colorOnBackground">@color/on_background_dark</item>
+            <item name="colorSurface">@color/surface_dark</item>
+            <item name="colorOnSurface">@color/on_surface_dark</item>
+            <item name="colorSurfaceVariant">@color/surface_variant_dark</item>
+            <item name="colorOnSurfaceVariant">@color/on_surface_variant_dark</item>
+
+            <!-- System Colors -->
+            <item name="colorError">@color/error_dark</item>
+            <item name="colorOnError">@color/black</item>
+
     </style>
 </resources>
