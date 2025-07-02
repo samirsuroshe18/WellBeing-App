@@ -194,12 +194,14 @@
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent">
 
+                                    <!-- Option 1: Using wrap_content with center positioning -->
                                     <VideoView
                                         android:id="@+id/taskVideo"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
                                         android:layout_gravity="center"
                                         android:keepScreenOn="true"
+                                        android:adjustViewBounds="true"
                                         app:layout_constraintBottom_toBottomOf="parent"
                                         app:layout_constraintEnd_toEndOf="parent"
                                         app:layout_constraintStart_toStartOf="parent"
@@ -274,16 +276,6 @@
                                         app:tint="?attr/colorOnSurface" />
 
                                 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-<!--                                <VideoView-->
-<!--                                    android:id="@+id/taskVideo"-->
-<!--                                    android:layout_width="match_parent"-->
-<!--                                    android:layout_height="200dp"-->
-<!--                                    android:visibility="invisible" />-->
-
-
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
