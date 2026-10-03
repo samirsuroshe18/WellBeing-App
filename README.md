@@ -14,14 +14,14 @@ The Wellbeing App is an Android application designed to promote mental, creative
 
 <p align="center">
   
-  <img width="188" height="2474" alt="register" src="https://github.com/user-attachments/assets/d1fad9fe-e290-4a90-b5c6-0721f99facdf" />
-  <img width="188" height="2474" alt="login" src="https://github.com/user-attachments/assets/3ed6c4e9-f8c0-4de3-bef6-4fa858df71f5" />
-  <img width="188" height="2474" alt="home" src="https://github.com/user-attachments/assets/5f0684b9-b1d4-4f39-8411-9bdea664ff78" />
-  <img width="188" height="2474" alt="task" src="https://github.com/user-attachments/assets/46b893f0-887a-4b29-bad1-24d847cc79c9" />
-  <img width="188" height="2474" alt="create" src="https://github.com/user-attachments/assets/b1f0147b-27d9-4b04-9140-304381cf1f78" />
-  <img width="188" height="2474" alt="leaderboard" src="https://github.com/user-attachments/assets/aec39978-50af-4f15-9b3a-a72ff8a3ba9a" />
-  <img width="188" height="2474" alt="profile" src="https://github.com/user-attachments/assets/a61c5737-7252-42a1-a4c8-a427643b5579" />
-  <img width="188" height="2474" alt="edit-profile" src="https://github.com/user-attachments/assets/7241da81-57e9-482c-8d5d-9ac1b0264597" />
+  <img width="188" alt="register" src="https://github.com/user-attachments/assets/d1fad9fe-e290-4a90-b5c6-0721f99facdf" />
+  <img width="188" alt="login" src="https://github.com/user-attachments/assets/3ed6c4e9-f8c0-4de3-bef6-4fa858df71f5" />
+  <img width="188" alt="home" src="https://github.com/user-attachments/assets/5f0684b9-b1d4-4f39-8411-9bdea664ff78" />
+  <img width="188" alt="task" src="https://github.com/user-attachments/assets/46b893f0-887a-4b29-bad1-24d847cc79c9" />
+  <img width="188" alt="create" src="https://github.com/user-attachments/assets/b1f0147b-27d9-4b04-9140-304381cf1f78" />
+  <img width="188" alt="leaderboard" src="https://github.com/user-attachments/assets/aec39978-50af-4f15-9b3a-a72ff8a3ba9a" />
+  <img width="188" alt="profile" src="https://github.com/user-attachments/assets/a61c5737-7252-42a1-a4c8-a427643b5579" />
+  <img width="188" alt="edit-profile" src="https://github.com/user-attachments/assets/7241da81-57e9-482c-8d5d-9ac1b0264597" />
 
 </p>
 
