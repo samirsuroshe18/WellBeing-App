@@ -1,5 +1,6 @@
 package com.example.wellbeing;
 
+import com.example.wellbeing.UtilsServices.ApiClient;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.FrameLayout;
@@ -37,7 +38,6 @@ import com.example.wellbeing.fragments.LeaderboardFragment;
 import com.example.wellbeing.fragments.TaskFragment;
 import com.example.wellbeing.models.UserModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,13 +47,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends AppCompatActivity {
-    //Global declaration
-    public static final int TIMEOUT_MS = 10000;
-    public static final int MAX_RETRIES = 2;
-    public static final float BACKOFF_MULT = 2.0f;
+    //Global declaration
     ActivityHomeBinding binding;
     BottomNavigationView bottomNavigationView;
     String accessToken, fragmentTagName;
@@ -66,7 +62,6 @@ public class HomeActivity extends AppCompatActivity {
     TaskFragment taskFragment;
     CreateFragment createFragment;
     LeaderboardFragment leaderboardFragment;
-    CircleImageView userProfileCV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +94,7 @@ public class HomeActivity extends AppCompatActivity {
     public void getUserInfo() {
 
 
-        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/get-userinfo";
+        String apiKey = ApiClient.BASE_URL + "/users/get-userinfo";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
@@ -121,7 +116,6 @@ public class HomeActivity extends AppCompatActivity {
 
                         userList.add(userModel);
 
-                        Picasso.get().load(userList.get(userList.size() - 1).getProfilePicture()).into(userProfileCV);
 
                     } else {
                         // Handle the case where "accessToken" key is not present in the JSON response
@@ -136,46 +130,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                NetworkResponse networkResponse = error.networkResponse;
-                String errorMessage = "Unknown error";
-                if (networkResponse == null) {
-                    if (error.getClass().equals(TimeoutError.class)) {
-                        errorMessage = "Request timeout";
-                    } else if (error.getClass().equals(NoConnectionError.class)) {
-                        errorMessage = "Failed to connect server";
-                    }
-                } else {
-                    String result = null;
-                    try {
-                        result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                        Log.d("Error : ", result);
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    Toast.makeText(HomeActivity.this, result, Toast.LENGTH_SHORT).show();
-                    try {
-                        JSONObject response = new JSONObject(result);
-                        String status = response.getString("status");
-                        String message = response.getString("message");
-
-                        Log.e("Error Status", status);
-                        Log.e("Error Message", message);
-
-                        if (networkResponse.statusCode == 404) {
-                            errorMessage = "Resource not found";
-                        } else if (networkResponse.statusCode == 401) {
-                            errorMessage = message + " Unauthorized";
-                        } else if (networkResponse.statusCode == 400) {
-                            errorMessage = message + "Bad request";
-                        } else if (networkResponse.statusCode == 500) {
-                            errorMessage = message + " Something is getting wrong";
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Log.i("Error", errorMessage);
-                Toast.makeText(HomeActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                ApiClient.showError(HomeActivity.this, error);
                 error.printStackTrace();
             }
         }) {
@@ -187,13 +142,8 @@ public class HomeActivity extends AppCompatActivity {
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(HomeActivity.this);
+        RequestQueue requestQueue = ApiClient.getQueue(HomeActivity.this);
         requestQueue.add(jsonObjectRequest);
-
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_MS,
-                MAX_RETRIES,
-                BACKOFF_MULT
-        ));
+
     }
 }

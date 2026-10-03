@@ -1,5 +1,6 @@
 package com.example.wellbeing;
 
+import com.example.wellbeing.UtilsServices.ApiClient;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -37,7 +38,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     private RequestQueue requestQueue;
 
     // API Configuration
-    private static final String FORGOT_PASSWORD_URL = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/forgot"; // Replace with your API endpoint
+    private static final String FORGOT_PASSWORD_URL = ApiClient.BASE_URL + "/users/forgot"; // Replace with your API endpoint
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +50,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         setupClickListeners();
 
         // Initialize Volley RequestQueue
-        requestQueue = Volley.newRequestQueue(this);
+        requestQueue = ApiClient.getQueue(this);
     }
 
     private void initializeViews() {
@@ -143,13 +144,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 }
         );
 
-        // Add request timeout (optional)
-        jsonObjectRequest.setRetryPolicy(new com.android.volley.DefaultRetryPolicy(
-                30000, // 30 seconds timeout
-                0, // No retries
-                com.android.volley.DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-        ));
-
         // Add request to queue
         requestQueue.add(jsonObjectRequest);
     }
@@ -178,44 +172,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     }
 
     private void handleApiError(VolleyError error) {
-        String errorMessage = "Network error occurred";
-
-        if (error.networkResponse != null) {
-            int statusCode = error.networkResponse.statusCode;
-
-            try {
-                String responseBody = new String(error.networkResponse.data, "utf-8");
-                JSONObject errorResponse = new JSONObject(responseBody);
-
-                // Parse error message from API response
-                if (errorResponse.has("message")) {
-                    errorMessage = errorResponse.getString("message");
-                } else if (errorResponse.has("error")) {
-                    errorMessage = errorResponse.getString("error");
-                }
-            } catch (Exception e) {
-                // Handle different status codes
-                switch (statusCode) {
-                    case 400:
-                        errorMessage = "Invalid email address";
-                        break;
-                    case 404:
-                        errorMessage = "Email not found in our records";
-                        break;
-                    case 429:
-                        errorMessage = "Too many requests. Please try again later";
-                        break;
-                    case 500:
-                        errorMessage = "Server error. Please try again later";
-                        break;
-                    default:
-                        errorMessage = "Something went wrong. Please try again";
-                        break;
-                }
-            }
-        }
-
-        showToast(errorMessage);
+        showToast(ApiClient.errorMessage(error));
     }
 
     private void showLoading(boolean isLoading) {

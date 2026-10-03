@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public abstract class VolleyMultipartRequest extends Request<NetworkResponse> {
@@ -120,8 +121,11 @@ public abstract class VolleyMultipartRequest extends Request<NetworkResponse> {
     private void buildTextPart(DataOutputStream dataOutputStream, String parameterName, String parameterValue) throws IOException {
         dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
         dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\"" + lineEnd);
+        dataOutputStream.writeBytes("Content-Type: text/plain; charset=UTF-8" + lineEnd);
         dataOutputStream.writeBytes(lineEnd);
-        dataOutputStream.writeBytes(parameterValue + lineEnd);
+        // writeBytes keeps only the low byte of each char, which breaks non-English text
+        dataOutputStream.write(parameterValue.getBytes(StandardCharsets.UTF_8));
+        dataOutputStream.writeBytes(lineEnd);
     }
 
 
@@ -129,7 +133,10 @@ public abstract class VolleyMultipartRequest extends Request<NetworkResponse> {
     //    Write data file into header and data output stream.
     private void buildDataPart(DataOutputStream dataOutputStream, DataPart dataFile, String inputName) throws IOException {
         dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
-        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + inputName + "\"; filename=\"" + dataFile.getFileName() + "\"" + lineEnd);
+        String fileName = dataFile.getFileName() == null ? "upload" : dataFile.getFileName().replace("\"", "");
+        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + inputName + "\"; filename=\"");
+        dataOutputStream.write(fileName.getBytes(StandardCharsets.UTF_8));
+        dataOutputStream.writeBytes("\"" + lineEnd);
         if (dataFile.getType() != null && !dataFile.getType().trim().isEmpty()) {
             dataOutputStream.writeBytes("Content-Type: " + dataFile.getType() + lineEnd);
         }

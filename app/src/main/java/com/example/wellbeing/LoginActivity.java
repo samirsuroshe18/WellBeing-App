@@ -1,5 +1,6 @@
 package com.example.wellbeing;
 
+import com.example.wellbeing.UtilsServices.ApiClient;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,10 +36,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginActivity extends AppCompatActivity {
-    public static final int TIMEOUT_MS = 10000;
-    public static final int MAX_RETRIES = 2;
-    public static final float BACKOFF_MULT = 2.0f;
+public class LoginActivity extends AppCompatActivity {
     TextView mov_to_signUp, forgot_password;
     EditText email_editText, pass_editText;
     Button sign_in_btn;
@@ -102,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
         params.put("email", email);
         params.put("password", password);
 
-        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/login";
+        String apiKey = ApiClient.BASE_URL + "/users/login";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, apiKey, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
@@ -114,8 +112,8 @@ public class LoginActivity extends AppCompatActivity {
                         refreshToken = dataObject.getString("refreshToken");
                         sharedPreference.setValue_string("accessToken", accessToken);
                         sharedPreference.setValue_string("refreshToken", refreshToken);
+                        sharedPreference.setUser(dataObject.getJSONObject("loggedInUser").getString("_id"));
                         resMsg = response.getString("message");
-                        Log.d("Response : ", accessToken);
                         Toast.makeText(LoginActivity.this, resMsg, Toast.LENGTH_SHORT).show();
                         login_progress.setVisibility(View.GONE);
                         sign_in_btn.setText("Login");
@@ -140,70 +138,7 @@ public class LoginActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                NetworkResponse networkResponse = error.networkResponse;
-                String errorMessage = "Unknown error";
-                if (networkResponse == null) {
-                    if (error.getClass().equals(TimeoutError.class)) {
-                        errorMessage = "Request timeout";
-                        login_progress.setVisibility(View.GONE);
-                        sign_in_btn.setText("Login");
-                        sign_in_btn.setEnabled(true);
-                    } else if (error.getClass().equals(NoConnectionError.class)) {
-                        errorMessage = "Failed to connect server";
-                        login_progress.setVisibility(View.GONE);
-                        sign_in_btn.setText("Login");
-                        sign_in_btn.setEnabled(true);
-                    }
-                } else {
-                    String result = null;
-                    try {
-                        result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                        Log.d("Error : ", result);
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    Toast.makeText(LoginActivity.this, result, Toast.LENGTH_SHORT).show();
-                    try {
-                        JSONObject response = new JSONObject(result);
-                        String status = response.getString("status");
-                        String message = response.getString("message");
-
-                        Log.e("Error Status", status);
-                        Log.e("Error Message", message);
-
-                        if (networkResponse.statusCode == 404) {
-                            errorMessage = "Resource not found";
-                            login_progress.setVisibility(View.GONE);
-                            sign_in_btn.setText("Login");
-                            sign_in_btn.setEnabled(true);
-                        } else if (networkResponse.statusCode == 401) {
-                            errorMessage = message+" Unauthorized";
-                            login_progress.setVisibility(View.GONE);
-                            sign_in_btn.setText("Login");
-                            sign_in_btn.setEnabled(true);
-                        } else if (networkResponse.statusCode == 400) {
-                            errorMessage = message+ "Bad request";
-                            login_progress.setVisibility(View.GONE);
-                            sign_in_btn.setText("Login");
-                            sign_in_btn.setEnabled(true);
-                        } else if (networkResponse.statusCode == 500) {
-                            errorMessage = message+" Something is getting wrong";
-                            login_progress.setVisibility(View.GONE);
-                            sign_in_btn.setText("Login");
-                            sign_in_btn.setEnabled(true);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        login_progress.setVisibility(View.GONE);
-                        sign_in_btn.setText("Login");
-                        sign_in_btn.setEnabled(true);
-                    }
-                    login_progress.setVisibility(View.GONE);
-                    sign_in_btn.setText("Login");
-                    sign_in_btn.setEnabled(true);
-                }
-                Log.i("Error", errorMessage);
-                Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                ApiClient.showError(LoginActivity.this, error);
                 error.printStackTrace();
                 login_progress.setVisibility(View.GONE);
                 sign_in_btn.setText("Login");
@@ -218,13 +153,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
+        RequestQueue requestQueue = ApiClient.getQueue(LoginActivity.this);
         requestQueue.add(jsonObjectRequest);
 
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_MS,
-                MAX_RETRIES,
-                BACKOFF_MULT
-        ));
     }
 }

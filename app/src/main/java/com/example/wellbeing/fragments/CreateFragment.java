@@ -1,5 +1,7 @@
 package com.example.wellbeing.fragments;
 
+import com.example.wellbeing.UtilsServices.ApiClient;
+import com.example.wellbeing.UtilsServices.MultipartUploader;
 import static android.app.Activity.RESULT_OK;
 
 import android.app.ProgressDialog;
@@ -20,43 +22,24 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkResponse;
-import com.android.volley.NoConnectionError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
-import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.example.wellbeing.R;
 import com.example.wellbeing.UtilsServices.SharedPreferenceClass;
-import com.example.wellbeing.UtilsServices.UriToByteArrayConverterUtil;
-import com.example.wellbeing.UtilsServices.VolleyMultipartRequest;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CreateFragment extends Fragment {
-    private static final String TAG = "CreateFragment";
-    public static final int TIMEOUT_MS = 10000;
-    public static final int MAX_RETRIES = 2;
-    public static final float BACKOFF_MULT = 2.0f;
-    byte[] multiMediaByteArray;
+    private static final String TAG = "CreateFragment";
     EditText taskTitle, taskDescription, taskTime;
     MaterialButton send;
-    String title, description, time, mediaType, accessToken, fileName;
+    String title, description, time, mediaType, accessToken;
     SharedPreferenceClass sharedPreferenceClass;
     ProgressDialog progressDialog;
 
@@ -150,144 +133,52 @@ public class CreateFragment extends Fragment {
      * Handle the upload post action
      */
     private void uploadPost() {
-        title = taskTitle.getText().toString();
-        description = taskDescription.getText().toString();
-        time = taskTime.getText().toString();
+        title = taskTitle.getText().toString().trim();
+        description = taskDescription.getText().toString().trim();
+        time = taskTime.getText().toString().trim();
         if (title.isEmpty() || description.isEmpty() || time.isEmpty()) {
             Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_SHORT).show();
-        } else if (isImageSelected && isVideoSelected) {
-            Toast.makeText(getContext(), "Please provide media reference", Toast.LENGTH_SHORT).show();
         } else if (selectedFileUri == null) {
             Toast.makeText(getContext(), "Please select a file first", Toast.LENGTH_SHORT).show();
-        }else{
+        } else if (MultipartUploader.getFileSize(requireContext(), selectedFileUri) > MultipartUploader.MAX_FILE_SIZE) {
+            Toast.makeText(getContext(), "File is too large. Maximum size is 100 MB", Toast.LENGTH_LONG).show();
+        } else {
             progressDialog.show();
-            String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/tasklist/create-task";
-            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, apiKey,
-                    new Response.Listener<NetworkResponse>() {
-                        @Override
-                        public void onResponse(NetworkResponse response) {
-                            String resultResponse = new String(response.data, StandardCharsets.UTF_8);
-                            try {
-                                JSONObject result = new JSONObject(resultResponse);
-                                String status = result.getString("status");
-                                String message = result.getString("message");
+            send.setEnabled(false);
 
-                                if (status.equals("200")) {
-                                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                                    taskTitle.setText("");
-                                    taskDescription.setText("");
-                                    taskTime.setText("");
-                                    clearSelectedFile();
-                                    progressDialog.dismiss();
-                                } else {
-                                    Log.i("Unexpected", message);
-                                    progressDialog.dismiss();
-                                }
+            Map<String, String> fields = new LinkedHashMap<>();
+            fields.put("title", title);
+            fields.put("description", description);
+            fields.put("timeToComplete", time);
+            fields.put("mediaType", isImageSelected ? "image" : "video");
+
+            MultipartUploader.upload(requireContext(), ApiClient.BASE_URL + "/tasklist/create-task", accessToken, fields,
+                    "taskReference", selectedFileUri, selectedFileName, new MultipartUploader.Callback() {
+                        @Override
+                        public void onSuccess(String responseBody) {
+                            if (!isAdded()) return;
+                            progressDialog.dismiss();
+                            String message = "Task is created successfully";
+                            try {
+                                message = new JSONObject(responseBody).optString("message", message);
                             } catch (JSONException e) {
                                 Log.e(TAG, "uploadPost error : ", e);
-                                progressDialog.dismiss();
                             }
+                            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                            taskTitle.setText("");
+                            taskDescription.setText("");
+                            taskTime.setText("");
+                            clearSelectedFile();
                         }
-                    },
-                    new Response.ErrorListener() {
+
                         @Override
-                        public void onErrorResponse(VolleyError error) {
-
-                            NetworkResponse networkResponse = error.networkResponse;
-                            String errorMessage = "Unknown error";
-                            if (networkResponse == null) {
-                                if (error.getClass().equals(TimeoutError.class)) {
-                                    errorMessage = "Request timeout";
-                                    progressDialog.dismiss();
-                                } else if (error.getClass().equals(NoConnectionError.class)) {
-                                    errorMessage = "Failed to connect server";
-                                    progressDialog.dismiss();
-                                }
-                            } else {
-                                String result = new String(networkResponse.data, StandardCharsets.UTF_8);
-                                try {
-                                    JSONObject response = new JSONObject(result);
-                                    String status = response.getString("status");
-                                    String message = response.getString("message");
-
-                                    Log.e("Error Status", status);
-                                    Log.e("Error Message", message);
-
-                                    if (networkResponse.statusCode == 404) {
-                                        errorMessage = "Resource not found";
-                                        progressDialog.dismiss();
-                                    } else if (networkResponse.statusCode == 401) {
-                                        errorMessage = message+" Please login again";
-                                        progressDialog.dismiss();
-                                    } else if (networkResponse.statusCode == 400) {
-                                        errorMessage = message+ " Check your inputs";
-                                        progressDialog.dismiss();
-                                    } else if (networkResponse.statusCode == 500) {
-                                        errorMessage = message+" Something is getting wrong";
-                                        progressDialog.dismiss();
-                                    }
-                                } catch (JSONException e) {
-                                    Log.e(TAG, "uploadPost error : ", e);
-                                    progressDialog.dismiss();
-                                }
-                            }
-                            Log.i("Error", errorMessage);
-                            Log.e(TAG, "uploadPost error : ", error);
+                        public void onError(int statusCode, String message) {
+                            if (!isAdded()) return;
                             progressDialog.dismiss();
+                            send.setEnabled(true);
+                            ApiClient.showError(getContext(), statusCode, message);
                         }
-                    })
-            {
-                @Override
-                protected Map<String, DataPart> getByteData() {
-                    Map<String, DataPart> params = new HashMap<>();
-                    params.put("taskReference", new DataPart(fileName, multiMediaByteArray));
-                    return params;
-                }
-
-                @NonNull
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> text = new HashMap<>();
-                    text.put("title", title);
-                    text.put("description", description);
-                    text.put("timeToComplete", time);
-                    text.put("mediaType", isImageSelected ? "image" : "video");
-                    return text;
-                }
-
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<>();
-                    headers.put("Authorization", "Bearer "+accessToken);
-                    return headers;
-                }
-            };
-
-            //adding the request to volley
-            Volley.newRequestQueue(requireContext()).add(volleyMultipartRequest);
-
-            volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    TIMEOUT_MS,
-                    MAX_RETRIES,
-                    BACKOFF_MULT
-            ));
-
-            volleyMultipartRequest.setRetryPolicy(new RetryPolicy() {
-                @Override
-                public int getCurrentTimeout() {
-                    return 50000;
-                }
-
-                @Override
-                public int getCurrentRetryCount() {
-                    return 50000;
-                }
-
-                @Override
-                public void retry(VolleyError error) throws VolleyError {
-
-                }
-            });
+                    });
         }
     }
 
@@ -394,28 +285,18 @@ public class CreateFragment extends Fragment {
     /**
      * Update UI to show the selected file information
      */
-    private void updateSelectedFileUI(Uri fileUri) throws IOException {
-        try {
-            // Show the selected file card
-            cardSelectedFile.setVisibility(View.VISIBLE);
+    private void updateSelectedFileUI(Uri fileUri) {
+        // Show the selected file card
+        cardSelectedFile.setVisibility(View.VISIBLE);
 
-            // Set file name
-            tvFileName.setText(selectedFileName);
+        // Set file name
+        tvFileName.setText(selectedFileName);
 
-            // Set appropriate icon based on file type
-            if (isImageSelected) {
-                ivFileType.setImageResource(R.drawable.ic_image);
-                multiMediaByteArray = UriToByteArrayConverterUtil.convertUriToByteArray(requireContext(), fileUri);
-            } else if (isVideoSelected) {
-                ivFileType.setImageResource(R.drawable.ic_video);
-                multiMediaByteArray = UriToByteArrayConverterUtil.convertUriToByteArray(requireContext(), fileUri);
-            }
+        // Set appropriate icon based on file type
+        ivFileType.setImageResource(isImageSelected ? R.drawable.ic_image : R.drawable.ic_video);
 
-            // Enable upload button
-            send.setEnabled(true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        // Enable upload button
+        send.setEnabled(true);
     }
 
     /**

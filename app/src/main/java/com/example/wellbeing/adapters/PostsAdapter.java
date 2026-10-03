@@ -1,5 +1,6 @@
 package com.example.wellbeing.adapters;
 
+import com.example.wellbeing.UtilsServices.ApiClient;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -64,10 +65,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     int IMAGE_VIEW_TYPE = 0;
     int VIDEO_VIEW_TYPE = 1;
     String accessToken;
-    PostModel posts;
-    public static final int TIMEOUT_MS = 10000;
-    public static final int MAX_RETRIES = 2;
-    public static final float BACKOFF_MULT = 2.0f;
+    PostModel posts;
 
     public PostsAdapter(ArrayList<PostModel> postModel, Context context, String accessToken) {
         this.postModel = postModel;
@@ -130,7 +128,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((ImageViewHolder) holder).like_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/like/send-like";
+                    String apiKey = ApiClient.BASE_URL + "/like/send-like";
                     PostModel currentPost = postModel.get(holder.getAdapterPosition());
 
                     final HashMap<String, String> params = new HashMap<>();
@@ -159,46 +157,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         @Override
                         public void onErrorResponse(VolleyError error) {
 
-                            NetworkResponse networkResponse = error.networkResponse;
-                            String errorMessage = "Unknown error";
-                            if (networkResponse == null) {
-                                if (error.getClass().equals(TimeoutError.class)) {
-                                    errorMessage = "Request timeout";
-                                } else if (error.getClass().equals(NoConnectionError.class)) {
-                                    errorMessage = "Failed to connect server";
-                                }
-                            } else {
-                                String result = null;
-                                try {
-                                    result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                                    Log.d("Error : ", result);
-                                } catch (UnsupportedEncodingException e) {
-                                    throw new RuntimeException(e);
-                                }
-                                Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
-                                try {
-                                    JSONObject response = new JSONObject(result);
-                                    String status = response.getString("status");
-                                    String message = response.getString("message");
-
-                                    Log.e("Error Status", status);
-                                    Log.e("Error Message", message);
-
-                                    if (networkResponse.statusCode == 404) {
-                                        errorMessage = "Resource not found";
-                                    } else if (networkResponse.statusCode == 401) {
-                                        errorMessage = message+" Unauthorized";
-                                    } else if (networkResponse.statusCode == 400) {
-                                        errorMessage = message+ "Bad request";
-                                    } else if (networkResponse.statusCode == 500) {
-                                        errorMessage = message+" Something is getting wrong";
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            Log.i("Error", errorMessage);
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                            ApiClient.showError(context, error);
                             error.printStackTrace();
 
                         }
@@ -212,21 +171,16 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         }
                     };
 
-                    RequestQueue requestQueue = Volley.newRequestQueue(context);
+                    RequestQueue requestQueue = ApiClient.getQueue(context);
                     requestQueue.add(jsonObjectRequest);
-
-                    jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                            TIMEOUT_MS,
-                            MAX_RETRIES,
-                            BACKOFF_MULT
-                    ));
+
                 }
             });
 
             ((ImageViewHolder) holder).dislike_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/dislike/send-dislike";
+                    String apiKey = ApiClient.BASE_URL + "/dislike/send-dislike";
                     PostModel currentPost = postModel.get(holder.getAdapterPosition());
 
                     final HashMap<String, String> params = new HashMap<>();
@@ -256,46 +210,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         @Override
                         public void onErrorResponse(VolleyError error) {
 
-                            NetworkResponse networkResponse = error.networkResponse;
-                            String errorMessage = "Unknown error";
-                            if (networkResponse == null) {
-                                if (error.getClass().equals(TimeoutError.class)) {
-                                    errorMessage = "Request timeout";
-                                } else if (error.getClass().equals(NoConnectionError.class)) {
-                                    errorMessage = "Failed to connect server";
-                                }
-                            } else {
-                                String result = null;
-                                try {
-                                    result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                                    Log.d("Error : ", result);
-                                } catch (UnsupportedEncodingException e) {
-                                    throw new RuntimeException(e);
-                                }
-                                Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
-                                try {
-                                    JSONObject response = new JSONObject(result);
-                                    String status = response.getString("status");
-                                    String message = response.getString("message");
-
-                                    Log.e("Error Status", status);
-                                    Log.e("Error Message", message);
-
-                                    if (networkResponse.statusCode == 404) {
-                                        errorMessage = "Resource not found";
-                                    } else if (networkResponse.statusCode == 401) {
-                                        errorMessage = message+" Unauthorized";
-                                    } else if (networkResponse.statusCode == 400) {
-                                        errorMessage = message+ "Bad request";
-                                    } else if (networkResponse.statusCode == 500) {
-                                        errorMessage = message+" Something is getting wrong";
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            Log.i("Error", errorMessage);
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                            ApiClient.showError(context, error);
                             error.printStackTrace();
 
                         }
@@ -309,14 +224,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         }
                     };
 
-                    RequestQueue requestQueue = Volley.newRequestQueue(context);
+                    RequestQueue requestQueue = ApiClient.getQueue(context);
                     requestQueue.add(jsonObjectRequest);
-
-                    jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                            TIMEOUT_MS,
-                            MAX_RETRIES,
-                            BACKOFF_MULT
-                    ));
+
                 }
             });
 
@@ -336,7 +246,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, AcceptedTaskActivity.class);
-                    intent.putExtra("post_id", posts.getTaskId());
+                    intent.putExtra("post_id", postModel.get(holder.getAdapterPosition()).getTaskId());
                     context.startActivity(intent);
                 }
             });
@@ -375,15 +285,21 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     updateRemainingTime((VideoViewHolder) holder, totalDuration, totalDuration);
                     ((VideoViewHolder) holder).video_progress_bar.setMax(totalDuration);
                     ((VideoViewHolder) holder).video_progress_bar.setProgress(0);
+
+                    // the user already tapped play while the video was loading
+                    if (((VideoViewHolder) holder).playWhenReady) {
+                        ((VideoViewHolder) holder).playWhenReady = false;
+                        ((VideoViewHolder) holder).post_video.start();
+                        ((VideoViewHolder) holder).play.setVisibility(View.INVISIBLE);
+                        ((VideoViewHolder) holder).pause.setVisibility(View.VISIBLE);
+                        startUpdatingProgress((VideoViewHolder) holder);
+                    }
                 }
             });
 
-// Now set the video
+            // The video is only loaded when the user taps play, so scrolling the feed stays light
             Uri videoUri = Uri.parse(videoUrl);
-            ((VideoViewHolder) holder).post_video.setVideoURI(videoUri);
-
-// Request focus to ensure it's ready
-            ((VideoViewHolder) holder).post_video.requestFocus();
+            ((VideoViewHolder) holder).playWhenReady = false;
 
             Picasso.get().load(posts.getUserProfile()).into(((VideoViewHolder) holder).user_profile);
             ((VideoViewHolder) holder).user_name.setText(posts.getUserName());
@@ -424,9 +340,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         startUpdatingProgress((VideoViewHolder)holder);
                         Log.d(TAG, "Video started successfully");
                     } else {
-                        Log.d(TAG, "Video not ready yet, trying to prepare again");
-                        // Try to reload the video
-                        ((VideoViewHolder) holder).post_video.setVideoURI(Uri.parse(posts.getMedia()));
+                        ((VideoViewHolder) holder).playWhenReady = true;
+                        ((VideoViewHolder) holder).post_video.setVideoURI(videoUri);
+                        ((VideoViewHolder) holder).post_video.requestFocus();
                     }
                 }
             });
@@ -458,7 +374,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((VideoViewHolder) holder).like_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/like/send-like";
+                    String apiKey = ApiClient.BASE_URL + "/like/send-like";
                     PostModel currentPost = postModel.get(holder.getAdapterPosition());
 
                     final HashMap<String, String> params = new HashMap<>();
@@ -485,46 +401,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            NetworkResponse networkResponse = error.networkResponse;
-                            String errorMessage = "Unknown error";
-                            if (networkResponse == null) {
-                                if (error.getClass().equals(TimeoutError.class)) {
-                                    errorMessage = "Request timeout";
-                                } else if (error.getClass().equals(NoConnectionError.class)) {
-                                    errorMessage = "Failed to connect server";
-                                }
-                            } else {
-                                String result = null;
-                                try {
-                                    result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                                    Log.d("Error : ", result);
-                                } catch (UnsupportedEncodingException e) {
-                                    throw new RuntimeException(e);
-                                }
-                                Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
-                                try {
-                                    JSONObject response = new JSONObject(result);
-                                    String status = response.getString("status");
-                                    String message = response.getString("message");
-
-                                    Log.e("Error Status", status);
-                                    Log.e("Error Message", message);
-
-                                    if (networkResponse.statusCode == 404) {
-                                        errorMessage = "Resource not found";
-                                    } else if (networkResponse.statusCode == 401) {
-                                        errorMessage = message+" Unauthorized";
-                                    } else if (networkResponse.statusCode == 400) {
-                                        errorMessage = message+ "Bad request";
-                                    } else if (networkResponse.statusCode == 500) {
-                                        errorMessage = message+" Something is getting wrong";
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            Log.i("Error", errorMessage);
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                            ApiClient.showError(context, error);
                             error.printStackTrace();
                         }
                     }){
@@ -537,14 +414,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         }
                     };
 
-                    RequestQueue requestQueue = Volley.newRequestQueue(context);
+                    RequestQueue requestQueue = ApiClient.getQueue(context);
                     requestQueue.add(jsonObjectRequest);
-
-                    jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                            TIMEOUT_MS,
-                            MAX_RETRIES,
-                            BACKOFF_MULT
-                    ));
+
                 }
             });
 
@@ -552,7 +424,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((VideoViewHolder) holder).dislike_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/dislike/send-dislike";
+                    String apiKey = ApiClient.BASE_URL + "/dislike/send-dislike";
                     PostModel currentPost = postModel.get(holder.getAdapterPosition());
 
                     final HashMap<String, String> params = new HashMap<>();
@@ -579,46 +451,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            NetworkResponse networkResponse = error.networkResponse;
-                            String errorMessage = "Unknown error";
-                            if (networkResponse == null) {
-                                if (error.getClass().equals(TimeoutError.class)) {
-                                    errorMessage = "Request timeout";
-                                } else if (error.getClass().equals(NoConnectionError.class)) {
-                                    errorMessage = "Failed to connect server";
-                                }
-                            } else {
-                                String result = null;
-                                try {
-                                    result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                                    Log.d("Error : ", result);
-                                } catch (UnsupportedEncodingException e) {
-                                    throw new RuntimeException(e);
-                                }
-                                Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
-                                try {
-                                    JSONObject response = new JSONObject(result);
-                                    String status = response.getString("status");
-                                    String message = response.getString("message");
-
-                                    Log.e("Error Status", status);
-                                    Log.e("Error Message", message);
-
-                                    if (networkResponse.statusCode == 404) {
-                                        errorMessage = "Resource not found";
-                                    } else if (networkResponse.statusCode == 401) {
-                                        errorMessage = message+" Unauthorized";
-                                    } else if (networkResponse.statusCode == 400) {
-                                        errorMessage = message+ "Bad request";
-                                    } else if (networkResponse.statusCode == 500) {
-                                        errorMessage = message+" Something is getting wrong";
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            Log.i("Error", errorMessage);
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                            ApiClient.showError(context, error);
                             error.printStackTrace();
                         }
                     }){
@@ -631,14 +464,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         }
                     };
 
-                    RequestQueue requestQueue = Volley.newRequestQueue(context);
+                    RequestQueue requestQueue = ApiClient.getQueue(context);
                     requestQueue.add(jsonObjectRequest);
-
-                    jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                            TIMEOUT_MS,
-                            MAX_RETRIES,
-                            BACKOFF_MULT
-                    ));
+
                 }
             });
 
@@ -646,6 +474,8 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(context, CommentActivity.class);
+                    intent.putExtra("_id", postModel.get(holder.getAdapterPosition()).get_id());
+                    intent.putExtra("accessToken", accessToken);
                     context.startActivity(intent);
                 }
             });
@@ -672,7 +502,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, AcceptedTaskActivity.class);
-                    intent.putExtra("post_id", posts.getTaskId());
+                    intent.putExtra("post_id", postModel.get(holder.getAdapterPosition()).getTaskId());
                     context.startActivity(intent);
                 }
             });
@@ -727,6 +557,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         VideoView post_video;
         ProgressBar video_progress_bar;
         MaterialButton view_vid_task;
+        boolean playWhenReady;
 
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);

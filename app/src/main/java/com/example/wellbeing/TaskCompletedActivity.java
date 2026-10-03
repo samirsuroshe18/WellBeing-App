@@ -24,7 +24,6 @@ public class TaskCompletedActivity extends AppCompatActivity {
 
         selectTaskBtn = findViewById(R.id.selectTaskBtn);
         sharedPreferenceClass = new SharedPreferenceClass(this);
-        Toast.makeText(TaskCompletedActivity.this, "This is completed Activity", Toast.LENGTH_SHORT).show();
 
         selectTaskBtn.setOnClickListener(new View.OnClickListener() {
 

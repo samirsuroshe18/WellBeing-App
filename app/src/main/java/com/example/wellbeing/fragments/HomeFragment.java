@@ -1,5 +1,6 @@
 package com.example.wellbeing.fragments;
 
+import com.example.wellbeing.UtilsServices.ApiClient;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,10 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HomeFragment extends Fragment {
-    public static final int TIMEOUT_MS = 10000;
-    public static final int MAX_RETRIES = 2;
-    public static final float BACKOFF_MULT = 2.0f;
+public class HomeFragment extends Fragment {
     ArrayList<PostModel> postList;
     RecyclerView postRecyclerView;
     PostsAdapter adapter;
@@ -95,11 +93,12 @@ public class HomeFragment extends Fragment {
     private void getPosts() {
         lottieAnimationView.setVisibility(View.VISIBLE);
         container.setVisibility(View.INVISIBLE);
-        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/upload/get-post";
+        String apiKey = ApiClient.BASE_URL + "/upload/get-post";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (!isAdded()) return;
                 try {
                     if (response != null) {
                         JSONArray dataObject = response.getJSONArray("data");
@@ -136,61 +135,9 @@ public class HomeFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (!isAdded()) return;
 
-                NetworkResponse networkResponse = error.networkResponse;
-                String errorMessage = "Unknown error";
-                if (networkResponse == null) {
-                    if (error.getClass().equals(TimeoutError.class)) {
-                        errorMessage = "Request timeout";
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    } else if (error.getClass().equals(NoConnectionError.class)) {
-                        errorMessage = "Failed to connect server";
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    String result = null;
-                    try {
-                        result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                        Log.d("Error : ", result);
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-                    try {
-                        JSONObject response = new JSONObject(result);
-                        String status = response.getString("status");
-                        String message = response.getString("message");
-
-                        Log.e("Error Status", status);
-                        Log.e("Error Message", message);
-
-                        if (networkResponse.statusCode == 404) {
-                            errorMessage = "Resource not found";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        } else if (networkResponse.statusCode == 401) {
-                            errorMessage = message+" Unauthorized";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        } else if (networkResponse.statusCode == 400) {
-                            errorMessage = message+ "Bad request";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        } else if (networkResponse.statusCode == 500) {
-                            errorMessage = message+" Something is getting wrong";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    }
-                }
-                Log.i("Error", errorMessage);
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                ApiClient.showError(getContext(), error);
                 error.printStackTrace();
                 lottieAnimationView.setVisibility(View.INVISIBLE);
                 container.setVisibility(View.VISIBLE);
@@ -204,25 +151,21 @@ public class HomeFragment extends Fragment {
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(requireContext());
+        RequestQueue requestQueue = ApiClient.getQueue(requireContext());
         requestQueue.add(jsonObjectRequest);
-
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_MS,
-                MAX_RETRIES,
-                BACKOFF_MULT
-        ));
+
     }
 
     private void getUpdatedPosts() {
         lottieAnimationView.setVisibility(View.VISIBLE);
         container.setVisibility(View.INVISIBLE);
 
-        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/upload/get-post";
+        String apiKey = ApiClient.BASE_URL + "/upload/get-post";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (!isAdded()) return;
                 try {
                     if (response != null) {
                         JSONArray dataObject = response.getJSONArray("data");
@@ -259,62 +202,9 @@ public class HomeFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (!isAdded()) return;
 
-                NetworkResponse networkResponse = error.networkResponse;
-                String errorMessage = "Unknown error";
-                if (networkResponse == null) {
-                    if (error.getClass().equals(TimeoutError.class)) {
-                        errorMessage = "Request timeout";
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    } else if (error.getClass().equals(NoConnectionError.class)) {
-                        errorMessage = "Failed to connect server";
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    String result = null;
-                    try {
-                        result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                        Log.d("Error : ", result);
-
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-                    try {
-                        JSONObject response = new JSONObject(result);
-                        String status = response.getString("status");
-                        String message = response.getString("message");
-
-                        Log.e("Error Status", status);
-                        Log.e("Error Message", message);
-
-                        if (networkResponse.statusCode == 404) {
-                            errorMessage = "Resource not found";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        } else if (networkResponse.statusCode == 401) {
-                            errorMessage = message+" Unauthorized";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        } else if (networkResponse.statusCode == 400) {
-                            errorMessage = message+ "Bad request";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        } else if (networkResponse.statusCode == 500) {
-                            errorMessage = message+" Something is getting wrong";
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                            container.setVisibility(View.VISIBLE);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                        container.setVisibility(View.VISIBLE);
-                    }
-                }
-                Log.i("Error", errorMessage);
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                ApiClient.showError(getContext(), error);
                 error.printStackTrace();
                 lottieAnimationView.setVisibility(View.INVISIBLE);
                 container.setVisibility(View.VISIBLE);
@@ -328,14 +218,9 @@ public class HomeFragment extends Fragment {
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(requireContext());
+        RequestQueue requestQueue = ApiClient.getQueue(requireContext());
         requestQueue.add(jsonObjectRequest);
-
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_MS,
-                MAX_RETRIES,
-                BACKOFF_MULT
-        ));
+
     }
 
 }

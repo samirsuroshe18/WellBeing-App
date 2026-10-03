@@ -1,5 +1,6 @@
 package com.example.wellbeing;
 
+import com.example.wellbeing.UtilsServices.ApiClient;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,9 +47,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CommentActivity extends AppCompatActivity {
-    public static final int TIMEOUT_MS = 10000;
-    public static final int MAX_RETRIES = 2;
-    public static final float BACKOFF_MULT = 2.0f;
     ArrayList<CommentModel> commentList;
     CommentAdapter adapter;
     RecyclerView commentRecyclerView;
@@ -104,7 +102,11 @@ public class CommentActivity extends AppCompatActivity {
         sendCommentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                content = commentInput.getText().toString();
+                content = commentInput.getText().toString().trim();
+                if (content.isEmpty()) {
+                    Toast.makeText(CommentActivity.this, "Write a comment first", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 sendComment();
                 commentInput.setText("");
                 new HideKeyboardClass(view, CommentActivity.this);
@@ -114,7 +116,7 @@ public class CommentActivity extends AppCompatActivity {
     }
 
     public void getComments(){
-            String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/comment/get-comment";
+            String apiKey = ApiClient.BASE_URL + "/comment/get-comment";
 
             final HashMap<String, String> params = new HashMap<>();
             params.put("multiMedia", multiMedia);
@@ -148,46 +150,7 @@ public class CommentActivity extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
 
-                    NetworkResponse networkResponse = error.networkResponse;
-                    String errorMessage = "Unknown error";
-                    if (networkResponse == null) {
-                        if (error.getClass().equals(TimeoutError.class)) {
-                            errorMessage = "Request timeout";
-                        } else if (error.getClass().equals(NoConnectionError.class)) {
-                            errorMessage = "Failed to connect server";
-                        }
-                    } else {
-                        String result = null;
-                        try {
-                            result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                            Log.d("Error : ", result);
-                        } catch (UnsupportedEncodingException e) {
-                            throw new RuntimeException(e);
-                        }
-                        Toast.makeText(CommentActivity.this, result, Toast.LENGTH_SHORT).show();
-                        try {
-                            JSONObject response = new JSONObject(result);
-                            String status = response.getString("status");
-                            String message = response.getString("message");
-
-                            Log.e("Error Status", status);
-                            Log.e("Error Message", message);
-
-                            if (networkResponse.statusCode == 404) {
-                                errorMessage = "Resource not found";
-                            } else if (networkResponse.statusCode == 401) {
-                                errorMessage = message+" Unauthorized";
-                            } else if (networkResponse.statusCode == 400) {
-                                errorMessage = message+ "Bad request";
-                            } else if (networkResponse.statusCode == 500) {
-                                errorMessage = message+" Something is getting wrong";
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    Log.i("Error", errorMessage);
-                    Toast.makeText(CommentActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    ApiClient.showError(CommentActivity.this, error);
                     error.printStackTrace();
 
                 }
@@ -201,18 +164,13 @@ public class CommentActivity extends AppCompatActivity {
                 }
             };
 
-            RequestQueue requestQueue = Volley.newRequestQueue(CommentActivity.this);
+            RequestQueue requestQueue = ApiClient.getQueue(CommentActivity.this);
             requestQueue.add(jsonObjectRequest);
 
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_MS,
-                MAX_RETRIES,
-                BACKOFF_MULT
-        ));
         }
 
     public void sendComment(){
-        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/comment/post-comment";
+        String apiKey = ApiClient.BASE_URL + "/comment/post-comment";
 
         final HashMap<String, String> params = new HashMap<>();
         params.put("multiMedia", multiMedia);
@@ -248,46 +206,7 @@ public class CommentActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                NetworkResponse networkResponse = error.networkResponse;
-                String errorMessage = "Unknown error";
-                if (networkResponse == null) {
-                    if (error.getClass().equals(TimeoutError.class)) {
-                        errorMessage = "Request timeout";
-                    } else if (error.getClass().equals(NoConnectionError.class)) {
-                        errorMessage = "Failed to connect server";
-                    }
-                } else {
-                    String result = null;
-                    try {
-                        result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                        Log.d("Error : ", result);
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    Toast.makeText(CommentActivity.this, result, Toast.LENGTH_SHORT).show();
-                    try {
-                        JSONObject response = new JSONObject(result);
-                        String status = response.getString("status");
-                        String message = response.getString("message");
-
-                        Log.e("Error Status", status);
-                        Log.e("Error Message", message);
-
-                        if (networkResponse.statusCode == 404) {
-                            errorMessage = "Resource not found";
-                        } else if (networkResponse.statusCode == 401) {
-                            errorMessage = message+" Unauthorized";
-                        } else if (networkResponse.statusCode == 400) {
-                            errorMessage = message+ "Bad request";
-                        } else if (networkResponse.statusCode == 500) {
-                            errorMessage = message+" Something is getting wrong";
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Log.i("Error", errorMessage);
-                Toast.makeText(CommentActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                ApiClient.showError(CommentActivity.this, error);
                 error.printStackTrace();
 
             }
@@ -301,13 +220,8 @@ public class CommentActivity extends AppCompatActivity {
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(CommentActivity.this);
+        RequestQueue requestQueue = ApiClient.getQueue(CommentActivity.this);
         requestQueue.add(jsonObjectRequest);
 
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_MS,
-                MAX_RETRIES,
-                BACKOFF_MULT
-        ));
     }
 }

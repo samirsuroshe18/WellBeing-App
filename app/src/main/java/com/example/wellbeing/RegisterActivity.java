@@ -1,5 +1,6 @@
 package com.example.wellbeing;
 
+import com.example.wellbeing.UtilsServices.ApiClient;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -54,10 +55,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = "RegisterActivity";
-    private ActivityResultLauncher<Intent> imagePickerLauncher;
-    public static final int TIMEOUT_MS = 10000;
-    public static final int MAX_RETRIES = 2;
-    public static final float BACKOFF_MULT = 2.0f;
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
     TextView mov_to_logIn, forgot_password;
     EditText email_editText, name_editText, pass_editText;
     Button sign_up_btn;
@@ -140,7 +138,7 @@ public class RegisterActivity extends AppCompatActivity {
                 email = email_editText.getText().toString();
                 password = pass_editText.getText().toString();
                 Matcher matcher = pattern.matcher(email);
-                if (name.isEmpty() && email.isEmpty() && password.isEmpty()) {
+                if (name.trim().isEmpty() || email.trim().isEmpty() || password.trim().isEmpty()) {
                     Toast.makeText(RegisterActivity.this, "All fields are required!!", Toast.LENGTH_SHORT).show();
                 }else if(selectedImageUri == null){
                     Toast.makeText(RegisterActivity.this, "Please select your profile", Toast.LENGTH_SHORT).show();
@@ -158,7 +156,7 @@ public class RegisterActivity extends AppCompatActivity {
         sign_up_btn.setEnabled(false);
         sign_up_btn.setText("");
         login_progress.setVisibility(View.VISIBLE);
-        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/register";
+        String apiKey = ApiClient.BASE_URL + "/users/register";
 
         VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, apiKey,
                 new Response.Listener<NetworkResponse>() {
@@ -198,67 +196,7 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
-                        NetworkResponse networkResponse = error.networkResponse;
-                        String errorMessage = "Unknown error";
-                        if (networkResponse == null) {
-                            if (error.getClass().equals(TimeoutError.class)) {
-                                errorMessage = "Request timeout";
-                                login_progress.setVisibility(View.GONE);
-                                sign_up_btn.setText("Sign up");
-                                sign_up_btn.setEnabled(true);
-                            } else if (error.getClass().equals(NoConnectionError.class)) {
-                                errorMessage = "Failed to connect server";
-                                login_progress.setVisibility(View.GONE);
-                                sign_up_btn.setText("Sign up");
-                                sign_up_btn.setEnabled(true);
-                            }
-                        } else {
-                            String result = null;
-                            try {
-                                result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                                Log.d("Error : ", result);
-                            } catch (UnsupportedEncodingException e) {
-                                throw new RuntimeException(e);
-                            }
-                            Toast.makeText(RegisterActivity.this, result, Toast.LENGTH_SHORT).show();
-                            try {
-                                JSONObject response = new JSONObject(result);
-                                String status = response.getString("status");
-                                String message = response.getString("message");
-
-                                Log.e("Error Status", status);
-                                Log.e("Error Message", message);
-
-                                if (networkResponse.statusCode == 404) {
-                                    errorMessage = "Resource not found";
-                                    login_progress.setVisibility(View.GONE);
-                                    sign_up_btn.setText("Sign up");
-                                    sign_up_btn.setEnabled(true);
-                                } else if (networkResponse.statusCode == 401) {
-                                    errorMessage = message+" Unauthorized";
-                                    login_progress.setVisibility(View.GONE);
-                                    sign_up_btn.setText("Sign up");
-                                    sign_up_btn.setEnabled(true);
-                                } else if (networkResponse.statusCode == 400) {
-                                    errorMessage = message+ "Bad request";
-                                    login_progress.setVisibility(View.GONE);
-                                    sign_up_btn.setText("Sign up");
-                                    sign_up_btn.setEnabled(true);
-                                } else if (networkResponse.statusCode == 500) {
-                                    errorMessage = message+" Something is getting wrong";
-                                    login_progress.setVisibility(View.GONE);
-                                    sign_up_btn.setText("Sign up");
-                                    sign_up_btn.setEnabled(true);
-                                }
-                            } catch (JSONException e) {
-                                login_progress.setVisibility(View.GONE);
-                                sign_up_btn.setText("Sign up");
-                                sign_up_btn.setEnabled(true);
-                                Log.e(TAG, "Error parsing JSON response: ", e);
-                            }
-                        }
-                        Log.i("Error", errorMessage);
-                        Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        ApiClient.showError(RegisterActivity.this, error);
                         login_progress.setVisibility(View.GONE);
                         sign_up_btn.setText("Sign up");
                         sign_up_btn.setEnabled(true);
@@ -284,13 +222,8 @@ public class RegisterActivity extends AppCompatActivity {
         };
 
         //adding the request to volley
-        Volley.newRequestQueue(this).add(volleyMultipartRequest);
+        ApiClient.getQueue(this).add(volleyMultipartRequest);
 
-        volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_MS,
-                MAX_RETRIES,
-                BACKOFF_MULT
-        ));
     }
 
     /**

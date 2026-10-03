@@ -1,5 +1,6 @@
 package com.example.wellbeing.fragments;
 
+import com.example.wellbeing.UtilsServices.ApiClient;
 import static android.app.Activity.RESULT_OK;
 
 import android.app.ProgressDialog;
@@ -55,10 +56,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class ProfileFragment extends Fragment {
-    public static final int TIMEOUT_MS = 10000;
-    public static final int MAX_RETRIES = 2;
-    public static final float BACKOFF_MULT = 2.0f;
+public class ProfileFragment extends Fragment {
     ArrayList<UserModel> userInfo;
     String accessToken;
     SharedPreferenceClass sharedPreferenceClass;
@@ -171,11 +169,12 @@ public class ProfileFragment extends Fragment {
     public void getUserInfo(){
         container.setVisibility(View.INVISIBLE);
         lottieAnimationView.setVisibility(View.VISIBLE);
-        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/get-userinfo";
+        String apiKey = ApiClient.BASE_URL + "/users/get-userinfo";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (!isAdded()) return;
                 try {
                     if (response != null) {
                         JSONObject dataObject = (JSONObject) response.getJSONArray("data").get(0);
@@ -229,63 +228,9 @@ public class ProfileFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (!isAdded()) return;
 
-                NetworkResponse networkResponse = error.networkResponse;
-                String errorMessage = "Unknown error";
-                if (networkResponse == null) {
-                    if (error.getClass().equals(TimeoutError.class)) {
-                        errorMessage = "Request timeout";
-                        container.setVisibility(View.VISIBLE);
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                    } else if (error.getClass().equals(NoConnectionError.class)) {
-                        errorMessage = "Failed to connect server";
-                        container.setVisibility(View.VISIBLE);
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                    }
-                } else {
-                    String result = null;
-                    try {
-                        result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                        Log.d("Error : ", result);
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-                    try {
-                        JSONObject response = new JSONObject(result);
-                        String status = response.getString("status");
-                        String message = response.getString("message");
-
-                        Log.e("Error Status", status);
-                        Log.e("Error Message", message);
-
-                        if (networkResponse.statusCode == 404) {
-                            errorMessage = "Resource not found";
-                            container.setVisibility(View.VISIBLE);
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                        } else if (networkResponse.statusCode == 401) {
-                            errorMessage = message+" Unauthorized";
-                            container.setVisibility(View.VISIBLE);
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                        } else if (networkResponse.statusCode == 400) {
-                            errorMessage = message+ "Bad request";
-                            container.setVisibility(View.VISIBLE);
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                        } else if (networkResponse.statusCode == 500) {
-                            errorMessage = message+" Something is getting wrong";
-                            container.setVisibility(View.VISIBLE);
-                            lottieAnimationView.setVisibility(View.INVISIBLE);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        container.setVisibility(View.VISIBLE);
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                    }
-                    container.setVisibility(View.VISIBLE);
-                    lottieAnimationView.setVisibility(View.INVISIBLE);
-                }
-                Log.i("Error", errorMessage);
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                ApiClient.showError(getContext(), error);
                 error.printStackTrace();
                 container.setVisibility(View.VISIBLE);
                 lottieAnimationView.setVisibility(View.INVISIBLE);
@@ -299,30 +244,26 @@ public class ProfileFragment extends Fragment {
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(requireContext());
+        RequestQueue requestQueue = ApiClient.getQueue(requireContext());
         requestQueue.add(jsonObjectRequest);
 
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_MS,
-                MAX_RETRIES,
-                BACKOFF_MULT
-        ));
     }
 
     public void logoutUser(){
         progressDialog.show();
-        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/logout";
+        String apiKey = ApiClient.BASE_URL + "/users/logout";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiKey, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (!isAdded()) return;
                 try {
                     progressDialog.dismiss();
                     String resMsg;
                     if (response != null) {
                         resMsg = response.getString("message");
                         Toast.makeText(getContext(), resMsg, Toast.LENGTH_SHORT).show();
-                        sharedPreferenceClass.remove("accessToken");
+                        sharedPreferenceClass.clearSession();
                         startActivity(new Intent(getContext(), LoginActivity.class));
                         requireActivity().finishAffinity();
                         container.setVisibility(View.VISIBLE);
@@ -343,57 +284,9 @@ public class ProfileFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (!isAdded()) return;
                 progressDialog.dismiss();
-                NetworkResponse networkResponse = error.networkResponse;
-                String errorMessage = "Unknown error";
-                if (networkResponse == null) {
-                    if (error.getClass().equals(TimeoutError.class)) {
-                        errorMessage = "Request timeout";
-                        container.setVisibility(View.VISIBLE);
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                    } else if (error.getClass().equals(NoConnectionError.class)) {
-                        errorMessage = "Failed to connect server";
-                        container.setVisibility(View.VISIBLE);
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                    }
-                } else {
-                    String result = null;
-                    try {
-                        result = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                        Log.d("Error : ", result);
-                        container.setVisibility(View.VISIBLE);
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-                    try {
-                        JSONObject response = new JSONObject(result);
-                        String status = response.getString("status");
-                        String message = response.getString("message");
-
-                        Log.e("Error Status", status);
-                        Log.e("Error Message", message);
-
-                        if (networkResponse.statusCode == 404) {
-                            errorMessage = "Resource not found";
-                        } else if (networkResponse.statusCode == 401) {
-                            errorMessage = message+" Unauthorized";
-                        } else if (networkResponse.statusCode == 400) {
-                            errorMessage = message+ "Bad request";
-                        } else if (networkResponse.statusCode == 500) {
-                            errorMessage = message+" Something is getting wrong";
-                        }
-                        container.setVisibility(View.VISIBLE);
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        container.setVisibility(View.VISIBLE);
-                        lottieAnimationView.setVisibility(View.INVISIBLE);
-                    }
-                }
-                Log.i("Error", errorMessage);
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                ApiClient.showError(getContext(), error);
                 container.setVisibility(View.VISIBLE);
                 lottieAnimationView.setVisibility(View.INVISIBLE);
                 error.printStackTrace();
@@ -408,13 +301,8 @@ public class ProfileFragment extends Fragment {
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(requireContext());
+        RequestQueue requestQueue = ApiClient.getQueue(requireContext());
         requestQueue.add(jsonObjectRequest);
 
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_MS,
-                MAX_RETRIES,
-                BACKOFF_MULT
-        ));
     }
 }

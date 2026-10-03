@@ -1,5 +1,6 @@
 package com.example.wellbeing;
 
+import com.example.wellbeing.UtilsServices.ApiClient;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -55,9 +56,6 @@ public class UpdateAccountDetails extends AppCompatActivity {
     private static final String TAG = "UpdateAccountDetails";
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     // Increase these values significantly for file uploads
-    private static final int TIMEOUT_MS = 60000; // 60 seconds (was probably 30 seconds)
-    private static final int MAX_RETRIES = 1; // Reduce retries to avoid multiple uploads
-    private static final float BACKOFF_MULT = 1.0f;
     SharedPreferenceClass sharedPreferenceClass;
     String accessToken;
     String fileName, fileType, name, intentName, intentProfile;
@@ -140,7 +138,7 @@ public class UpdateAccountDetails extends AppCompatActivity {
         updateBtn.setEnabled(false);
         updateBtn.setText("");
         updateProgress.setVisibility(View.VISIBLE);
-        String apiKey = "https://wellbeing-backend-5f8e.onrender.com/api/v1/users/update-account";
+        String apiKey = ApiClient.BASE_URL + "/users/update-account";
 
         VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, apiKey,
                 new Response.Listener<NetworkResponse>() {
@@ -177,25 +175,7 @@ public class UpdateAccountDetails extends AppCompatActivity {
                         updateProgress.setVisibility(View.GONE);
                         updateBtn.setText("Update");
                         updateBtn.setEnabled(true);
-                        String errorMessage = "Unknown error";
-                        if (error.networkResponse != null && error.networkResponse.data != null) {
-                            try {
-                                String responseBody = new String(error.networkResponse.data, "utf-8");
-                                // Optionally parse the JSON to extract a specific message
-                                JSONObject data = new JSONObject(responseBody);
-                                if (data.has("message")) {
-                                    errorMessage = data.getString("message");
-                                } else {
-                                    errorMessage = responseBody;
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            errorMessage = error.toString();
-                            Log.e(TAG, "Error parsing JSON response: ", error);
-                        }
-                        Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+                        ApiClient.showError(UpdateAccountDetails.this, error);
                     }
 
                 }) {
@@ -231,13 +211,8 @@ public class UpdateAccountDetails extends AppCompatActivity {
         };
 
         //adding the request to volley
-        Volley.newRequestQueue(this).add(volleyMultipartRequest);
+        ApiClient.getQueue(this).add(volleyMultipartRequest);
 
-        volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_MS,
-                MAX_RETRIES,
-                BACKOFF_MULT
-        ));
     }
 
     /**
