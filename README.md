@@ -77,3 +77,7 @@ change it there to use a server of your own.
 🔗 LinkedIn: [samir-suroshe](https://www.linkedin.com/in/samir-suroshe)  
 
 Your feedback and contributions are always welcome!
+
+## License
+
+[MIT](LICENSE)
