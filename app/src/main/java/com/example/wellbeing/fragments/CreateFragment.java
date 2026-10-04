@@ -138,6 +138,8 @@ public class CreateFragment extends Fragment {
         time = taskTime.getText().toString().trim();
         if (title.isEmpty() || description.isEmpty() || time.isEmpty()) {
             Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_SHORT).show();
+        } else if (!time.matches("0*[1-9][0-9]*")) {
+            Toast.makeText(getContext(), "Time to complete must be at least 1 day", Toast.LENGTH_SHORT).show();
         } else if (selectedFileUri == null) {
             Toast.makeText(getContext(), "Please select a file first", Toast.LENGTH_SHORT).show();
         } else if (MultipartUploader.getFileSize(requireContext(), selectedFileUri) > MultipartUploader.MAX_FILE_SIZE) {

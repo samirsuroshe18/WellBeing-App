@@ -115,11 +115,7 @@ public class TaskFragment extends Fragment {
         accessToken = sharedPreferenceClass.getValue_string("accessToken");
 
         if (acceptFlag.equals("true")){
-            nextBtn.setVisibility(View.INVISIBLE);
-            acceptBtn.setVisibility(View.INVISIBLE);
-            acceptedBtn.setVisibility(View.VISIBLE);
-            postBtn.setVisibility(View.VISIBLE);
-            timer.setVisibility(View.VISIBLE);
+            showAcceptedState();
             getTaskCurrentStatus();
         }else {
             getTask();
@@ -136,14 +132,14 @@ public class TaskFragment extends Fragment {
         acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sharedPreferenceClass.setValue_string("acceptFlag", "true");
+                // no task is on screen when loading one failed or none is left
+                if (tasks.isEmpty()) {
+                    Toast.makeText(getContext(), "There is no task to accept right now", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 taskId = tasks.get(tasks.size()-1).get_id();
-                sharedPreferenceClass.setValue_string("taskId", taskId);
-                nextBtn.setVisibility(View.INVISIBLE);
-                acceptBtn.setVisibility(View.INVISIBLE);
-                acceptedBtn.setVisibility(View.VISIBLE);
-                timer.setVisibility(View.VISIBLE);
-                postBtn.setVisibility(View.VISIBLE);
+                // the task counts as accepted only once the server has confirmed it
+                acceptBtn.setEnabled(false);
                 taskAccepted(taskId);
             }
         });
@@ -193,6 +189,11 @@ public class TaskFragment extends Fragment {
                 if (!isAdded()) return;
                 try {
                     if (response != null) {
+                        if (response.getJSONArray("data").length() == 0) {
+                            // every task has been taken already
+                            showNoTaskLeft();
+                            return;
+                        }
                         JSONObject dataObject = (JSONObject) response.getJSONArray("data").get(0);
                         TaskModel taskModel = new TaskModel();
 
@@ -207,6 +208,7 @@ public class TaskFragment extends Fragment {
                         taskModel.setPofilePicture(dataObject.getJSONObject("createdBy").getString("profilePicture"));
 
                         tasks.add(taskModel);
+                        acceptBtn.setEnabled(true);
                         sharedPreferenceClass.setValue_string("taskId", dataObject.getString("_id"));
                         container.setVisibility(View.VISIBLE);
                         lottieAnimationView.setVisibility(View.INVISIBLE);
@@ -378,6 +380,11 @@ public class TaskFragment extends Fragment {
 
                         JSONObject dataObject = response.getJSONObject("data");
                         sharedPreferenceClass.setValue_string("acceptedTaskId", dataObject.getString("_id"));
+                        sharedPreferenceClass.setValue_string("taskId", taskId);
+                        sharedPreferenceClass.setValue_string("acceptFlag", "true");
+                        acceptFlag = "true";
+                        acceptBtn.setEnabled(true);
+                        showAcceptedState();
                         String remainingTime = dataObject.getString("remainingTime");
 
                         timeLeftTV.setText(remainingTime);
@@ -393,6 +400,7 @@ public class TaskFragment extends Fragment {
 
                 }catch (Exception e){
                     Log.e(TAG, "Task Accepted : ", e);
+                    acceptBtn.setEnabled(true);
                     container.setVisibility(View.VISIBLE);
                     lottieAnimationView.setVisibility(View.INVISIBLE);
                 }
@@ -403,6 +411,7 @@ public class TaskFragment extends Fragment {
                 if (!isAdded()) return;
 
                 ApiClient.showError(getContext(), error);
+                acceptBtn.setEnabled(true);
                 container.setVisibility(View.VISIBLE);
                 lottieAnimationView.setVisibility(View.INVISIBLE);
 
@@ -423,6 +432,11 @@ public class TaskFragment extends Fragment {
     }
 
     public void getTaskCurrentStatus(){
+        // an accept that never reached the server leaves no id behind: start over with a new task
+        if (sharedPreferenceClass.getValue_string("acceptedTaskId").isEmpty()) {
+            resetAcceptedTask();
+            return;
+        }
         container.setVisibility(View.INVISIBLE);
         lottieAnimationView.setVisibility(View.VISIBLE);
         String apiKey = ApiClient.BASE_URL + "/usertaskinfo/get-status";
@@ -440,13 +454,15 @@ public class TaskFragment extends Fragment {
                         JSONObject dataObject = response.getJSONObject("data");
                         String status = dataObject.getString("status");
                         Log.d("currentTaskStatusData : ", String.valueOf(dataObject));
-                        if (status.equals("incompleted")){
-                            sharedPreferenceClass.setValue_string("statusFlag", "incompleted");
-                        }
 
                         String time = dataObject.getString("remainingTime");
-                        if (time.contains("-")){
-                            sharedPreferenceClass.setValue_string("statusFlag", "incompleted");
+                        // proof is uploaded for the task that was accepted, whatever task was looked at since
+                        sharedPreferenceClass.setValue_string("taskId", dataObject.getJSONObject("taskInfo").getString("_id"));
+                        if (status.equals("completed")) {
+                            // a completed task stays completed after its time has run out
+                            showTaskResult("completed", TaskCompletedActivity.class);
+                        } else if (status.equals("incompleted") || time.contains("-")) {
+                            showTaskResult("incompleted", TaskIncompletedActivity.class);
                         }
 
                         timeLeftTV.setText(dataObject.getString("remainingTime"));
@@ -583,6 +599,12 @@ public class TaskFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 if (!isAdded()) return;
 
+                int statusCode = error.networkResponse != null ? error.networkResponse.statusCode : 0;
+                if (statusCode == 400 || statusCode == 404) {
+                    // the accepted task is not on the server (any more): start over with a new one
+                    resetAcceptedTask();
+                    return;
+                }
                 ApiClient.showError(getContext(), error);
                 container.setVisibility(View.VISIBLE);
                 lottieAnimationView.setVisibility(View.INVISIBLE);
@@ -601,6 +623,52 @@ public class TaskFragment extends Fragment {
         RequestQueue requestQueue = ApiClient.getQueue(requireContext());
         requestQueue.add(jsonObjectRequest);
 
+    }
+
+    private void showAcceptedState() {
+        nextBtn.setVisibility(View.INVISIBLE);
+        acceptBtn.setVisibility(View.INVISIBLE);
+        acceptedBtn.setVisibility(View.VISIBLE);
+        postBtn.setVisibility(View.VISIBLE);
+        timer.setVisibility(View.VISIBLE);
+    }
+
+    private void showChoosingState() {
+        nextBtn.setVisibility(View.VISIBLE);
+        acceptBtn.setVisibility(View.VISIBLE);
+        acceptedBtn.setVisibility(View.INVISIBLE);
+        postBtn.setVisibility(View.INVISIBLE);
+        timer.setVisibility(View.INVISIBLE);
+    }
+
+    private void resetAcceptedTask() {
+        sharedPreferenceClass.setValue_string("acceptFlag", "false");
+        sharedPreferenceClass.setValue_string("statusFlag", "");
+        acceptFlag = "false";
+        statusFlag = "";
+        showChoosingState();
+        getTask();
+    }
+
+    private void showNoTaskLeft() {
+        tasks.clear();
+        acceptBtn.setEnabled(false);
+        taskVideo.stopPlayback();
+        videoContainer.setVisibility(View.INVISIBLE);
+        taskImage.setVisibility(View.INVISIBLE);
+        taskTitleTV.setText("No new task right now");
+        describeTV.setText("You have taken every task. Create one or check back later.");
+        container.setVisibility(View.VISIBLE);
+        lottieAnimationView.setVisibility(View.INVISIBLE);
+    }
+
+    // remembers the result and opens its screen, once
+    private void showTaskResult(String result, Class<?> screen) {
+        sharedPreferenceClass.setValue_string("statusFlag", result);
+        if (!result.equals(statusFlag)) {
+            statusFlag = result;
+            startActivity(new Intent(getContext(), screen));
+        }
     }
 
     private void startUpdatingProgress() {

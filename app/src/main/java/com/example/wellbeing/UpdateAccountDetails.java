@@ -125,8 +125,13 @@ public class UpdateAccountDetails extends AppCompatActivity {
                                 fileName = getFileName(selectedImageUri);
                                 fileType = getFileType(selectedImageUri);
                                 circleImageView.setImageURI(selectedImageUri);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
+                            } catch (IOException | SecurityException e) {
+                                multiMediaByteArray = null;
+                            }
+                            if (multiMediaByteArray == null) {
+                                // the picked image could not be read
+                                selectedImageUri = null;
+                                Toast.makeText(getApplicationContext(), "Unable to read the selected image", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }

@@ -103,6 +103,8 @@ public class HomeFragment extends Fragment {
                     if (response != null) {
                         JSONArray dataObject = response.getJSONArray("data");
                         for (int i=0; i<dataObject.length(); i++){
+                            // a post whose author's account is gone cannot be shown, and must not hide the others
+                            if (dataObject.getJSONObject(i).optJSONObject("uploadedBy") == null) continue;
                             PostModel postModel = new PostModel();
 
                             postModel.set_id(dataObject.getJSONObject(i).getString("_id"));
@@ -171,6 +173,8 @@ public class HomeFragment extends Fragment {
                         JSONArray dataObject = response.getJSONArray("data");
 
                         for (int i=0; i<dataObject.length(); i++){
+                            // a post whose author's account is gone cannot be shown, and must not hide the others
+                            if (dataObject.getJSONObject(i).optJSONObject("uploadedBy") == null) continue;
                             PostModel postModel = new PostModel();
 
                             postModel.set_id(dataObject.getJSONObject(i).getString("_id"));
