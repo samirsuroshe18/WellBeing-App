@@ -49,6 +49,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -60,6 +61,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final Handler handler = new Handler();
     private Runnable updateTimeRunnable;
     private static final String TAG = "PostsAdapter";
+    private static final Object PAYLOAD_COUNTS = new Object();
     ArrayList<PostModel> postModel;
     Context context;
     int IMAGE_VIEW_TYPE = 0;
@@ -129,7 +131,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 @Override
                 public void onClick(View view) {
                     String apiKey = ApiClient.BASE_URL + "/like/send-like";
-                    PostModel currentPost = postModel.get(holder.getAdapterPosition());
+                    int clicked = holder.getAdapterPosition();
+                    if (clicked == RecyclerView.NO_POSITION) return;
+                    PostModel currentPost = postModel.get(clicked);
 
                     final HashMap<String, String> params = new HashMap<>();
                     params.put("multiMedia", currentPost.get_id());
@@ -141,10 +145,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                                 if (response != null) {
                                     JSONObject dataObject = response.getJSONObject("data");
                                     currentPost.setTotalLikes(dataObject.getInt("totalLikes"));
-                                    postModel.set(holder.getAdapterPosition(), currentPost);
                                     String resMsg = response.getString("message");
                                     Toast.makeText(context, resMsg, Toast.LENGTH_SHORT).show();
-                                    notifyItemChanged(holder.getAdapterPosition());
+                                    notifyCountsChanged(currentPost);
                                 } else {
                                     // Handle the case where "accessToken" key is not present in the JSON response
                                     Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
@@ -181,7 +184,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 @Override
                 public void onClick(View view) {
                     String apiKey = ApiClient.BASE_URL + "/dislike/send-dislike";
-                    PostModel currentPost = postModel.get(holder.getAdapterPosition());
+                    int clicked = holder.getAdapterPosition();
+                    if (clicked == RecyclerView.NO_POSITION) return;
+                    PostModel currentPost = postModel.get(clicked);
 
                     final HashMap<String, String> params = new HashMap<>();
                     params.put("multiMedia", currentPost.get_id());
@@ -193,8 +198,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                                 if (response != null) {
                                     JSONObject dataObject = response.getJSONObject("data");
                                     currentPost.setTotalDislikes(dataObject.getInt("totalDislike"));
-                                    postModel.set(holder.getAdapterPosition(), currentPost);
-                                    notifyItemChanged(holder.getAdapterPosition());
+                                    notifyCountsChanged(currentPost);
                                     String resMsg = response.getString("message");
                                     Toast.makeText(context, resMsg, Toast.LENGTH_SHORT).show();
                                 } else {
@@ -233,7 +237,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((ImageViewHolder) holder).comment_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    PostModel currentPost = postModel.get(holder.getAdapterPosition());
+                    int clicked = holder.getAdapterPosition();
+                    if (clicked == RecyclerView.NO_POSITION) return;
+                    PostModel currentPost = postModel.get(clicked);
                     String _id = currentPost.get_id();
                     Intent intent = new Intent(context, CommentActivity.class);
                     intent.putExtra("_id", _id);
@@ -304,23 +310,30 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             Picasso.get().load(posts.getUserProfile()).into(((VideoViewHolder) holder).user_profile);
             ((VideoViewHolder) holder).user_name.setText(posts.getUserName());
             ((VideoViewHolder) holder).user_name.setText(posts.getUserName());
+            // the server's time is UTC; without that the time of a video post is off by the time zone
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date date = null;
 
             try {
                 date = sdf.parse(posts.getCreatedAt());
             } catch (ParseException e) {
-                throw new RuntimeException(e);
+                Log.e(TAG, "Error parsing date: " + e.getMessage());
             }
             PrettyTime prettyTime = new PrettyTime();
-            ((VideoViewHolder) holder).time.setText(prettyTime.format(date));
+            ((VideoViewHolder) holder).time.setText(date != null ? prettyTime.format(date) : "");
             ((VideoViewHolder) holder).description.setText(posts.getDescription());
             ((VideoViewHolder) holder).like_count.setText(String.valueOf(posts.getTotalLikes()));
             ((VideoViewHolder) holder).dislike_count.setText(String.valueOf(posts.getTotalDislikes()));
             ((VideoViewHolder) holder).comment_count.setText(String.valueOf(posts.getTotalComments()));
 
 // Initial duration setup - show total duration until video starts
-            int duration1 = Integer.parseInt(posts.getDuration());
+            int duration1 = 0;
+            try {
+                duration1 = (int) Math.round(Double.parseDouble(posts.getDuration()));
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "Unreadable duration: " + posts.getDuration());
+            }
             String initialDurationText = formatDuration(duration1 * 1000); // Convert to milliseconds
             ((VideoViewHolder) holder).duration.setText(initialDurationText);
 
@@ -375,7 +388,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 @Override
                 public void onClick(View view) {
                     String apiKey = ApiClient.BASE_URL + "/like/send-like";
-                    PostModel currentPost = postModel.get(holder.getAdapterPosition());
+                    int clicked = holder.getAdapterPosition();
+                    if (clicked == RecyclerView.NO_POSITION) return;
+                    PostModel currentPost = postModel.get(clicked);
 
                     final HashMap<String, String> params = new HashMap<>();
                     params.put("multiMedia", currentPost.get_id());
@@ -387,10 +402,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                                 if (response != null) {
                                     JSONObject dataObject = response.getJSONObject("data");
                                     currentPost.setTotalLikes(dataObject.getInt("totalLikes"));
-                                    postModel.set(holder.getAdapterPosition(), currentPost);
                                     String resMsg = response.getString("message");
                                     Toast.makeText(context, resMsg, Toast.LENGTH_SHORT).show();
-                                    notifyItemChanged(holder.getAdapterPosition());
+                                    notifyCountsChanged(currentPost);
                                 } else {
                                     Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                                 }
@@ -425,7 +439,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 @Override
                 public void onClick(View view) {
                     String apiKey = ApiClient.BASE_URL + "/dislike/send-dislike";
-                    PostModel currentPost = postModel.get(holder.getAdapterPosition());
+                    int clicked = holder.getAdapterPosition();
+                    if (clicked == RecyclerView.NO_POSITION) return;
+                    PostModel currentPost = postModel.get(clicked);
 
                     final HashMap<String, String> params = new HashMap<>();
                     params.put("multiMedia", currentPost.get_id());
@@ -437,8 +453,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                                 if (response != null) {
                                     JSONObject dataObject = response.getJSONObject("data");
                                     currentPost.setTotalDislikes(dataObject.getInt("totalDislike"));
-                                    postModel.set(holder.getAdapterPosition(), currentPost);
-                                    notifyItemChanged(holder.getAdapterPosition());
+                                    notifyCountsChanged(currentPost);
                                     String resMsg = response.getString("message");
                                     Toast.makeText(context, resMsg, Toast.LENGTH_SHORT).show();
                                 } else {
@@ -508,6 +523,30 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             });
         }
 
+    }
+
+    // Only the counts are redrawn after a like or a dislike, so a playing video keeps playing
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
+        if (!payloads.contains(PAYLOAD_COUNTS)) {
+            super.onBindViewHolder(holder, position, payloads);
+            return;
+        }
+        PostModel post = postModel.get(position);
+        if (holder instanceof ImageViewHolder) {
+            ((ImageViewHolder) holder).like_count.setText(String.valueOf(post.getTotalLikes()));
+            ((ImageViewHolder) holder).dislike_count.setText(String.valueOf(post.getTotalDislikes()));
+        } else {
+            ((VideoViewHolder) holder).like_count.setText(String.valueOf(post.getTotalLikes()));
+            ((VideoViewHolder) holder).dislike_count.setText(String.valueOf(post.getTotalDislikes()));
+        }
+    }
+
+    private void notifyCountsChanged(PostModel post) {
+        int index = postModel.indexOf(post);
+        if (index != -1) {
+            notifyItemChanged(index, PAYLOAD_COUNTS);
+        }
     }
 
     @Override

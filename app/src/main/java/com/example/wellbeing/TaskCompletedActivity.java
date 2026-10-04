@@ -32,6 +32,7 @@ public class TaskCompletedActivity extends AppCompatActivity {
                 sharedPreferenceClass.setValue_string("acceptFlag", "false");
                 sharedPreferenceClass.setValue_string("statusFlag", "");
                 Intent intent = new Intent(TaskCompletedActivity.this, HomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("fragmentTagName", "taskFragment");
                 startActivity(intent);
                 finish();
@@ -43,6 +44,7 @@ public class TaskCompletedActivity extends AppCompatActivity {
             public void handleOnBackPressed() {
                 // Handle the back button event
                 Intent intent = new Intent(TaskCompletedActivity.this, HomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
             }

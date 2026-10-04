@@ -156,7 +156,6 @@ public class AcceptedTaskActivity extends AppCompatActivity {
                         taskModel.setPofilePicture(dataObject.getJSONObject("createdBy").getString("profilePicture"));
 
                         tasks.add(taskModel);
-                        sharedPreferenceClass.setValue_string("taskId", dataObject.getString("_id"));
                         container.setVisibility(View.VISIBLE);
                         lottieAnimationView.setVisibility(View.INVISIBLE);
 
@@ -268,7 +267,6 @@ public class AcceptedTaskActivity extends AppCompatActivity {
                         taskCreatedUserName.setText(tasks.get(tasks.size()-1).getUserName());
                         timelineTV.setText(tasks.get(tasks.size()-1).getTimeToComplete());
 
-                        sharedPreferenceClass.setValue_string("List", String.valueOf(tasks.get(tasks.size()-1)));
                         Log.d("getTaskData : ", String.valueOf(dataObject));
 
                     } else {

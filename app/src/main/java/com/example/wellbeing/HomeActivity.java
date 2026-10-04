@@ -89,6 +89,11 @@ public class HomeActivity extends AppCompatActivity {
         assert navHostFragment != null;
         NavController navController = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(binding.bottomNav, navController);
+
+        // "Select a new task" on the result screens asks for the task tab
+        if (savedInstanceState == null && "taskFragment".equals(getIntent().getStringExtra("fragmentTagName"))) {
+            binding.bottomNav.setSelectedItemId(R.id.nav_add_task);
+        }
     }
 
     public void getUserInfo() {

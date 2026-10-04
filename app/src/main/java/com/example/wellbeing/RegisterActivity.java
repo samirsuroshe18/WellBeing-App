@@ -98,8 +98,13 @@ public class RegisterActivity extends AppCompatActivity {
                                 fileName = getFileName(selectedImageUri);
                                 fileType = getFileType(selectedImageUri);
                                 circleImageView.setImageURI(selectedImageUri);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
+                            } catch (IOException | SecurityException e) {
+                                multiMediaByteArray = null;
+                            }
+                            if (multiMediaByteArray == null) {
+                                // the picked image could not be read
+                                selectedImageUri = null;
+                                Toast.makeText(getApplicationContext(), "Unable to read the selected image", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -134,8 +139,8 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String regex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
                 Pattern pattern = Pattern.compile(regex);
-                name = name_editText.getText().toString();
-                email = email_editText.getText().toString();
+                name = name_editText.getText().toString().trim();
+                email = email_editText.getText().toString().trim();
                 password = pass_editText.getText().toString();
                 Matcher matcher = pattern.matcher(email);
                 if (name.trim().isEmpty() || email.trim().isEmpty() || password.trim().isEmpty()) {

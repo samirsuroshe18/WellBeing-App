@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
        sign_in_btn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
-               email = email_editText.getText().toString();
+               email = email_editText.getText().toString().trim();
                password = pass_editText.getText().toString();
                if(!email.isEmpty() && !password.isEmpty()){
                    LoginUser(view);

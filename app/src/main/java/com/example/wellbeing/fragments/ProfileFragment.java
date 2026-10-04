@@ -112,8 +112,8 @@ public class ProfileFragment extends Fragment {
         logout = view.findViewById(R.id.logoutBtn);
         editBtn = view.findViewById(R.id.editBtn);
         progressDialog = new ProgressDialog(requireContext());
-        progressDialog.setTitle("Register");
-        progressDialog.setMessage("Registering to your account");
+        progressDialog.setTitle("Logout");
+        progressDialog.setMessage("Logging out of your account");
 
         editBtn.setOnClickListener(v -> {
             if(!userInfo.isEmpty()){

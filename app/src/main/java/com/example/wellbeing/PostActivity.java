@@ -155,7 +155,9 @@ public class PostActivity extends AppCompatActivity {
                             }
                             Toast.makeText(PostActivity.this, message, Toast.LENGTH_SHORT).show();
                             sharedPreferenceClass.setValue_string("statusFlag", "completed");
-                            startActivity(new Intent(PostActivity.this, HomeActivity.class));
+                            Intent home = new Intent(PostActivity.this, HomeActivity.class);
+                            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(home);
                             finish();
                         }
 

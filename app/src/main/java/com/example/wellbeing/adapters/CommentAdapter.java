@@ -56,7 +56,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             Date date = sdf.parse(commentModel.getTime());
             PrettyTime prettyTime = new PrettyTime();
             holder.time.setText(prettyTime.format(date));
-            holder.user_profile.setImageURI(Uri.parse(commentModel.getUserProfile()));
             Picasso.get().load(commentModel.getUserProfile()).into(holder.user_profile);
         }catch (Exception e){
             e.printStackTrace();
