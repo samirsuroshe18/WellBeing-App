@@ -30,7 +30,7 @@ The Wellbeing App is an Android application designed to promote mental, creative
 <p align="center">
   <img width="80" height="80" alt="wellbeing_app_icon" src="https://github.com/samirsuroshe18/WellBeing-app---Android-studio/assets/130245723/57dd9a45-2b6b-436b-8ea3-31ee6f6e9554" />
   <br/><br/>
-  <a href="https://github.com/samirsuroshe18/WellBeing-App/releases/tag/2.0.0">
+  <a href="https://github.com/samirsuroshe18/WellBeing-App/releases/latest">
     <img src="https://img.shields.io/badge/Download%20APK-blue?style=for-the-badge&logo=android" alt="Download APK"/>
   </a>
 </p>
@@ -40,7 +40,9 @@ The Wellbeing App is an Android application designed to promote mental, creative
 - ⭐ Earn Wellpoints for good deeds & creativity  
 - 📊 Track personal progress and achievements  
 - 🏆 View and compete on the Leaderboard  
-- 📤 Upload posts to share accomplishments and inspire others  
+- 📤 Upload posts to share accomplishments and inspire others
+- ⏳ Accept a task with a deadline and post a photo or video as proof
+- ❤️ Like, dislike and comment on posts in the community feed  
 
 ## 🛠️ Tech Stack
 - **Language:** Java  
@@ -50,21 +52,28 @@ The Wellbeing App is an Android application designed to promote mental, creative
 - **Design Tools:** Figma, Eraser.io (data modeling)  
 
 ## 📲 Installation
-1. Download the APK from the [Releases](https://github.com/samirsuroshe18/WellBeing-App/releases/tag/2.0.0).  
+1. Download the APK from the [Releases](https://github.com/samirsuroshe18/WellBeing-App/releases/latest).  
 2. Enable **installation from unknown sources** on your device.  
 3. Tap the APK file to install it.  
 4. Create an account to start.  
 
 ## ⚙️ For Developers (Setup Guide)
-1. Clone this repo  
+1. Clone this repo
    ```bash
    git clone https://github.com/samirsuroshe18/WellBeing-App.git
-2. Open in Android Studio
-6. Sync Gradle and run on emulator or device
+   ```
+2. Open the project in Android Studio.
+3. Sync Gradle and run on an emulator or a device.
+
+The app talks to its own server, which lives in a separate repository:
+[wellbeing-backend](https://github.com/samirsuroshe18/wellbeing-backend).
+The server's address is `BASE_URL` in
+`app/src/main/java/com/example/wellbeing/UtilsServices/ApiClient.java`;
+change it there to use a server of your own.
 
 ## 📬 Contact
 👨‍💻 Developer: Samir Suroshe  
 📧 Email: [sameersuroshe50@gmail.com](mailto:sameersuroshe50@gmail.com)  
-🔗 LinkedIn: [samir-suroshe](https://www.linkedin.com/in/samir-suroshe-50b073271)  
+🔗 LinkedIn: [samir-suroshe](https://www.linkedin.com/in/samir-suroshe)  
 
 Your feedback and contributions are always welcome!
